@@ -907,7 +907,7 @@
       const list = document.getElementById('song-list');
       if (!list) return;
       list.innerHTML = songs.map((s, i) => `
-                      <div onclick="  Play(${i})" class=" max-w-full bento-card p-5 rounded-2xl flex justify-between items-center cursor-pointer hover:bg-white/5 transition-all">
+                      <div onclick=" loadAndPlay(${i})" class=" max-w-full bento-card p-5 rounded-2xl flex justify-between items-center cursor-pointer hover:bg-white/5 transition-all">
                           <p class="text-white font-bold text-sm">${s.name}</p>
                           <button onclick="event.stopPropagation(); deleteSong('${s.id}')" class="text-red-500 opacity-30 hover:opacity-100">Xóa</button>
                       </div>`).join('');
