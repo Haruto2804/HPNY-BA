@@ -1,14 +1,8 @@
-# Chặn toàn bộ thư mục media nằm trong src
-src/images/
-src/musics/
-src/videos/
+# Chế độ chuẩn: Chỉ chặn các file rác của hệ thống và IDE
+node_modules/
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
 
-# Hoặc nếu bạn muốn chặn tất cả file media dù nó nằm ở bất kỳ đâu
-*.jpg
-*.jpeg
-*.png
-*.gif
-*.mp3
-*.wav
-*.mp4
-*.mov
+# KHÔNG chặn images, musics, hay videos để GitHub có thể load được hình
