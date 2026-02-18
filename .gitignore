@@ -1,0 +1,14 @@
+# Chặn toàn bộ thư mục media nằm trong src
+src/images/
+src/musics/
+src/videos/
+
+# Hoặc nếu bạn muốn chặn tất cả file media dù nó nằm ở bất kỳ đâu
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.mp3
+*.wav
+*.mp4
+*.mov
