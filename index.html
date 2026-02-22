@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Our Journey | Memory Studio v8.0</title>
   <script src="https://cdn.tailwindcss.com"></script>
+
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;600;800&display=swap"
     rel="stylesheet">
   <style>
@@ -447,6 +448,8 @@
         class="nav-link p-5 rounded-2xl text-md font-bold opacity-50 text-left text-white">📅 Timeline</button>
       <button onclick="switchPage('video-memories', this)"
         class="nav-link p-5 rounded-2xl text-md font-bold opacity-50 text-left text-white">🎬 Video Clips</button>
+      <button onclick="switchPage('media-gallery', this)"
+        class="nav-link p-5 rounded-2xl text-md font-bold opacity-50 text-left text-white">🖼️ Ảnh</button>
       <button onclick="switchPage('music-lab', this)"
         class="nav-link p-5 rounded-2xl text-md font-bold opacity-50 text-left text-white">🎵 Music Lab</button>
       <button onclick="document.getElementById('change-pw-modal').classList.remove('hidden')"
@@ -520,6 +523,19 @@
           <span
             class="absolute -right-10 md:-right-20 bottom-6 md:bottom-16 text-sky-500 text-xl md:text-5xl font-black italic tracking-tighter">DAYS</span>
         </div>
+      </div>
+    </section>
+
+    <section id="media-gallery" class="page p-6 md:p-20 hidden">
+      <div class="max-w-6xl mx-auto pb-32">
+        <div class="flex flex-col md:flex-row justify-between items-center mb-10 gap-8">
+          <h2 class="text-5xl md:text-8xl font-black italic tracking-tighter text-white">Ảnh & Video</h2>
+          <button onclick="document.getElementById('media-modal').classList.remove('hidden')"
+            class="bg-sky-500 text-white px-8 md:px-10 py-4 md:py-5 rounded-[1.5rem] md:rounded-[2rem] font-black text-xs md:text-sm tracking-widest shadow-2xl hover:scale-105 transition-transform">THÊM
+            ẢNH</button>
+        </div>
+
+        <div id="media-content" class="grid grid-cols-1 md:grid-cols-3 gap-8"></div>
       </div>
     </section>
 
@@ -599,6 +615,53 @@
     </div>
   </div>
 
+  <div id="media-modal"
+    class="fixed inset-0 bg-black/95 backdrop-blur-xl z-[300] hidden flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-white/10 w-full max-w-lg rounded-[2.5rem] p-10">
+      <h3 class="text-2xl font-black mb-6 text-white italic text-center">Thêm Ảnh</h3>
+      <input type="text" id="m-caption" placeholder="Nội dung/Chú thích..."
+        class="w-full bg-white/5 border border-white/10 rounded-2x  l p-4 mb-4 text-white outline-none">
+
+      <div class="mb-4">
+        <label for="m-file"
+          class="group relative flex flex-col items-center justify-center w-full min-h-[150px] max-h-[300px] border-2 border-dashed border-white/10 rounded-[2rem] bg-white/5 hover:bg-white/10 hover:border-sky-500/50 transition-all cursor-pointer overflow-hidden">
+
+          <div id="preview-container" class="absolute inset-0 hidden bg-slate-950 flex items-center justify-center">
+            <img id="m-preview" class="w-full h-full object-contain p-2">
+            <div
+              class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+              <span
+                class="text-[10px] font-black uppercase tracking-widest text-white bg-sky-500 px-4 py-2 rounded-full shadow-xl">Thay
+                đổi ảnh</span>
+            </div>
+          </div>
+
+          <div id="upload-placeholder" class="flex flex-col items-center justify-center py-8">
+            <div
+              class="w-12 h-12 mb-3 rounded-2xl bg-sky-500/10 flex items-center justify-center text-sky-400 group-hover:scale-110 transition-transform">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
+                </path>
+              </svg>
+            </div>
+            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest text-center px-4"
+              id="file-name-display">Nhấn để chọn hoặc thả ảnh</p>
+          </div>
+
+          <input type="file" id="m-file" accept="image/*,video/*" class="hidden" onchange="previewImage(this)" />
+        </label>
+      </div>
+
+      <div class="flex gap-4">
+        <button onclick="addMedia()"
+          class="flex-1 py-4 rounded-2xl font-bold bg-sky-500 text-white uppercase tracking-widest text-xs">Đăng</button>
+        <button onclick="document.getElementById('media-modal').classList.add('hidden')"
+          class="px-8 py-4 rounded-2xl font-bold bg-white/10 text-white">Hủy</button>
+      </div>
+    </div>
+  </div>
+
   <div id="change-pw-modal"
     class="fixed inset-0 bg-black/95 backdrop-blur-xl z-[300] hidden flex items-center justify-center p-4">
     <div class="bg-slate-900 border border-white/10 w-full max-w-sm rounded-[2.5rem] p-10">
@@ -639,141 +702,201 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getFirestore, doc, getDoc, updateDoc, collection, addDoc, query, orderBy, onSnapshot, where, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getStorage, ref as storageRef, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
+    import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
     import * as THREE from 'three';
 
     const firebaseConfig = { apiKey: "AIzaSyCtXpEIp65Uyr8YbJUPqPz8x6CzqC8Q4Xg", authDomain: "todo-list-8d4c3.firebaseapp.com", projectId: "todo-list-8d4c3", storageBucket: "todo-list-8d4c3.firebasestorage.app", messagingSenderId: "926023141272", appId: "1:926023141272:web:7c1fe53d54364143098ded" };
-    const app = initializeApp(firebaseConfig); const db = getFirestore(app);
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const storage = getStorage(app);
+    const auth = getAuth(app);
+
+    signInAnonymously(auth).catch(err => console.warn('Anonymous sign-in failed', err));
     let userData = null; let selectedUserId = null;
 
-    // --- UTILS ---
     function getYoutubeID(url) {
       if (!url) return null;
-
-      // Regex đã được bổ sung thêm 'live/' để nhận diện link livestream
       const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=|shorts\/|live\/)([^#\&\?]*).*/;
       const match = url.match(regExp);
-
-      // Trả về ID 11 ký tự nếu khớp
       return (match && match[2].length === 11) ? match[2] : null;
     }
-    // --- VIDEO LOGIC ---
+
     window.addVideo = async () => {
       const titleInput = document.getElementById('v-title');
       const urlInput = document.getElementById('v-url');
       const title = titleInput.value.trim();
       const rawUrl = urlInput.value.trim();
       const videoId = getYoutubeID(rawUrl);
-
-      if (!title || !videoId)
-        return alert("Nhập tiêu đề và dán link YouTube/Shorts chuẩn nhé!");
-
+      if (!title || !videoId) return alert("Nhập tiêu đề và dán link YouTube chuẩn nhé!");
       const isShorts = rawUrl.includes("shorts");
-
-      await addDoc(collection(db, "videos"), {
-        title,
-        videoId,
-        isShorts,
-        author: userData.name,
-        authorId: userData.id,
-        createdAt: serverTimestamp()
-      });
-
-      titleInput.value = '';
-      urlInput.value = '';
-      document.getElementById('video-modal').classList.add('hidden');
+      await addDoc(collection(db, "videos"), { title, videoId, isShorts, author: userData.name, authorId: userData.id, createdAt: serverTimestamp() });
+      titleInput.value = ''; urlInput.value = ''; document.getElementById('video-modal').classList.add('hidden');
     };
 
-
     function loadVideos() {
-      onSnapshot(
-        query(collection(db, "videos"), orderBy("createdAt", "desc")),
-        (snap) => {
-          const container = document.getElementById("video-content");
-
-          container.innerHTML = snap.docs.map((doc) => {
-            const v = doc.data();
-            const date = v.createdAt ? v.createdAt.toDate() : new Date();
-            const color = v.authorId === "bao" ? "#0ea5e9" : "#f472b6";
-
-            const isShorts = v.isShorts === true;
-
-            return `
-          <div class="bento-card p-6 rounded-[2.5rem] border-t-4 shadow-2xl mb-6 w-full"
-               style="border-top-color: ${color}">
-
-              <div class="flex justify-between items-start mb-4">
-                  <div class="flex-1 pr-4">
-                      <h4 class="text-xl md:text-2xl font-black text-white italic mb-1">
-                          ${v.title}
-                      </h4>
-                      <p class="text-[11px] uppercase font-extrabold tracking-wider opacity-60"
-                         style="color: ${color}">
-                          ${v.author} • ${date.toLocaleDateString("vi-VN")}
-                      </p>
-                  </div>
-                  <button onclick="deleteVideo('${doc.id}')"
-                          class="text-white/30 hover:text-red-500">
-                          ✕
-                  </button>
-              </div>
-              
-              <div class="video-wrapper w-full flex justify-center">
-                  <div class="aspect-container w-full    ${isShorts ? 'aspect-shorts aspect-shorts-mobile' : ''}">
-                      <iframe
-
-                          src="https://www.youtube.com/embed/${v.videoId}?rel=0&modestbranding=1"
-                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                          allowfullscreen>
-                      </iframe>
-                  </div>
-              </div>
-
-          </div>
-        `;
-          }).join("");
-        }
-      );
+      onSnapshot(query(collection(db, "videos"), orderBy("createdAt", "desc")), (snap) => {
+        const container = document.getElementById("video-content");
+        container.innerHTML = snap.docs.map((doc) => {
+          const v = doc.data(); const date = v.createdAt ? v.createdAt.toDate() : new Date();
+          const color = v.authorId === "bao" ? "#0ea5e9" : "#f472b6";
+          const isShorts = v.isShorts === true;
+          return `<div class="bento-card p-6 rounded-[2.5rem] border-t-4 shadow-2xl mb-6 w-full" style="border-top-color: ${color}">
+                <div class="flex justify-between items-start mb-4">
+                    <div class="flex-1 pr-4">
+                        <h4 class="text-xl md:text-2xl font-black text-white italic mb-1">${v.title}</h4>
+                        <p class="text-[11px] uppercase font-extrabold tracking-wider opacity-60" style="color: ${color}">${v.author} • ${date.toLocaleDateString("vi-VN")}</p>
+                    </div>
+                    <button onclick="deleteVideo('${doc.id}')" class="text-white/30 hover:text-red-500">✕</button>
+                </div>
+                <div class="video-wrapper w-full flex justify-center">
+                    <div class="aspect-container w-full ${isShorts ? 'aspect-shorts aspect-shorts-mobile' : ''}">
+                        <iframe src="https://www.youtube.com/embed/${v.videoId}?rel=0&modestbranding=1" allowfullscreen></iframe>
+                    </div>
+                </div>
+            </div>`;
+        }).join("");
+      });
     }
 
+    window.deleteVideo = async (id) => confirm("Xóa video này hả?") && await deleteDoc(doc(db, "videos", id));
 
-    window.deleteVideo = async (id) => confirm("Xóa video này hả Bảo?") && await deleteDoc(doc(db, "videos", id));
+    // --- CẬP NHẬT CHÍNH TẠI ĐÂY: HÀM ADD MEDIA ---
+    window.addMedia = async () => {
+      const caption = document.getElementById('m-caption').value.trim();    
+      const fileInput = document.getElementById('m-file');
+      const file = fileInput && fileInput.files && fileInput.files[0];
 
-    // --- TIMELINE LOGIC ---
+      const docData = { caption, author: userData.name, authorId: userData.id, createdAt: serverTimestamp() };
+
+      // THÔNG TIN CLOUDINARY CỦA BẠN
+      const CLOUD_NAME = "ddvotq2cg";
+      const UPLOAD_PRESET = "images_memories";
+
+      try {
+        if (file) {
+          // 1. Tạo FormData để gửi file lên Cloudinary
+          const formData = new FormData();
+          formData.append('file', file);
+          formData.append('upload_preset', UPLOAD_PRESET);
+
+          // 2. Gọi API Cloudinary
+          const response = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, {
+            method: 'POST',
+            body: formData
+          });
+
+          if (!response.ok) throw new Error("Không thể upload ảnh lên Cloudinary");
+
+          const cloudinaryData = await response.json();
+
+          // 3. Lấy URL trả về từ Cloudinary và gán vào docData
+          docData.url = cloudinaryData.secure_url;
+          docData.public_id = cloudinaryData.public_id; // Lưu lại để xóa sau này nếu cần
+          docData.isVideo = file.type.startsWith('video');
+
+
+        } else if (type === 'youtube') {
+          const videoId = getYoutubeID(rawUrl);
+          if (!videoId) return alert('Link YouTube không hợp lệ.');
+          docData.isVideo = true;
+          docData.videoId = videoId;
+          docData.isShorts = rawUrl.includes('shorts');
+        } else {
+          if (!rawUrl) return alert('Hãy chọn file hoặc dán link nhé!');
+          docData.url = rawUrl;
+          docData.isVideo = false;
+        }
+
+        // 4. Lưu vào Firestore (Collection: images)
+        await addDoc(collection(db, "images"), docData);
+
+        // Reset form
+        document.getElementById('m-caption').value = '';
+        document.getElementById('m-url').value = '';
+        if (fileInput) fileInput.value = '';
+        document.getElementById('media-modal').classList.add('hidden');
+        alert("Đã thêm vào bộ sưu tập thành công! 🚀");
+
+      } catch (err) {
+        console.error(err);
+        alert("Lỗi: " + err.message);
+      }
+      document.getElementById('preview-container').classList.add('hidden');
+      document.getElementById('upload-placeholder').classList.remove('opacity-0');
+      document.getElementById('m-preview').src = '';
+    };
+
+    function loadMedia() {
+      onSnapshot(query(collection(db, "images"), orderBy("createdAt", "desc")), (snap) => {
+        const container = document.getElementById('media-content');
+        if (!container) return;
+        if (snap.empty) { container.innerHTML = `<p class="text-center opacity-30 py-20 text-white">Chưa có ảnh nào...</p>`; return; }
+        container.innerHTML = snap.docs.map(doc => {
+          const m = doc.data(); const date = m.createdAt ? m.createdAt.toDate() : new Date();
+          const color = m.authorId === 'bao' ? '#0ea5e9' : '#f472b6';
+          let mediaHtml = '';
+          if (m.videoId) {
+            mediaHtml = `<div class="aspect-container ${m.isShorts ? 'aspect-shorts aspect-shorts-mobile' : ''}"><iframe src="https://www.youtube.com/embed/${m.videoId}?rel=0&modestbranding=1" allowfullscreen></iframe></div>`;
+          } else if (m.isVideo && m.url) {
+            mediaHtml = `<video controls class="w-full h-60 object-cover rounded-lg"><source src="${m.url}"></video>`;
+          } else if (m.url) {
+            mediaHtml = `<img src="${m.url}" class="w-full h-60 object-cover rounded-lg">`;
+          }
+          return `<div class="bento-card p-4 rounded-2xl border-t-4 shadow-2xl" style="border-top-color: ${color}">
+                  <div class="flex justify-between items-start mb-3">
+                    <p class="text-[11px] uppercase font-extrabold tracking-wider opacity-60" style="color:${color}">${m.author} • ${date.toLocaleDateString('vi-VN')}</p>
+                    <button onclick="deleteMedia('${doc.id}')" class="text-white/30 hover:text-red-500">✕</button>
+                  </div>
+                  <div class="mb-3">${mediaHtml}</div>
+                  <p class="text-slate-300 italic text-sm">${m.caption || ''}</p>
+                </div>`;
+        }).join('');
+      });
+    }
+
+    window.deleteMedia = async (id) => {
+      if (!confirm('Xóa cái này nhé?')) return;
+      const snap = await getDoc(doc(db, 'images', id));
+      if (snap.exists() && snap.data().storagePath) {
+        try { await deleteObject(storageRef(storage, snap.data().storagePath)); } catch (e) { }
+      }
+      await deleteDoc(doc(db, 'images', id));
+    };
+
     window.loadMemories = (selectedDate = null) => {
-      let memoriesRef = collection(db, "memories");
-      let q = query(memoriesRef, orderBy("date", "desc"));
+      let q = query(collection(db, "memories"), orderBy("date", "desc"));
       if (selectedDate) {
         const start = new Date(selectedDate).toISOString();
         const end = new Date(new Date(selectedDate).setHours(23, 59, 59, 999)).toISOString();
-        q = query(memoriesRef, where("date", ">=", start), where("date", "<=", end), orderBy("date", "desc"));
+        q = query(collection(db, "memories"), where("date", ">=", start), where("date", "<=", end), orderBy("date", "desc"));
       }
       onSnapshot(q, (snap) => {
         const contentEl = document.getElementById('timeline-content');
-        if (snap.empty) { contentEl.innerHTML = `<p class="text-center opacity-30 py-20 text-white">Chưa có kỷ niệm nào...</p>`; return; }
+        if (snap.empty) { contentEl.innerHTML = `<p class="text-center opacity-30 py-20 text-white">Chưa có kỉ niệm này...</p>`; return; }
         contentEl.innerHTML = snap.docs.map(doc => {
           const d = doc.data(); const color = d.author === 'bao' ? '#0ea5e9' : '#f472b6';
           return `<div class="memory-row flex w-full relative min-h-[150px] ${d.author === 'bao' ? 'md:flex-row' : 'md:flex-row-reverse'}">
-                                  <div class="timeline-dot" style="background: ${color}; box-shadow: 0 0 15px ${color}"></div>
-                                  <div class="memory-card-wrapper w-full md:w-1/2 ${d.author === 'bao' ? 'md:pr-14' : 'md:pl-14'}">
-                                      <div class="reveal-text reveal-active bento-card p-6 md:p-10 rounded-[2.5rem] inline-block w-full border-t-4 shadow-2xl" style="border-top-color: ${color}">
-                                          <p class="text-[10px] md:text-[11px] font-black uppercase mb-3 tracking-[0.2em]" style="color: ${color}">${d.author === 'bao' ? 'Bảo' : 'Bảo Anh'} • ${new Date(d.date).toLocaleDateString('vi-VN')}</p>
-                                          <h4 class="text-2xl md:text-3xl font-black text-white italic text-left mb-3">${d.title}</h4>
-                                          <p class="text-slate-400 text-sm md:text-lg italic text-left leading-relaxed">"${d.desc}"</p>
-                                      </div>
-                                  </div><div class="hidden md:block md:w-1/2"></div></div>`;
+                <div class="timeline-dot" style="background: ${color}; box-shadow: 0 0 15px ${color}"></div>
+                <div class="memory-card-wrapper w-full md:w-1/2 ${d.author === 'bao' ? 'md:pr-14' : 'md:pl-14'}">
+                    <div class="reveal-text reveal-active bento-card p-6 md:p-10 rounded-[2.5rem] w-full border-t-4 shadow-2xl" style="border-top-color: ${color}">
+                        <p class="text-[10px] md:text-[11px] font-black uppercase mb-3 tracking-[0.2em]" style="color: ${color}">${d.author === 'bao' ? 'Bảo' : 'Bảo Anh'} • ${new Date(d.date).toLocaleDateString('vi-VN')}</p>
+                        <h4 class="text-2xl md:text-3xl font-black text-white italic mb-3">${d.title}</h4>
+                        <p class="text-slate-400 text-sm md:text-lg italic leading-relaxed">"${d.desc}"</p>
+                    </div>
+                </div></div>`;
         }).join('');
       });
     }
 
     window.addMemory = async () => {
       const t = document.getElementById('m-title').value; const d = document.getElementById('m-desc').value;
-      if (!t || !d) return alert("Nhập đủ thông tin nhé!");
+      if (!t || !d) return alert("Điền đủ thông tin nha!");
       await addDoc(collection(db, "memories"), { title: t, desc: d, author: userData.id, date: new Date().toISOString() });
       document.getElementById('m-title').value = ''; document.getElementById('m-desc').value = '';
       document.getElementById('timeline-modal').classList.add('hidden');
     };
 
-    // --- SYSTEM LOGIC ---
     window.selectUser = (id) => { selectedUserId = id; document.getElementById('profile-select').classList.add('hidden'); document.getElementById('password-box').classList.remove('hidden'); };
     window.togglePassword = (id) => { const el = document.getElementById(id); el.type = el.type === 'password' ? 'text' : 'password'; };
     window.toggleSidebar = () => document.getElementById('sidebar').classList.toggle('open');
@@ -785,93 +908,50 @@
         userData = { id: selectedUserId, name: userDoc.data().name || (selectedUserId === 'bao' ? 'Bảo' : 'Bảo Anh') };
         sessionStorage.setItem('memory_session', JSON.stringify(userData));
         enterStudio();
-      } else alert("Sai mật khẩu rồi! ✨");
+      } else alert("Mật khẩu sai rồi Bảo ơi! ✨");
     };
 
     window.updatePassword = async () => {
       const np = document.getElementById('new-pw').value;
-      if (!np) return alert("Nhập mật khẩu mới đã!");
+      if (!np) return alert("Nhập pass mới nè!");
       await updateDoc(doc(db, "users", userData.id), { password: np });
-      alert("Đã đổi thành công! 🔑"); document.getElementById('change-pw-modal').classList.add('hidden');
+      alert("Xong rồi! 🔑"); document.getElementById('change-pw-modal').classList.add('hidden');
     };
 
     function enterStudio() {
-      // 1. Định dạng chuẩn để gán vào ô Input (phải là YYYY-MM-DD)
       const now = new Date();
       const todayISO = now.toISOString().split('T')[0];
-
-      // 2. Định dạng kiểu Việt Nam để hiển thị nếu cần (dd/mm/yyyy)
-      const todayVN = now.toLocaleDateString('vi-VN');
-
-      // 3. Gán vào ô lọc ngày
       const dateInput = document.getElementById('filter-date');
-      if (dateInput) {
-        dateInput.value = todayISO;
-      }
-
-      // 4. Cập nhật giao diện
+      if (dateInput) dateInput.value = todayISO;
       document.getElementById('login-overlay').style.display = 'none';
-
-      // Ví dụ: Hiển thị thêm ngày hiện tại vào lời chào cho "đúng chất" Việt Nam
-      document.getElementById('user-greeting').innerText = `Chào ${userData.name} ✨ (${todayVN})`;
-
-      // Giữ nguyên các phần ảnh đại diện
+      document.getElementById('user-greeting').innerText = `Chào ${userData.name} ✨`;
       const avatarImg = userData.id === 'bao' ? './src/images/Haruto.png' : './src/images/BaoAnh.jpg';
       document.getElementById('user-avatar').innerHTML = `<img src="${avatarImg}" class="w-full h-full object-cover">`;
-
-      // 5. Gọi dữ liệu (Lọc luôn theo ngày hôm nay)
-      loadMemories(todayISO);
-      loadVideos();
-      initMusicSystem();
-      initTimer();
-      initThreeJS();
-
-
-      // Đợi 1 chút để Firebase trả về danh sách bài hát (songs)
-      let checkSongs = setInterval(() => {
-        if (songs.length > 0) {
-          loadAndPlay(0); // Gọi hàm này để vừa gán src vừa phát
-          clearInterval(checkSongs); // Chạy được rồi thì dừng vòng lặp
-        }
-      }, 500);
-
-      // Tự động dừng kiểm tra sau 5 giây để tránh tốn tài nguyên nếu ko có mạng
-      setTimeout(() => clearInterval(checkSongs), 5000);
-      setTimeout(() => {
-        document.querySelectorAll('.active .reveal-text').forEach(el => el.classList.add('reveal-active'));
-      }, 200);
+      loadMemories(todayISO); loadVideos(); loadMedia(); initMusicSystem(); initTimer(); initThreeJS();
+      setTimeout(() => document.querySelectorAll('.active .reveal-text').forEach(el => el.classList.add('reveal-active')), 200);
     }
 
     window.switchPage = (pid, btn) => {
       if (window.innerWidth < 768) document.getElementById('sidebar').classList.remove('open');
-      document.querySelectorAll('.page').forEach(p => p.classList.remove('active', 'hidden'));
-      document.querySelectorAll('.page').forEach(p => p.id !== pid && p.classList.add('hidden'));
-      document.getElementById(pid).classList.add('active');
-      document.querySelectorAll('.nav-link').forEach(l => l.classList.add('opacity-50'));
-      document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+      document.querySelectorAll('.page').forEach(p => { p.classList.remove('active'); p.classList.add('hidden'); });
+      document.getElementById(pid).classList.add('active'); document.getElementById(pid).classList.remove('hidden');
+      document.querySelectorAll('.nav-link').forEach(l => { l.classList.add('opacity-50'); l.classList.remove('active'); });
       btn.classList.add('active'); btn.classList.remove('opacity-50');
       setTimeout(() => document.querySelectorAll(`#${pid} .reveal-text`).forEach(el => el.classList.add('reveal-active')), 50);
     };
 
-    // --- TIMER & MUSIC ---
     function initTimer() {
-      // Thay đổi ngày tại đây: YYYY-MM-DD (Năm-Tháng-Ngày)
-      // Tháng 7 là '07'
       const start = new Date('2025-07-15T00:00:00');
-
       const update = () => {
         const diff = new Date() - start;
-
-        // Tính toán số ngày, giờ, phút, giây đã trôi qua
         document.getElementById('days-main').innerText = Math.floor(diff / 86400000);
         document.getElementById('hrs').innerText = String(Math.floor((diff % 86400000) / 3600000)).padStart(2, '0');
         document.getElementById('mins').innerText = String(Math.floor((diff % 3600000) / 60000)).padStart(2, '0');
         document.getElementById('secs').innerText = String(Math.floor((diff % 60000) / 1000)).padStart(2, '0');
       };
-
-      update();
-      setInterval(update, 1000);
+      update(); setInterval(update, 1000);
     }
+
     function initThreeJS() {
       const scene = new THREE.Scene(); const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
       const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('threejs-canvas'), alpha: true });
@@ -887,49 +967,31 @@
     let songs = []; let cIdx = 0; const audio = document.getElementById('main-audio');
     function initMusicSystem() {
       onSnapshot(query(collection(db, "songs"), orderBy("createdAt", "desc")), (snap) => {
-        const oldSongsLength = songs.length;
         songs = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-
-        if (songs.length > 0) {
-          // Chỉ gán src lần đầu tiên hoặc khi chưa có nhạc
-          if (!audio.src || audio.src === "") {
-            audio.src = songs[0].url;
-            document.getElementById('current-song-title').innerText = songs[0].name;
-            document.getElementById('current-song-author').innerText = `Gửi bởi: ${songs[0].author}`;
-          }
-          document.getElementById('floating-player').classList.add('show');
+        if (songs.length > 0 && !audio.src) {
+          audio.src = songs[0].url;
+          document.getElementById('current-song-title').innerText = songs[0].name;
+          document.getElementById('current-song-author').innerText = `Gửi bởi: ${songs[0].author}`;
         }
         renderSongList();
       });
     }
 
     function renderSongList() {
-      const list = document.getElementById('song-list');
-      if (!list) return;
-      list.innerHTML = songs.map((s, i) => `
-                      <div onclick=" loadAndPlay(${i})" class=" max-w-full bento-card p-5 rounded-2xl flex justify-between items-center cursor-pointer hover:bg-white/5 transition-all">
-                          <p class="text-white font-bold text-sm">${s.name}</p>
-                          <button onclick="event.stopPropagation(); deleteSong('${s.id}')" class="text-red-500 opacity-30 hover:opacity-100">Xóa</button>
-                      </div>`).join('');
+      const list = document.getElementById('song-list'); if (!list) return;
+      list.innerHTML = songs.map((s, i) => `<div onclick="loadAndPlay(${i})" class="bento-card p-5 rounded-2xl flex justify-between items-center cursor-pointer hover:bg-white/5 transition-all">
+            <p class="text-white font-bold text-sm">${s.name}</p>
+            <button onclick="event.stopPropagation(); deleteSong('${s.id}')" class="text-red-500 opacity-30 hover:opacity-100">Xóa</button>
+        </div>`).join('');
     }
 
     window.loadAndPlay = (i) => {
-      cIdx = i;
-      audio.src = songs[i].url;
+      cIdx = i; audio.src = songs[i].url;
       document.getElementById('current-song-title').innerText = songs[i].name;
       document.getElementById('current-song-author').innerText = `Gửi bởi: ${songs[i].author}`;
-
-      // Xử lý phát nhạc có kiểm soát lỗi
-      const playPromise = audio.play();
-      if (playPromise !== undefined) {
-        playPromise.then(() => {
-          updateUI(true); // Nhạc phát thật sự thì mới quay đĩa
-        }).catch(error => {
-          console.log("Trình duyệt chặn phát tự động, chờ bấm Play.");
-          updateUI(false); // Dừng đĩa lại nếu nhạc bị chặn
-        });
-      }
-    }; window.toggleMusic = () => audio.paused ? (audio.play(), updateUI(true)) : (audio.pause(), updateUI(false));
+      audio.play().then(() => updateUI(true)).catch(() => updateUI(false));
+    };
+    window.toggleMusic = () => audio.paused ? (audio.play(), updateUI(true)) : (audio.pause(), updateUI(false));
     window.nextSong = () => { cIdx = (cIdx + 1) % songs.length; loadAndPlay(cIdx); };
     window.prevSong = () => { cIdx = (cIdx - 1 + songs.length) % songs.length; loadAndPlay(cIdx); };
     window.deleteSong = async (id) => confirm("Xóa bài này?") && await deleteDoc(doc(db, "songs", id));
@@ -947,15 +1009,33 @@
     if (session) { userData = JSON.parse(session); enterStudio(); }
     window.togglePlayerSize = () => {
       const player = document.getElementById('floating-player');
-      const icon = document.getElementById('toggle-icon');
-
       player.classList.toggle('collapsed');
+      document.getElementById('toggle-icon').innerText = player.classList.contains('collapsed') ? '♫' : '✕';
+    };
+    window.previewImage = (input) => {
+      const container = document.getElementById('preview-container');
+      const previewImg = document.getElementById('m-preview');
+      const label = document.getElementById('file-name-display');
+      const file = input.files[0];
 
-      // Đổi icon để người dùng biết cách mở lại
-      if (player.classList.contains('collapsed')) {
-        icon.innerText = '♫'; // Hiện nốt nhạc khi đã thu gọn
-      } else {
-        icon.innerText = '✕'; // Hiện dấu X khi đang mở
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          // Nếu là video, chúng ta có thể hiện icon hoặc ảnh thumbnail tạm
+          if (file.type.startsWith('video')) {
+            previewImg.src = "https://cdn-icons-png.flaticon.com/512/1179/1179120.png"; // Icon video
+            previewImg.classList.add('w-16', 'h-16', 'mx-auto'); // Thu nhỏ icon lại
+            previewImg.classList.remove('w-full', 'h-full', 'object-contain');
+          } else {
+            previewImg.src = e.target.result;
+            previewImg.classList.remove('w-16', 'h-16');
+            previewImg.classList.add('w-full', 'h-full', 'object-contain');
+          }
+
+          container.classList.remove('hidden');
+          label.innerText = file.name;
+        };
+        reader.readAsDataURL(file);
       }
     };
   </script>
