@@ -4,5 +4,5 @@ node_modules/
 Thumbs.db
 .vscode/
 .idea/
-
+.env.js
 # KHÔNG chặn images, musics, hay videos để GitHub có thể load được hình
