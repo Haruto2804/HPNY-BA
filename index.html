@@ -617,47 +617,46 @@
 
   <div id="media-modal"
     class="fixed inset-0 bg-black/95 backdrop-blur-xl z-[300] hidden flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-white/10 w-full max-w-lg rounded-[2.5rem] p-10">
-      <h3 class="text-2xl font-black mb-6 text-white italic text-center">Thêm Ảnh</h3>
-      <input type="text" id="m-caption" placeholder="Nội dung/Chú thích..."
-        class="w-full bg-white/5 border border-white/10 rounded-2x  l p-4 mb-4 text-white outline-none">
+    <div class="bg-slate-900 border border-white/10 w-full max-w-lg rounded-[2.5rem] p-10 shadow-2xl">
+      <h3 class="text-2xl font-black mb-6 text-white italic text-center">Thêm Kỷ Niệm</h3>
 
-      <div class="mb-4">
+      <div class="relative mb-6">
+        <label class="text-[10px] font-black uppercase tracking-[0.2em] text-sky-400/70 ml-2 mb-2 block">Caption</label>
+        <input type="text" id="m-caption" placeholder="Để lại vài lời ngọt ngào..."
+          class="w-full bg-white/5 border border-white/10 rounded-[1.5rem] p-5 text-white outline-none focus:border-sky-500/50 focus:bg-white/10 focus:ring-4 focus:ring-sky-500/10 transition-all duration-300">
+      </div>
+
+      <div class="mb-6">
         <label for="m-file"
           class="group relative flex flex-col items-center justify-center w-full min-h-[150px] max-h-[300px] border-2 border-dashed border-white/10 rounded-[2rem] bg-white/5 hover:bg-white/10 hover:border-sky-500/50 transition-all cursor-pointer overflow-hidden">
-
           <div id="preview-container" class="absolute inset-0 hidden bg-slate-950 flex items-center justify-center">
             <img id="m-preview" class="w-full h-full object-contain p-2">
             <div
               class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
               <span
                 class="text-[10px] font-black uppercase tracking-widest text-white bg-sky-500 px-4 py-2 rounded-full shadow-xl">Thay
-                đổi ảnh</span>
+                đổi</span>
             </div>
           </div>
-
           <div id="upload-placeholder" class="flex flex-col items-center justify-center py-8">
-            <div
-              class="w-12 h-12 mb-3 rounded-2xl bg-sky-500/10 flex items-center justify-center text-sky-400 group-hover:scale-110 transition-transform">
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
-                </path>
-              </svg>
-            </div>
+            <svg class="w-10 h-10 mb-3 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
+              </path>
+            </svg>
             <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest text-center px-4"
-              id="file-name-display">Nhấn để chọn hoặc thả ảnh</p>
+              id="file-name-display">Chọn ảnh hoặc video</p>
           </div>
-
           <input type="file" id="m-file" accept="image/*,video/*" class="hidden" onchange="previewImage(this)" />
         </label>
       </div>
 
       <div class="flex gap-4">
-        <button onclick="addMedia()"
-          class="flex-1 py-4 rounded-2xl font-bold bg-sky-500 text-white uppercase tracking-widest text-xs">Đăng</button>
-        <button onclick="document.getElementById('media-modal').classList.add('hidden')"
-          class="px-8 py-4 rounded-2xl font-bold bg-white/10 text-white">Hủy</button>
+        <button onclick="addMedia()" id="btn-upload-media"
+          class="flex-1 py-4 rounded-2xl font-bold bg-sky-500 text-white uppercase tracking-widest text-xs hover:scale-105 transition-transform">Đăng
+          lên</button>
+        <button onclick="closeMediaModal()"
+          class="px-8 py-4 rounded-2xl font-bold bg-white/10 text-white hover:bg-white/20">Hủy</button>
       </div>
     </div>
   </div>
@@ -763,7 +762,7 @@
 
     // --- CẬP NHẬT CHÍNH TẠI ĐÂY: HÀM ADD MEDIA ---
     window.addMedia = async () => {
-      const caption = document.getElementById('m-caption').value.trim();    
+      const caption = document.getElementById('m-caption').value.trim();
       const fileInput = document.getElementById('m-file');
       const file = fileInput && fileInput.files && fileInput.files[0];
 
@@ -807,17 +806,13 @@
           docData.url = rawUrl;
           docData.isVideo = false;
         }
-
         // 4. Lưu vào Firestore (Collection: images)
         await addDoc(collection(db, "images"), docData);
-
         // Reset form
         document.getElementById('m-caption').value = '';
-        document.getElementById('m-url').value = '';
         if (fileInput) fileInput.value = '';
         document.getElementById('media-modal').classList.add('hidden');
         alert("Đã thêm vào bộ sưu tập thành công! 🚀");
-
       } catch (err) {
         console.error(err);
         alert("Lỗi: " + err.message);
@@ -831,37 +826,64 @@
       onSnapshot(query(collection(db, "images"), orderBy("createdAt", "desc")), (snap) => {
         const container = document.getElementById('media-content');
         if (!container) return;
-        if (snap.empty) { container.innerHTML = `<p class="text-center opacity-30 py-20 text-white">Chưa có ảnh nào...</p>`; return; }
+
+        if (snap.empty) {
+          container.innerHTML = `<p class="text-center opacity-30 py-20 text-white italic">Chưa có kỷ niệm nào được tải lên...</p>`;
+          return;
+        }
+
         container.innerHTML = snap.docs.map(doc => {
-          const m = doc.data(); const date = m.createdAt ? m.createdAt.toDate() : new Date();
+          const m = doc.data();
+          const date = m.createdAt ? m.createdAt.toDate() : new Date();
           const color = m.authorId === 'bao' ? '#0ea5e9' : '#f472b6';
+
+          // KIỂM TRA QUYỀN: Chỉ hiện nút xóa nếu người đang đăng nhập là người đăng ảnh
+          const isOwner = m.authorId === userData.id;
+
           let mediaHtml = '';
-          if (m.videoId) {
-            mediaHtml = `<div class="aspect-container ${m.isShorts ? 'aspect-shorts aspect-shorts-mobile' : ''}"><iframe src="https://www.youtube.com/embed/${m.videoId}?rel=0&modestbranding=1" allowfullscreen></iframe></div>`;
-          } else if (m.isVideo && m.url) {
-            mediaHtml = `<video controls class="w-full h-60 object-cover rounded-lg"><source src="${m.url}"></video>`;
+          if (m.isVideo && m.url) {
+            mediaHtml = `<video controls class="w-full h-64 object-cover rounded-2xl shadow-inner"><source src="${m.url}"></video>`;
           } else if (m.url) {
-            mediaHtml = `<img src="${m.url}" class="w-full h-60 object-cover rounded-lg">`;
+            mediaHtml = `<img src="${m.url}" class="w-full h-64 object-cover rounded-2xl shadow-inner hover:scale-[1.02] transition-transform duration-500" loading="lazy">`;
           }
-          return `<div class="bento-card p-4 rounded-2xl border-t-4 shadow-2xl" style="border-top-color: ${color}">
-                  <div class="flex justify-between items-start mb-3">
-                    <p class="text-[11px] uppercase font-extrabold tracking-wider opacity-60" style="color:${color}">${m.author} • ${date.toLocaleDateString('vi-VN')}</p>
-                    <button onclick="deleteMedia('${doc.id}')" class="text-white/30 hover:text-red-500">✕</button>
-                  </div>
-                  <div class="mb-3">${mediaHtml}</div>
-                  <p class="text-slate-300 italic text-sm">${m.caption || ''}</p>
-                </div>`;
+
+          return `
+        <div class="bento-card p-5 rounded-[2.5rem] border-t-4 shadow-2xl mb-2 transition-all" style="border-top-color: ${color}">
+          <div class="flex justify-between items-start mb-4">
+            <div class="flex items-center gap-2">
+              <div class="w-2 h-2 rounded-full" style="background: ${color}"></div>
+              <p class="text-[10px] uppercase font-black tracking-widest opacity-70" style="color:${color}">
+                ${m.author} • ${date.toLocaleDateString('vi-VN')}
+              </p>
+            </div>
+            
+            ${isOwner ? `
+              <button onclick="deleteMedia('${doc.id}')" class="w-8 h-8 flex items-center justify-center rounded-full bg-white/5 text-white/30 hover:bg-red-500/20 hover:text-red-500 transition-all">
+                ✕
+              </button>` : ''}
+          </div>
+          
+          <div class="relative group cursor-pointer overflow-hidden rounded-2xl mb-4">
+            ${mediaHtml}
+          </div>
+          
+          <p class="text-slate-300 italic text-sm px-2 leading-relaxed">
+            ${m.caption ? `“${m.caption}”` : '<span class="opacity-20">Không có chú thích</span>'}
+          </p>
+        </div>`;
         }).join('');
       });
     }
 
     window.deleteMedia = async (id) => {
-      if (!confirm('Xóa cái này nhé?')) return;
-      const snap = await getDoc(doc(db, 'images', id));
-      if (snap.exists() && snap.data().storagePath) {
-        try { await deleteObject(storageRef(storage, snap.data().storagePath)); } catch (e) { }
+      if (confirm("Bạn có chắc chắn muốn xóa kỷ niệm này không? Hành động này không thể hoàn tác.")) {
+        try {
+          await deleteDoc(doc(db, "images", id));
+          // Nếu dùng Cloudinary, việc xóa ảnh trên Cloudinary cần thông qua Backend (hoặc để đó cũng được vì dung lượng Free khá lớn)
+        } catch (err) {
+          alert("Bạn không có quyền xóa ảnh này!");
+        }
       }
-      await deleteDoc(doc(db, 'images', id));
     };
 
     window.loadMemories = (selectedDate = null) => {
@@ -1015,28 +1037,25 @@
     window.previewImage = (input) => {
       const container = document.getElementById('preview-container');
       const previewImg = document.getElementById('m-preview');
-      const label = document.getElementById('file-name-display');
+      const placeholder = document.getElementById('upload-placeholder');
       const file = input.files[0];
 
       if (file) {
         const reader = new FileReader();
         reader.onload = (e) => {
-          // Nếu là video, chúng ta có thể hiện icon hoặc ảnh thumbnail tạm
-          if (file.type.startsWith('video')) {
-            previewImg.src = "https://cdn-icons-png.flaticon.com/512/1179/1179120.png"; // Icon video
-            previewImg.classList.add('w-16', 'h-16', 'mx-auto'); // Thu nhỏ icon lại
-            previewImg.classList.remove('w-full', 'h-full', 'object-contain');
-          } else {
-            previewImg.src = e.target.result;
-            previewImg.classList.remove('w-16', 'h-16');
-            previewImg.classList.add('w-full', 'h-full', 'object-contain');
-          }
-
+          previewImg.src = file.type.startsWith('video') ? "https://cdn-icons-png.flaticon.com/512/1179/1179120.png" : e.target.result;
           container.classList.remove('hidden');
-          label.innerText = file.name;
+          placeholder.classList.add('opacity-0');
         };
         reader.readAsDataURL(file);
       }
+    };
+    window.closeMediaModal = () => {
+      document.getElementById('media-modal').classList.add('hidden');
+      document.getElementById('m-caption').value = '';
+      document.getElementById('m-file').value = '';
+      document.getElementById('preview-container').classList.add('hidden');
+      document.getElementById('upload-placeholder').classList.remove('opacity-0');
     };
   </script>
 </body>
