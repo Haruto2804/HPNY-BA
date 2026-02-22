@@ -992,7 +992,7 @@
         songs = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         if (songs.length > 0 && !audio.src) {
           audio.src = songs[0].url;
-          document.getElementById('current-song-title').innerText = songs[0].name;
+          document.getElementById('current-song-title').innerText = songs[0 ].name;
           document.getElementById('current-song-author').innerText = `Gửi bởi: ${songs[0].author}`;
         }
         renderSongList();
@@ -1043,7 +1043,7 @@
       if (file) {
         const reader = new FileReader();
         reader.onload = (e) => {
-          previewImg.src = file.type.startsWith('video') ? "https://cdn-icons-png.flaticon.com/512/1179/1179120.png" : e.target.result;
+          previewImg.src = file.type.startsWith('video') ? "./src/images/BaoAnh.jpg" : e.target.result;
           container.classList.remove('hidden');
           placeholder.classList.add('opacity-0');
         };
