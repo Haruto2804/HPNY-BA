@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Abyss & Light - Epic Aquarium</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --neon-blue: #00f3ff;
+            --neon-pink: #ff00ea;
+            --gold: #FFD700;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
+        
+        body, html {
+            width: 100%; height: 100%; overflow: hidden;
+            font-family: 'Quicksand', sans-serif;
+            background: #000; /* Nền đen để video nổi bật */
+        }
+
+        /* 🎬 VIDEO BACKGROUND */
+        #bg-video {
+            position: fixed; right: 0; bottom: 0; min-width: 100%; min-height: 100%; 
+            z-index: 0; object-fit: cover; pointer-events: none; transition: filter 2s ease;
+        }
+
+        canvas { display: block; position: absolute; inset: 0; z-index: 1; cursor: crosshair; }
+
+        /* UI COMPONENTS */
+        #ui-layer { position: absolute; z-index: 10; width: 100%; height: 100%; pointer-events: none; }
+
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px; color: white;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            pointer-events: auto;
+        }
+
+        .header { position: absolute; top: 15px; left: 15px; display: flex; gap: 20px; padding: 12px 25px; align-items: center; }
+        .stat-box { display: flex; flex-direction: column; align-items: center;}
+        .stat-value { font-family: 'Outfit', sans-serif; font-size: 22px; font-weight: 900; color: var(--neon-blue); text-shadow: 0 0 10px rgba(0, 243, 255, 0.5); }
+        .stat-label { font-size: 11px; opacity: 0.8; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin-top: 2px;}
+
+        .sidebar {
+            position: absolute; top: 100px; right: 15px; width: 300px; max-height: 60vh; 
+            padding: 15px; display: flex; flex-direction: column;
+            transform: translateX(calc(100% + 50px));
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 100;
+        }
+        .sidebar.active { transform: translateX(0); }
+        
+        .close-sidebar-btn {
+            text-align: center; background: rgba(255, 71, 87, 0.15); color: #ff4757;
+            padding: 10px; border-radius: 12px; cursor: pointer; font-weight: 800;
+            margin-bottom: 15px; border: 1px solid rgba(255, 71, 87, 0.3); transition: 0.3s;
+        }
+        .close-sidebar-btn:hover { background: #ff4757; color: white; }
+
+        #inventory-list { overflow-y: auto; padding-right: 5px; flex-grow: 1; }
+        
+        .fish-item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 10px; margin-bottom: 8px; border-radius: 12px;
+            background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255,255,255,0.1); transition: 0.3s;
+        }
+        .fish-item:hover { background: rgba(0, 0, 0, 0.6); transform: translateX(-5px); border-color: var(--neon-blue); }
+        
+        .btn-slide-toggle {
+            position: absolute; top: 100px; right: -5px;
+            background: linear-gradient(45deg, #00f3ff, #0088ff); color: white;
+            border: none; padding: 12px 15px 12px 12px; border-radius: 20px 0 0 20px;
+            cursor: pointer; font-weight: 900; box-shadow: -5px 0 15px rgba(0, 243, 255, 0.4);
+            transition: 0.4s; z-index: 9999; pointer-events: auto; font-family: 'Outfit';
+        }
+        .btn-slide-toggle:hover { right: 0; padding-right: 20px; }
+        .btn-slide-toggle.hidden { transform: translateX(150%); opacity: 0; pointer-events: none; }
+
+        .controls {
+            position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
+            display: flex; gap: 10px; pointer-events: auto; flex-wrap: wrap; justify-content: center; width: 95%; max-width: 600px;
+        }
+        button.btn-main {
+            padding: 12px 20px; border-radius: 30px; border: 1px solid var(--glass-border);
+            background: var(--glass-bg); color: white; font-weight: 800; font-family: 'Outfit';
+            font-size: 14px; cursor: pointer; backdrop-filter: blur(5px);
+            transition: 0.3s; text-transform: uppercase; white-space: nowrap; flex: 1 1 auto; text-align: center;
+        }
+        button.btn-main:hover { transform: translateY(-3px); background: rgba(255,255,255,0.2); }
+        
+        .btn-epic { background: linear-gradient(45deg, #ff00ea, #00f3ff) !important; border: none !important; }
+        .btn-shop { background: linear-gradient(45deg, #00f3ff, #0088ff) !important; border: none !important; }
+        .btn-bday { background: linear-gradient(45deg, #FF1493, #FFD700) !important; border: none !important; }
+
+        .tutorial { position: absolute; bottom: 85px; left: 50%; transform: translateX(-50%); color: rgba(255,255,255,0.8); text-align: center; font-size: 12px; pointer-events: none; width: 90%; line-height: 1.5; text-shadow: 0 2px 4px #000;}
+
+        /* OVERLAYS & MODALS */
+        .overlay {
+            position: fixed; inset: 0; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(8px);
+            display: none; justify-content: center; align-items: center; z-index: 9999;
+            opacity: 0; transition: 0.3s; pointer-events: none;
+        }
+        .overlay.active { display: flex; opacity: 1; pointer-events: auto; }
+        
+        .modal {
+            background: rgba(15, 23, 42, 0.85); border: 1px solid var(--glass-border);
+            padding: 30px; border-radius: 24px; text-align: center; color: white;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+            transform: scale(0.8); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            width: 90%; max-width: 400px; backdrop-filter: blur(20px);
+        }
+        .overlay.active .modal { transform: scale(1); }
+
+        .gacha-name { font-family: 'Outfit'; font-size: 45px; font-weight: 900; margin: 10px 0; background: linear-gradient(45deg, var(--neon-blue), var(--neon-pink)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .gacha-rarity { font-size: 14px; font-weight: 800; padding: 5px 15px; border-radius: 20px; border: 1px solid white; display: inline-block; }
+
+        .sell-modal { background: linear-gradient(135deg, #fff0f5 0%, #ffe4e1 100%); color: #333; border: 4px solid #fff; }
+        .loading-bar-bg { width: 100%; height: 10px; background: rgba(255,105,180,0.2); border-radius: 10px; margin-top: 15px; overflow: hidden; }
+        .loading-bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #ff758c, #ff7eb3); transition: width 2s linear; }
+        
+        .shop-modal { max-width: 600px; border-color: rgba(0, 243, 255, 0.4); }
+        .shop-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 15px; margin-top: 15px;}
+        .shop-item { background: rgba(255, 255, 255, 0.05); padding: 15px; border-radius: 15px; border: 1px solid rgba(255, 255, 255, 0.1); display: flex; flex-direction: column; align-items: center; }
+        
+        .bday-modal { background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); border: 4px solid #fff; color: #d81b60; }
+
+        .flying-diamond { position: absolute; font-size: 25px; pointer-events: none; z-index: 10000; animation: flyDiamond 2s forwards; }
+        @keyframes flyDiamond { 0% { transform: translateY(0) scale(0.5); opacity: 1; } 100% { transform: translateY(-150px) scale(1.2); opacity: 0; } }
+        .floating-price { position: absolute; font-size: 24px; font-weight: 900; color: #FFD700; text-shadow: 0 0 10px rgba(0,0,0,0.8); z-index: 10001; pointer-events: none; animation: floatUpPrice 2.5s forwards; font-family: 'Outfit'; }
+        @keyframes floatUpPrice { 0% { transform: translateY(0); opacity: 0; } 20% { transform: translateY(-20px); opacity: 1; } 100% { transform: translateY(-100px); opacity: 0; } }
+
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.3); border-radius: 10px; }
+
+        @media screen and (max-width: 400px) {
+            .header { flex-direction: column; align-items: flex-start; gap: 5px; }
+            .header > div[style*="width: 2px"] { display: none; }
+            .btn-slide-toggle { top: 140px; }
+            .sidebar { top: 140px; width: 240px; }
+        }
+    </style>
+</head>
+
+<body>
+  
+    <video id="bg-video" autoplay muted loop playsinline>
+        <source src="./videos/underrwater_bg.mp4" type="video/mp4">
+    </video>
+    
+    <canvas id="gameCanvas"></canvas>
+
+    <button class="btn-slide-toggle" id="btn-slide-toggle" onclick="toggleSidebar(true)">🎒 DSTC</button>
+
+    <div id="ui-layer">
+        <div class="header glass-panel">
+            <div class="stat-box">
+                <span class="stat-label">Thời Gian</span>
+                <span class="stat-value" id="clock-ui" style="color: #fff;">12:00</span>
+            </div>
+            <div style="width: 2px; height: 30px; background: rgba(255,255,255,0.2);"></div>
+            <div class="stat-box">
+                <span class="stat-label">Kho Báu</span>
+                <span class="stat-value" id="coin-ui">0 💎</span>
+            </div>
+            <div style="width: 2px; height: 30px; background: rgba(255,255,255,0.2);"></div>
+            <div class="stat-box">
+                <span class="stat-label">Cá</span>
+                <span class="stat-value"><span id="fish-count-ui">0</span> / 30</span>
+            </div>
+        </div>
+
+        <div class="sidebar glass-panel" id="sidebar">
+            <div class="close-sidebar-btn" onclick="toggleSidebar(false)">Đóng Lại ➔</div>
+            <h3 style="font-family: 'Outfit'; font-size: 14px; margin-bottom: 10px; color: var(--neon-blue); text-align: center;">DANH SÁCH THỦY CUNG</h3>
+            <div id="inventory-list"></div>
+        </div>
+
+        <div class="tutorial">👆 <b>CHUỘT TRÁI</b> thả mồi | <b>CHUỘT PHẢI</b> dọa cá | <b>SPACE</b> mưa mồi<br>Ban đêm cá sẽ đi ngủ 💤. Ban ngày cá bơi thành đàn & tự sinh sản 💖.</div>
+
+        <div class="controls">
+            <button class="btn-main btn-shop" onclick="openModal('shop-overlay')">🛒 Cửa Hàng</button>
+            <button class="btn-main btn-epic" onclick="summonFish()">✨ Triệu Hồi</button>
+            <button class="btn-main btn-bday" onclick="openModal('bday-overlay')">🎁 Quà Bảo Anh</button>
+            <button class="btn-main" onclick="clearSave()" style="color: #ff4757;">Reset</button>
+        </div>
+    </div>
+
+    <div class="overlay" id="gacha-overlay" onclick="closeModal('gacha-overlay')">
+        <div class="modal">
+            <div style="font-size: 14px; font-weight: 700; letter-spacing: 2px; opacity: 0.8;">THẦN BIỂN ĐÃ BAN TẶNG</div>
+            <div class="gacha-name" id="gacha-name">Tên Cá</div>
+            <div class="gacha-rarity" id="gacha-rarity">ĐỘ HIẾM</div>
+        </div>
+    </div>
+
+    <div class="overlay" id="sell-overlay">
+        <div class="modal sell-modal">
+            <img src="./images/sell/business-cat.gif" alt="Cat" style="width: 120px; border-radius: 15px; margin-bottom: 10px;">
+            <h2 style="color: #ff4757; font-family: 'Outfit'; font-size: 24px; font-weight: 900;">Thương Nhân Mèo</h2>
+            <p id="sell-text" style="color: #ff6b81; font-weight: 700; font-size: 14px;">Đang kiểm tra cá...</p>
+            <div class="loading-bar-bg"><div id="sell-loading-bar" class="loading-bar-fill"></div></div>
+        </div>
+    </div>
+
+    <div class="overlay" id="shop-overlay">
+        <div class="modal shop-modal">
+            <h2 style="font-family: 'Outfit'; font-size: 26px; color: var(--neon-blue);">🛒 SIÊU THỊ THỦY CUNG</h2>
+            <div class="shop-grid">
+                <div class="shop-item">
+                    <div style="font-size: 35px; margin-bottom: 5px;">🌧️</div>
+                    <div style="font-weight: 800; font-size: 14px;">Mưa Mồi Ngon</div>
+                    <button class="btn-main btn-shop" style="width: 100%; padding: 8px; margin-top: 10px;" onclick="buyItem('rain', 100)">100 💎</button>
+                </div>
+                <div class="shop-item">
+                    <div style="font-size: 35px; margin-bottom: 5px;">🧪</div>
+                    <div style="font-weight: 800; font-size: 14px;">Tăng Trọng</div>
+                    <button class="btn-main btn-shop" style="width: 100%; padding: 8px; margin-top: 10px;" onclick="buyItem('levelUp', 1500)">1500 💎</button>
+                </div>
+                <div class="shop-item">
+                    <div style="font-size: 35px; margin-bottom: 5px;">🔮</div>
+                    <div style="font-weight: 800; font-size: 14px;">Tiến Hóa</div>
+                    <button class="btn-main btn-epic" style="width: 100%; padding: 8px; margin-top: 10px;" onclick="buyItem('evolve', 3000)">3000 💎</button>
+                </div>
+            </div>
+            <button class="btn-main" style="margin-top: 20px; background: transparent; border-color: rgba(255,255,255,0.3);" onclick="closeModal('shop-overlay')">Đóng</button>
+        </div>
+    </div>
+
+    <div class="overlay" id="bday-overlay">
+        <div class="modal bday-modal">
+            <div style="font-size: 60px;">🎂✨</div>
+            <h2 style="font-family: 'Outfit'; font-size: 28px; font-weight: 900; color: #ff0844;">Quà Cho Bảo Anh!</h2>
+            <p style="font-size: 14px; font-weight: 700; margin: 15px 0;">Đại dương gửi tặng Bảo Anh một món quà siêu đặc biệt nè! 🎁</p>
+            <button class="btn-main" style="background: linear-gradient(45deg, #ff0844, #ffb199); border: none;" onclick="claimBdayGift()">Nhận Cá Sinh Nhật 🎉</button>
+        </div>
+    </div>
+
+    <script>
+        const FISH_DATA = [
+            { type: "Cá Hề Lạc Lối", rarity: "Thường", colors: ["#FF4500", "#FFFFFF"], speed: 2, scale: 0.8 },
+            { type: "Cá Vàng Mộng Mơ", rarity: "Thường", colors: ["#FFD700", "#FFA500"], speed: 1.5, scale: 0.7 },
+            { type: "Cá Neon Xanh", rarity: "Thường", colors: ["#00FFFF", "#000080"], speed: 3, scale: 0.6 },
+            { type: "Cá Bảy Màu", rarity: "Thường", colors: ["#FF4500", "#9400D3"], speed: 2.5, scale: 0.6 },
+            { type: "Cá Trích Bạc", rarity: "Thường", colors: ["#C0C0C0", "#E0FFFF"], speed: 3.5, scale: 0.5 },
+            { type: "Cá Betta Huyết", rarity: "Hiếm", colors: ["#FF0000", "#8B0000"], speed: 2.5, scale: 0.9 },
+            { type: "Cá Đuối Bóng Đêm", rarity: "Hiếm", colors: ["#4B0082", "#191970"], speed: 1.8, scale: 1.5 },
+            { type: "Cá Ngựa Pha Lê", rarity: "Hiếm", colors: ["#FF69B4", "#FFC0CB"], speed: 1.2, scale: 0.8 },
+            { type: "Sứa Dạ Quang", rarity: "Hiếm", colors: ["#00FF7F", "#008B8B"], speed: 1.0, scale: 1.2 },
+            { type: "Leviathan Xanh", rarity: "Huyền thoại", colors: ["#00FA9A", "#006400"], speed: 3.5, scale: 2 },
+            { type: "Long Vương Hắc Ám", rarity: "Huyền thoại", colors: ["#111111", "#FF00EA"], speed: 4, scale: 2.5 },
+            { type: "Cá Voi Ánh Sáng", rarity: "Huyền thoại", colors: ["#FFFFFF", "#00F3FF"], speed: 1.5, scale: 3 },
+            { type: "Rùa Biển Cổ Đại", rarity: "Huyền thoại", colors: ["#2E8B57", "#8B4513"], speed: 0.8, scale: 2.2 },
+            { type: "Tiên Cá Pha Lê", rarity: "Huyền thoại", colors: ["#E6E6FA", "#FFB6C1"], speed: 2.0, scale: 1.8 },
+            { type: "Cá Sinh Nhật 🎂", rarity: "Huyền thoại", colors: ["#FF1493", "#FFD700"], speed: 2.2, scale: 2.5 }
+        ];
+
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        let width, height;
+        let gameState = { coins: 1000, fishes: [], lastId: 0 };
+        let foods = []; let particles = []; let corals = []; let seaweeds = [];
+        let currentHour = 12; let isNight = false;
+
+        function resize() { width = canvas.width = window.innerWidth; height = canvas.height = window.innerHeight; initEnvironment(); }
+        window.addEventListener('resize', resize);
+
+        function initEnvironment() {
+            corals = []; seaweeds = [];
+            for (let i = 0; i < 6; i++) {
+                corals.push({
+                    x: (width / 6) * i + 50, y: height, size: Math.random() * 40 + 40,
+                    color: ["rgba(255,99,132,0.8)", "rgba(54,162,235,0.8)", "rgba(255,206,86,0.8)", "rgba(75,192,192,0.8)"][Math.floor(Math.random()*4)]
+                });
+            }
+            for (let i = 0; i < 15; i++) {
+                seaweeds.push({
+                    x: Math.random() * width, y: height, height: 100 + Math.random() * 150,
+                    swayOffset: Math.random() * Math.PI * 2, color: i % 2 === 0 ? "rgba(34, 197, 94, 0.4)" : "rgba(21, 128, 61, 0.6)"
+                });
+            }
+        }
+
+        class Food {
+            constructor(x, y) { this.x = x; this.y = y; this.radius = 5; this.vy = Math.random() * 0.3 + 0.5; this.swing = Math.random() * 100; }
+            update() { this.y += this.vy; this.x += Math.sin(this.y * 0.05 + this.swing) * 0.5; }
+            draw() { ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI*2); ctx.fillStyle = "#FFD700"; ctx.shadowBlur = 10; ctx.shadowColor = "#FFD700"; ctx.fill(); ctx.shadowBlur = 0; }
+        }
+
+        class Particle {
+            constructor(x, y, color, isBubble = false) {
+                this.x = x; this.y = y; this.color = color; this.isBubble = isBubble;
+                this.radius = isBubble ? Math.random()*3+2 : Math.random()*3+1;
+                let angle = Math.random() * Math.PI * 2; let speed = isBubble ? Math.random()*0.5+0.1 : Math.random()*4+1;
+                this.vx = Math.cos(angle)*speed; this.vy = isBubble ? -speed : Math.sin(angle)*speed;
+                this.life = 1; this.decay = isBubble ? 0.005 : 0.02;
+            }
+            update() { if(!this.isBubble){this.vx*=0.95; this.vy*=0.95;} this.x+=this.vx; this.y+=this.vy; this.life-=this.decay; if(this.isBubble) this.x+=Math.sin(this.y*0.05)*0.5; }
+            draw() { ctx.globalAlpha = Math.max(0, this.life); ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI*2); ctx.fillStyle=this.color; ctx.fill(); ctx.globalAlpha=1; }
+        }
+
+        class Fish {
+            constructor(data, saveObj = null) {
+                this.id = saveObj ? saveObj.id : ++gameState.lastId;
+                this.data = data; this.level = saveObj ? saveObj.level : 1; this.xp = saveObj ? saveObj.xp : 0;
+                this.x = saveObj ? saveObj.x : Math.random() * width; this.y = saveObj ? saveObj.y : Math.random() * height;
+                this.vx = (Math.random() - 0.5)*2; this.vy = (Math.random() - 0.5)*2;
+                this.targetAngle = Math.atan2(this.vy, this.vx); this.currentAngle = this.targetAngle;
+                this.swimCycle = Math.random() * 100; this.baseScale = data.scale;
+                this.breedCooldown = 0;
+            }
+
+            update() {
+                if(this.breedCooldown > 0) this.breedCooldown--;
+
+                let speedBoost = 1; let turnSpeed = 0.05;
+
+                if (isNight) {
+                    let targetCoral = corals[this.id % corals.length];
+                    let dx = targetCoral.x - this.x; let dy = targetCoral.y - 20 - this.y;
+                    let dist = Math.hypot(dx, dy);
+                    if (dist > 50) {
+                        this.targetAngle = Math.atan2(dy, dx); speedBoost = 0.8;
+                    } else {
+                        this.targetAngle += (Math.random() - 0.5) * 0.1; speedBoost = 0.1;
+                        if(Math.random() < 0.01) particles.push(new Particle(this.x, this.y-10, "rgba(255,255,255,0.6)", true));
+                    }
+                } else {
+                    let targetFood = null; let minDist = Infinity;
+                    foods.forEach(f => { let d = Math.hypot(f.x - this.x, f.y - this.y); if(d < 300 && d < minDist) { minDist = d; targetFood = f; } });
+
+                    if (targetFood) {
+                        let dx = targetFood.x - this.x; let dy = targetFood.y - this.y;
+                        if (minDist < 60) {
+                            foods = foods.filter(f => f !== targetFood); this.gainXp(); createExplosion(this.x, this.y, this.data.colors[0], 10);
+                        } else {
+                            this.targetAngle = Math.atan2(dy, dx); speedBoost = 1.8; turnSpeed = 0.15;
+                        }
+                    } else {
+                        let flockDx = 0; let flockDy = 0; let neighbors = 0;
+                        gameState.fishes.forEach(other => {
+                            if(other.id !== this.id && other.data.type === this.data.type) {
+                                let d = Math.hypot(other.x - this.x, other.y - this.y);
+                                if(d > 50 && d < 200) { flockDx += (other.x - this.x); flockDy += (other.y - this.y); neighbors++; }
+                                
+                                if(d < 40 && this.level >= 5 && other.level >= 5 && this.breedCooldown === 0 && other.breedCooldown === 0 && gameState.fishes.length < 30 && Math.random() < 0.001) {
+                                    this.breedCooldown = 1000; other.breedCooldown = 1000;
+                                    createExplosion(this.x, this.y, "var(--neon-pink)", 20); 
+                                    let baby = new Fish(this.data); baby.x = this.x; baby.y = this.y;
+                                    gameState.fishes.push(baby); updateUI(); saveGame();
+                                }
+                            }
+                        });
+                        
+                        if(neighbors > 0) {
+                            this.targetAngle = Math.atan2(flockDy, flockDx); turnSpeed = 0.02;
+                        } else {
+                            if (Math.random() < 0.01) this.targetAngle += (Math.random() - 0.5) * Math.PI;
+                        }
+                    }
+                }
+
+                const margin = 100;
+                if (this.x < margin) this.targetAngle = 0; if (this.x > width - margin) this.targetAngle = Math.PI;
+                if (this.y < margin) this.targetAngle = Math.PI / 2; if (this.y > height - margin) this.targetAngle = -Math.PI / 2;
+
+                let angleDiff = this.targetAngle - this.currentAngle;
+                while (angleDiff > Math.PI) angleDiff -= Math.PI * 2; while (angleDiff < -Math.PI) angleDiff += Math.PI * 2;
+                this.currentAngle += angleDiff * turnSpeed;
+                
+                let currentSpeed = this.data.speed * speedBoost;
+                this.vx = Math.cos(this.currentAngle) * currentSpeed; this.vy = Math.sin(this.currentAngle) * currentSpeed;
+                this.x += this.vx; this.y += this.vy; this.swimCycle += 0.1 * currentSpeed;
+            }
+
+            gainXp() { this.xp += 10; if (this.xp >= this.level * 20) { this.level++; this.xp = 0; createExplosion(this.x, this.y, "#00f3ff", 30); saveGame(); updateUI(); } }
+
+            draw() {
+                const scale = this.baseScale * (1 + this.level * 0.05);
+                const tailWag = Math.sin(this.swimCycle) * 0.3;
+                
+                ctx.save(); ctx.translate(this.x, this.y); ctx.rotate(this.currentAngle); ctx.scale(scale, scale);
+                if (this.data.rarity === "Huyền thoại") { ctx.shadowBlur = 20; ctx.shadowColor = this.data.colors[1]; } 
+                
+                ctx.save(); ctx.translate(-20, 0); ctx.rotate(tailWag); ctx.beginPath();
+                ctx.moveTo(0, 0); ctx.lineTo(-20, -15); ctx.lineTo(-15, 0); ctx.lineTo(-20, 15); ctx.closePath();
+                ctx.fillStyle = this.data.colors[1]; ctx.fill(); ctx.restore();
+
+                ctx.fillStyle = this.data.colors[1]; ctx.beginPath(); ctx.ellipse(0, -10, 15, 8, 0, Math.PI, 0); ctx.fill(); ctx.beginPath(); ctx.ellipse(5, 10, 10, 6, 0, 0, Math.PI); ctx.fill();
+                const grad = ctx.createLinearGradient(-20, 0, 20, 0); grad.addColorStop(0, this.data.colors[1]); grad.addColorStop(1, this.data.colors[0]);
+                ctx.beginPath(); ctx.ellipse(0, 0, 25, 12, 0, 0, Math.PI * 2); ctx.fillStyle = grad; ctx.fill();
+
+                ctx.beginPath(); ctx.arc(15, -4, 3, 0, Math.PI * 2); ctx.fillStyle = "white"; ctx.fill();
+                ctx.beginPath();
+                if(isNight && Math.hypot(this.vx, this.vy) < 0.5) { ctx.moveTo(13,-4); ctx.lineTo(17,-4); ctx.lineWidth=1.5; ctx.strokeStyle="black"; ctx.stroke(); }
+                else { ctx.arc(16, -4, 1.5, 0, Math.PI * 2); ctx.fillStyle = "black"; ctx.fill(); }
+                ctx.restore();
+
+                ctx.font = "bold 10px Quicksand"; ctx.fillStyle = "rgba(255,255,255,0.8)"; ctx.textAlign = "center";
+                if(isNight && Math.hypot(this.vx, this.vy) < 0.5) ctx.fillText(`Zzz`, this.x, this.y - 25 * scale);
+                else ctx.fillText(`Lv.${this.level}`, this.x, this.y - 30 * scale);
+            }
+        }
+
+        function createExplosion(x, y, color, count) { for (let i = 0; i < count; i++) particles.push(new Particle(x, y, color)); }
+
+        // --- 5. RENDER MÔI TRƯỜNG & GAME LOOP ---
+        function drawEnvironment() {
+            let now = new Date(); 
+            currentHour = now.getHours();
+            let mins = now.getMinutes().toString().padStart(2, '0');
+            document.getElementById('clock-ui').innerText = `${currentHour}:${mins}`;
+            
+            isNight = (currentHour >= 19 || currentHour < 6);
+            let isSunset = (currentHour >= 17 && currentHour < 19);
+
+            // QUAN TRỌNG: Xóa canvas để thấy Video bên dưới
+            ctx.clearRect(0, 0, width, height);
+
+            // Xử lý đổi màu Video theo thời gian (Sáng / Tối / Chiều)
+            const videoEl = document.getElementById('bg-video');
+            if (videoEl) {
+                if (isNight) videoEl.style.filter = "brightness(0.3) saturate(0.6)";
+                else if (isSunset) videoEl.style.filter = "brightness(0.7) sepia(0.4) hue-rotate(-20deg)";
+                else videoEl.style.filter = "brightness(1) saturate(1)";
+            }
+
+            const time = Date.now() * 0.0005;
+            
+            // Vẽ San hô mờ mờ cho có độ sâu
+            corals.forEach(c => {
+                ctx.fillStyle = c.color; ctx.beginPath(); ctx.moveTo(c.x, c.y);
+                for (let i = 0; i < 7; i++) {
+                    let a = (i/7)*Math.PI - Math.PI/2; let d = c.size + Math.sin(i*2)*10;
+                    ctx.lineTo(c.x + Math.cos(a)*d, c.y + Math.sin(a)*d); ctx.lineTo(c.x + Math.cos(a)*(c.size*0.4), c.y+10);
+                }
+                ctx.fill();
+            });
+
+            // Vẽ Rong biển
+            ctx.lineCap = "round";
+            seaweeds.forEach(s => {
+                ctx.lineWidth = 12; ctx.strokeStyle = s.color; ctx.beginPath(); ctx.moveTo(s.x, s.y);
+                let sway = Math.sin(time + s.swayOffset) * 30;
+                ctx.quadraticCurveTo(s.x + sway/2, s.y - s.height/2, s.x + sway, s.y - s.height); ctx.stroke();
+            });
+
+            // Lớp Ánh sáng/Bóng tối đè lên toàn cảnh
+            ctx.save(); ctx.globalCompositeOperation = "overlay";
+            const overlayGrad = ctx.createLinearGradient(0, 0, width, height);
+            if (isNight) {
+                overlayGrad.addColorStop(0, `rgba(0, 0, 50, 0.4)`); overlayGrad.addColorStop(1, "rgba(0,0,0,0.8)"); 
+            } else if (isSunset) {
+                overlayGrad.addColorStop(0, `rgba(255, 100, 100, 0.2)`); overlayGrad.addColorStop(1, "rgba(0,0,0,0.2)"); 
+            } else {
+                overlayGrad.addColorStop(0, `rgba(0, 243, 255, ${0.05 + Math.sin(time) * 0.02})`); overlayGrad.addColorStop(1, "rgba(0,0,0,0)"); 
+            }
+            ctx.fillStyle = overlayGrad; ctx.fillRect(0, 0, width, height); ctx.restore();
+
+            if (Math.random() < 0.1) particles.push(new Particle(Math.random() * width, height + 10, "rgba(255,255,255,0.3)", true));
+        }
+
+        function animate() {
+            drawEnvironment();
+            foods.forEach((f, i) => { f.update(); f.draw(); if (f.y > height + 20) foods.splice(i, 1); });
+            gameState.fishes.forEach(fish => { fish.update(); fish.draw(); });
+            for (let i = particles.length - 1; i >= 0; i--) { let p = particles[i]; p.update(); p.draw(); if (p.life <= 0) particles.splice(i, 1); }
+            requestAnimationFrame(animate);
+        }
+
+        // --- 6. TƯƠNG TÁC & SỰ KIỆN ---
+        window.addEventListener('mousedown', (e) => {
+            if (e.target.tagName !== 'BUTTON' && !e.target.closest('.glass-panel') && !e.target.closest('.modal')) {
+                if (e.button === 2) { 
+                    createExplosion(e.clientX, e.clientY, "rgba(0, 243, 255, 0.8)", 40);
+                    gameState.fishes.forEach(fish => { if (Math.hypot(fish.x - e.clientX, fish.y - e.clientY) < 300) { fish.targetAngle = Math.atan2(fish.y - e.clientY, fish.x - e.clientX); fish.vx *= 3; fish.vy *= 3; } });
+                } else if(e.button === 0) { 
+                    foods.push(new Food(e.clientX, e.clientY)); createExplosion(e.clientX, e.clientY, "rgba(255,255,255,0.5)", 5);
+                }
+            }
+        });
+        window.addEventListener('mousemove', (e) => { if (Math.random() < 0.3) particles.push(new Particle(e.clientX, e.clientY, "rgba(0, 243, 255, 0.6)", true)); });
+        window.addEventListener('contextmenu', e => e.preventDefault());
+        window.addEventListener('keydown', (e) => {
+            if (e.code === 'Space' && gameState.coins >= 50) {
+                gameState.coins -= 50; updateUI();
+                for (let i = 0; i < 15; i++) setTimeout(() => { let rx = Math.random() * (width - 200) + 100; foods.push(new Food(rx, -10)); createExplosion(rx, 10, "#FFD700", 5); }, i * 150);
+            }
+        });
+        window.addEventListener('click', (e) => {
+            if (e.button === 0 && e.target.tagName !== 'BUTTON' && !e.target.closest('.glass-panel') && !e.target.closest('.modal')) {
+                gameState.fishes.forEach(fish => { if (Math.hypot(e.clientX - fish.x, e.clientY - fish.y) < 50 * fish.baseScale) { fish.currentAngle += Math.PI * 2; fish.xp += 5; createExplosion(fish.x, fish.y, "var(--neon-pink)", 15); } });
+            }
+        });
+
+        // --- 7. UI & SHOP LOGIC ---
+        function toggleSidebar(show) {
+            document.getElementById('sidebar').classList.toggle('active', show);
+            document.getElementById('btn-slide-toggle').classList.toggle('hidden', show);
+        }
+        function openModal(id) { document.getElementById(id).classList.add('active'); }
+        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+        function summonFish() {
+            if (gameState.coins < 200) return alert("Hết Kim Cương rồi fen ơi!");
+            if (gameState.fishes.length >= 30) return alert("Hồ cá đã đầy (Max 30)!");
+            gameState.coins -= 200;
+            const r = Math.random() * 100; let pool = r < 5 ? FISH_DATA.filter(f=>f.rarity==="Huyền thoại") : r < 30 ? FISH_DATA.filter(f=>f.rarity==="Hiếm") : FISH_DATA.filter(f=>f.rarity==="Thường");
+            const tmpl = pool[Math.floor(Math.random() * pool.length)];
+            const fish = new Fish(tmpl); fish.x = width/2; fish.y = height/2; gameState.fishes.push(fish);
+            createExplosion(width/2, height/2, tmpl.colors[0], 100);
+            document.getElementById('gacha-name').innerText = tmpl.type; document.getElementById('gacha-rarity').innerText = tmpl.rarity;
+            document.getElementById('gacha-rarity').style.color = tmpl.rarity==="Huyền thoại"?"var(--neon-pink)":tmpl.rarity==="Hiếm"?"var(--neon-blue)":"white";
+            openModal('gacha-overlay'); saveGame(); updateUI();
+        }
+
+        function sellFish(id) {
+            const idx = gameState.fishes.findIndex(f => f.id === id); if (idx === -1) return;
+            const fish = gameState.fishes[idx];
+            let price = (fish.data.rarity==="Huyền thoại"?500:fish.data.rarity==="Hiếm"?200:50) + fish.level*(fish.data.rarity==="Huyền thoại"?150:fish.data.rarity==="Hiếm"?50:20);
+            
+            openModal('sell-overlay'); document.getElementById('sell-text').innerText = `Đang định giá ${fish.data.type}...`;
+            let bar = document.getElementById('sell-loading-bar'); bar.style.transition = 'none'; bar.style.width = '0%';
+            setTimeout(() => { bar.style.transition = 'width 1.5s linear'; bar.style.width = '100%'; }, 50);
+            setTimeout(() => {
+                closeModal('sell-overlay'); gameState.coins += price; gameState.fishes.splice(idx, 1);
+                createExplosion(fish.x, fish.y, "#FFD700", 40);
+                let tag = document.createElement('div'); tag.className = 'floating-price'; tag.innerText = `+${price} 💎`;
+                tag.style.left = (fish.x-40)+'px'; tag.style.top = (fish.y-40)+'px'; document.body.appendChild(tag); setTimeout(()=>tag.remove(), 2500);
+                updateUI(); saveGame();
+            }, 1600);
+        }
+
+        function buyItem(type, price) {
+            if (gameState.coins < price) return alert("Không đủ Kim Cương!");
+            if (type === 'rain') {
+                gameState.coins -= price; closeModal('shop-overlay');
+                for(let i=0; i<20; i++) setTimeout(() => { let rx = Math.random()*(width-100)+50; foods.push(new Food(rx, -10)); createExplosion(rx, 10, "#FFD700", 5); }, i*150);
+            } else if (type === 'levelUp') {
+                if(gameState.fishes.length===0) return alert("Hồ chưa có cá!"); gameState.coins -= price; closeModal('shop-overlay');
+                gameState.fishes.forEach(fish => { fish.level++; createExplosion(fish.x, fish.y, "#00f3ff", 30); });
+            } else if (type === 'evolve') {
+                let pool = gameState.fishes.filter(f=>f.data.rarity!=="Huyền thoại"); if(pool.length===0) return alert("Cá đã Max Huyền Thoại!");
+                gameState.coins -= price; closeModal('shop-overlay');
+                let t = pool[Math.floor(Math.random()*pool.length)]; let newForm = FISH_DATA.filter(f=>f.rarity==="Huyền thoại")[Math.floor(Math.random()*3)];
+                t.data = newForm; t.baseScale = newForm.scale; createExplosion(t.x, t.y, "var(--neon-pink)", 100);
+            }
+            updateUI(); saveGame();
+        }
+
+        function claimBdayGift() {
+            if (gameState.fishes.length >= 30) return alert("Bán bớt cá để nhận quà nhé!"); closeModal('bday-overlay');
+            let fish = new Fish(FISH_DATA.find(f=>f.type==="Cá Sinh Nhật 🎂")); fish.x = width/2; fish.y = height/2; fish.level = 10; gameState.fishes.push(fish);
+            for(let i=0;i<8;i++) setTimeout(() => { createExplosion(width/2+(Math.random()*200-100), height/2+(Math.random()*200-100), "#FF1493", 50); }, i*250);
+            updateUI(); saveGame();
+        }
+
+        function updateUI() {
+            document.getElementById('coin-ui').innerText = gameState.coins + " 💎";
+            document.getElementById('fish-count-ui').innerText = gameState.fishes.length;
+            document.getElementById('inventory-list').innerHTML = gameState.fishes.sort((a,b)=>b.level-a.level).map(f => `
+                <div class="fish-item">
+                    <div><div style="font-family:'Outfit';font-weight:800;color:${f.data.colors[0]}">${f.data.type}</div><div style="font-size:11px;opacity:0.6">${f.data.rarity} - Lv.${f.level}</div></div>
+                    <button onclick="sellFish(${f.id})" style="padding:6px 15px; font-family:'Outfit'; font-size:12px; background:linear-gradient(45deg,#ff6b81,#ff4757); color:white; border:none; border-radius:20px; cursor:pointer;">BÁN</button>
+                </div>`).join('');
+        }
+
+        function saveGame() { localStorage.setItem('abyss_save', JSON.stringify({ coins: gameState.coins, lastId: gameState.lastId, fishes: gameState.fishes.map(f => ({ id: f.id, type: f.data.type, level: f.level, xp: f.xp, x: f.x, y: f.y })) })); }
+        function loadGame() {
+            let data = localStorage.getItem('abyss_save');
+            if (data) { let p = JSON.parse(data); gameState.coins = p.coins; gameState.lastId = p.lastId; p.fishes.forEach(o => { let t = FISH_DATA.find(x=>x.type===o.type); if(t) gameState.fishes.push(new Fish(t, o)); }); }
+            if(window.innerWidth > 768) toggleSidebar(true);
+        }
+        function clearSave() { if (confirm("Xóa hết dữ liệu chơi lại?")) { localStorage.removeItem('abyss_save'); location.reload(); } }
+
+        resize(); loadGame(); updateUI(); animate();
+
+        // Tiền thụ động mỗi 5s
+        setInterval(() => {
+            let earned = 0;
+            gameState.fishes.forEach(f => { if(f.level>=5) { earned+=2; createExplosion(f.x, f.y+15, "#FFD700", 3); } });
+            if(earned>0) { gameState.coins+=earned; updateUI(); saveGame(); }
+        }, 5000);
+
+    </script>
+</body>
+</html>
