@@ -1,13 +1,12 @@
 <!DOCTYPE html>
 <html lang="vi">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Abyss & Light - Epic Aquarium</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;800;900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
-
+    
     <style>
         :root {
             --glass-bg: rgba(255, 255, 255, 0.1);
@@ -17,453 +16,161 @@
             --gold: #FFD700;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            user-select: none;
-        }
-
-        body,
-        html {
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
+        * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
+        
+        body, html {
+            width: 100%; height: 100%; overflow: hidden;
             font-family: 'Quicksand', sans-serif;
             background: #000;
-            /* Nền đen để video nổi bật */
         }
 
         /* 🎬 VIDEO BACKGROUND */
         #bg-video {
-            position: fixed;
-            right: 0;
-            bottom: 0;
-            min-width: 100%;
-            min-height: 100%;
-            z-index: 0;
-            object-fit: cover;
-            pointer-events: none;
-            transition: filter 2s ease;
+            position: fixed; right: 0; bottom: 0; min-width: 100%; min-height: 100%; 
+            z-index: 0; object-fit: cover; pointer-events: none; transition: filter 2s ease;
         }
 
-        canvas {
-            display: block;
-            position: absolute;
-            inset: 0;
-            z-index: 1;
-            cursor: crosshair;
-        }
+        canvas { display: block; position: absolute; inset: 0; z-index: 1; cursor: crosshair; }
 
         /* UI COMPONENTS */
-        #ui-layer {
-            position: absolute;
-            z-index: 10;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-        }
+        #ui-layer { position: absolute; z-index: 10; width: 100%; height: 100%; pointer-events: none; }
 
         .glass-panel {
             background: var(--glass-bg);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
+            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
             border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            color: white;
+            border-radius: 20px; color: white;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
             pointer-events: auto;
         }
 
-        .header {
-            position: absolute;
-            top: 15px;
-            left: 15px;
-            display: flex;
-            gap: 20px;
-            padding: 12px 25px;
-            align-items: center;
-        }
-
-        .stat-box {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .stat-value {
-            font-family: 'Outfit', sans-serif;
-            font-size: 22px;
-            font-weight: 900;
-            color: var(--neon-blue);
-            text-shadow: 0 0 10px rgba(0, 243, 255, 0.5);
-        }
-
-        .stat-label {
-            font-size: 11px;
-            opacity: 0.8;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-weight: 700;
-            margin-top: 2px;
-        }
+        .header { position: absolute; top: 15px; left: 15px; display: flex; gap: 20px; padding: 12px 25px; align-items: center; }
+        .stat-box { display: flex; flex-direction: column; align-items: center;}
+        .stat-value { font-family: 'Outfit', sans-serif; font-size: 22px; font-weight: 900; color: var(--neon-blue); text-shadow: 0 0 10px rgba(0, 243, 255, 0.5); }
+        .stat-label { font-size: 11px; opacity: 0.8; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin-top: 2px;}
 
         .sidebar {
-            position: absolute;
-            top: 100px;
-            right: 15px;
-            width: 300px;
-            max-height: 60vh;
-            padding: 15px;
-            display: flex;
-            flex-direction: column;
+            position: absolute; top: 100px; right: 15px; width: 300px; max-height: 60vh; 
+            padding: 15px; display: flex; flex-direction: column;
             transform: translateX(calc(100% + 50px));
             transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             z-index: 100;
         }
-
-        .sidebar.active {
-            transform: translateX(0);
-        }
-
+        .sidebar.active { transform: translateX(0); }
+        
         .close-sidebar-btn {
-            text-align: center;
-            background: rgba(255, 71, 87, 0.15);
-            color: #ff4757;
-            padding: 10px;
-            border-radius: 12px;
-            cursor: pointer;
-            font-weight: 800;
-            margin-bottom: 15px;
-            border: 1px solid rgba(255, 71, 87, 0.3);
-            transition: 0.3s;
+            text-align: center; background: rgba(255, 71, 87, 0.15); color: #ff4757;
+            padding: 10px; border-radius: 12px; cursor: pointer; font-weight: 800;
+            margin-bottom: 15px; border: 1px solid rgba(255, 71, 87, 0.3); transition: 0.3s;
         }
+        .close-sidebar-btn:hover { background: #ff4757; color: white; }
 
-        .close-sidebar-btn:hover {
-            background: #ff4757;
-            color: white;
-        }
-
-        #inventory-list {
-            overflow-y: auto;
-            padding-right: 5px;
-            flex-grow: 1;
-        }
-
+        #inventory-list { overflow-y: auto; padding-right: 5px; flex-grow: 1; }
+        
         .fish-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px;
-            margin-bottom: 8px;
-            border-radius: 12px;
-            background: rgba(0, 0, 0, 0.4);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: 0.3s;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 10px; margin-bottom: 8px; border-radius: 12px;
+            background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255,255,255,0.1); transition: 0.3s;
         }
-
-        .fish-item:hover {
-            background: rgba(0, 0, 0, 0.6);
-            transform: translateX(-5px);
-            border-color: var(--neon-blue);
-        }
-
+        .fish-item:hover { background: rgba(0, 0, 0, 0.6); transform: translateX(-5px); border-color: var(--neon-blue); }
+        
         .btn-slide-toggle {
-            position: absolute;
-            top: 100px;
-            right: -5px;
-            background: linear-gradient(45deg, #00f3ff, #0088ff);
-            color: white;
-            border: none;
-            padding: 12px 15px 12px 12px;
-            border-radius: 20px 0 0 20px;
-            cursor: pointer;
-            font-weight: 900;
-            box-shadow: -5px 0 15px rgba(0, 243, 255, 0.4);
-            transition: 0.4s;
-            z-index: 9999;
-            pointer-events: auto;
-            font-family: 'Outfit';
+            position: absolute; top: 100px; right: -5px;
+            background: linear-gradient(45deg, #00f3ff, #0088ff); color: white;
+            border: none; padding: 12px 15px 12px 12px; border-radius: 20px 0 0 20px;
+            cursor: pointer; font-weight: 900; box-shadow: -5px 0 15px rgba(0, 243, 255, 0.4);
+            transition: 0.4s; z-index: 9999; pointer-events: auto; font-family: 'Outfit';
         }
-
-        .btn-slide-toggle:hover {
-            right: 0;
-            padding-right: 20px;
-        }
-
-        .btn-slide-toggle.hidden {
-            transform: translateX(150%);
-            opacity: 0;
-            pointer-events: none;
-        }
+        .btn-slide-toggle:hover { right: 0; padding-right: 20px; }
+        .btn-slide-toggle.hidden { transform: translateX(150%); opacity: 0; pointer-events: none; }
 
         .controls {
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 10px;
-            pointer-events: auto;
-            flex-wrap: wrap;
-            justify-content: center;
-            width: 95%;
-            max-width: 600px;
+            position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
+            display: flex; gap: 10px; pointer-events: auto; flex-wrap: wrap; justify-content: center; width: 95%; max-width: 600px;
         }
-
         button.btn-main {
-            padding: 12px 20px;
-            border-radius: 30px;
-            border: 1px solid var(--glass-border);
-            background: var(--glass-bg);
-            color: white;
-            font-weight: 800;
-            font-family: 'Outfit';
-            font-size: 14px;
-            cursor: pointer;
-            backdrop-filter: blur(5px);
-            transition: 0.3s;
-            text-transform: uppercase;
-            white-space: nowrap;
-            flex: 1 1 auto;
-            text-align: center;
+            padding: 12px 20px; border-radius: 30px; border: 1px solid var(--glass-border);
+            background: var(--glass-bg); color: white; font-weight: 800; font-family: 'Outfit';
+            font-size: 14px; cursor: pointer; backdrop-filter: blur(5px);
+            transition: 0.3s; text-transform: uppercase; white-space: nowrap; flex: 1 1 auto; text-align: center;
         }
+        button.btn-main:hover { transform: translateY(-3px); background: rgba(255,255,255,0.2); }
+        
+        .btn-epic { background: linear-gradient(45deg, #ff00ea, #00f3ff) !important; border: none !important; }
+        .btn-shop { background: linear-gradient(45deg, #00f3ff, #0088ff) !important; border: none !important; }
+        .btn-bday { background: linear-gradient(45deg, #FF1493, #FFD700) !important; border: none !important; }
 
-        button.btn-main:hover {
-            transform: translateY(-3px);
-            background: rgba(255, 255, 255, 0.2);
-        }
+        .tutorial { position: absolute; bottom: 85px; left: 50%; transform: translateX(-50%); color: rgba(255,255,255,0.8); text-align: center; font-size: 12px; pointer-events: none; width: 90%; line-height: 1.5; text-shadow: 0 2px 4px #000;}
 
-        .btn-epic {
-            background: linear-gradient(45deg, #ff00ea, #00f3ff) !important;
-            border: none !important;
+        /* ✨ TOOLTIP HIỂN THỊ THÔNG TIN CÁ */
+        #fish-tooltip {
+            position: absolute; pointer-events: none; display: none; z-index: 10000;
+            background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 243, 255, 0.4); border-radius: 12px;
+            padding: 12px; color: white; font-family: 'Quicksand'; box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            min-width: 180px; transition: opacity 0.2s;
         }
-
-        .btn-shop {
-            background: linear-gradient(45deg, #00f3ff, #0088ff) !important;
-            border: none !important;
-        }
-
-        .btn-bday {
-            background: linear-gradient(45deg, #FF1493, #FFD700) !important;
-            border: none !important;
-        }
-
-        .tutorial {
-            position: absolute;
-            bottom: 85px;
-            left: 50%;
-            transform: translateX(-50%);
-            color: rgba(255, 255, 255, 0.8);
-            text-align: center;
-            font-size: 12px;
-            pointer-events: none;
-            width: 90%;
-            line-height: 1.5;
-            text-shadow: 0 2px 4px #000;
-        }
+        .tt-title { font-family: 'Outfit'; font-size: 18px; font-weight: 900; margin-bottom: 5px; }
+        .tt-row { font-size: 12px; margin-bottom: 4px; display: flex; justify-content: space-between; }
+        .tt-bar-bg { width: 100%; height: 6px; background: rgba(255,255,255,0.2); border-radius: 5px; margin-top: 5px; overflow: hidden; }
+        .tt-bar-fill { height: 100%; transition: width 0.3s, background 0.3s; }
 
         /* OVERLAYS & MODALS */
         .overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(8px);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            opacity: 0;
-            transition: 0.3s;
-            pointer-events: none;
+            position: fixed; inset: 0; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(8px);
+            display: none; justify-content: center; align-items: center; z-index: 9999;
+            opacity: 0; transition: 0.3s; pointer-events: none;
         }
-
-        .overlay.active {
-            display: flex;
-            opacity: 1;
-            pointer-events: auto;
-        }
-
+        .overlay.active { display: flex; opacity: 1; pointer-events: auto; }
+        
         .modal {
-            background: rgba(15, 23, 42, 0.85);
-            border: 1px solid var(--glass-border);
-            padding: 30px;
-            border-radius: 24px;
-            text-align: center;
-            color: white;
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
-            transform: scale(0.8);
-            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            width: 90%;
-            max-width: 400px;
-            backdrop-filter: blur(20px);
+            background: rgba(15, 23, 42, 0.85); border: 1px solid var(--glass-border);
+            padding: 30px; border-radius: 24px; text-align: center; color: white;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+            transform: scale(0.8); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            width: 90%; max-width: 400px; backdrop-filter: blur(20px);
         }
+        .overlay.active .modal { transform: scale(1); }
 
-        .overlay.active .modal {
-            transform: scale(1);
-        }
+        .gacha-name { font-family: 'Outfit'; font-size: 45px; font-weight: 900; margin: 10px 0; background: linear-gradient(45deg, var(--neon-blue), var(--neon-pink)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .gacha-rarity { font-size: 14px; font-weight: 800; padding: 5px 15px; border-radius: 20px; border: 1px solid white; display: inline-block; }
 
-        .gacha-name {
-            font-family: 'Outfit';
-            font-size: 45px;
-            font-weight: 900;
-            margin: 10px 0;
-            background: linear-gradient(45deg, var(--neon-blue), var(--neon-pink));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
+        .sell-modal { background: linear-gradient(135deg, #fff0f5 0%, #ffe4e1 100%); color: #333; border: 4px solid #fff; }
+        .loading-bar-bg { width: 100%; height: 10px; background: rgba(255,105,180,0.2); border-radius: 10px; margin-top: 15px; overflow: hidden; }
+        .loading-bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #ff758c, #ff7eb3); transition: width 2s linear; }
+        
+        .shop-modal { max-width: 600px; border-color: rgba(0, 243, 255, 0.4); }
+        .shop-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 15px; margin-top: 15px;}
+        .shop-item { background: rgba(255, 255, 255, 0.05); padding: 15px; border-radius: 15px; border: 1px solid rgba(255, 255, 255, 0.1); display: flex; flex-direction: column; align-items: center; }
+        
+        .bday-modal { background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); border: 4px solid #fff; color: #d81b60; }
 
-        .gacha-rarity {
-            font-size: 14px;
-            font-weight: 800;
-            padding: 5px 15px;
-            border-radius: 20px;
-            border: 1px solid white;
-            display: inline-block;
-        }
+        .flying-diamond { position: absolute; font-size: 25px; pointer-events: none; z-index: 10000; animation: flyDiamond 2s forwards; }
+        @keyframes flyDiamond { 0% { transform: translateY(0) scale(0.5); opacity: 1; } 100% { transform: translateY(-150px) scale(1.2); opacity: 0; } }
+        .floating-price { position: absolute; font-size: 24px; font-weight: 900; color: #FFD700; text-shadow: 0 0 10px rgba(0,0,0,0.8); z-index: 10001; pointer-events: none; animation: floatUpPrice 2.5s forwards; font-family: 'Outfit'; }
+        @keyframes floatUpPrice { 0% { transform: translateY(0); opacity: 0; } 20% { transform: translateY(-20px); opacity: 1; } 100% { transform: translateY(-100px); opacity: 0; } }
 
-        .sell-modal {
-            background: linear-gradient(135deg, #fff0f5 0%, #ffe4e1 100%);
-            color: #333;
-            border: 4px solid #fff;
-        }
-
-        .loading-bar-bg {
-            width: 100%;
-            height: 10px;
-            background: rgba(255, 105, 180, 0.2);
-            border-radius: 10px;
-            margin-top: 15px;
-            overflow: hidden;
-        }
-
-        .loading-bar-fill {
-            height: 100%;
-            width: 0%;
-            background: linear-gradient(90deg, #ff758c, #ff7eb3);
-            transition: width 2s linear;
-        }
-
-        .shop-modal {
-            max-width: 600px;
-            border-color: rgba(0, 243, 255, 0.4);
-        }
-
-        .shop-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 15px;
-            margin-top: 15px;
-        }
-
-        .shop-item {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 15px;
-            border-radius: 15px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .bday-modal {
-            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
-            border: 4px solid #fff;
-            color: #d81b60;
-        }
-
-        .flying-diamond {
-            position: absolute;
-            font-size: 25px;
-            pointer-events: none;
-            z-index: 10000;
-            animation: flyDiamond 2s forwards;
-        }
-
-        @keyframes flyDiamond {
-            0% {
-                transform: translateY(0) scale(0.5);
-                opacity: 1;
-            }
-
-            100% {
-                transform: translateY(-150px) scale(1.2);
-                opacity: 0;
-            }
-        }
-
-        .floating-price {
-            position: absolute;
-            font-size: 24px;
-            font-weight: 900;
-            color: #FFD700;
-            text-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
-            z-index: 10001;
-            pointer-events: none;
-            animation: floatUpPrice 2.5s forwards;
-            font-family: 'Outfit';
-        }
-
-        @keyframes floatUpPrice {
-            0% {
-                transform: translateY(0);
-                opacity: 0;
-            }
-
-            20% {
-                transform: translateY(-20px);
-                opacity: 1;
-            }
-
-            100% {
-                transform: translateY(-100px);
-                opacity: 0;
-            }
-        }
-
-        ::-webkit-scrollbar {
-            width: 4px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 10px;
-        }
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.3); border-radius: 10px; }
 
         @media screen and (max-width: 400px) {
-            .header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 5px;
-            }
-
-            .header>div[style*="width: 2px"] {
-                display: none;
-            }
-
-            .btn-slide-toggle {
-                top: 140px;
-            }
-
-            .sidebar {
-                top: 140px;
-                width: 240px;
-            }
+            .header { flex-direction: column; align-items: flex-start; gap: 5px; }
+            .header > div[style*="width: 2px"] { display: none; }
+            .btn-slide-toggle { top: 140px; }
+            .sidebar { top: 140px; width: 240px; }
         }
     </style>
 </head>
 
 <body>
-
     <video id="bg-video" autoplay muted loop playsinline>
-        <source src="https://res.cloudinary.com/ddvotq2cg/video/upload/q_auto/f_auto/v1776140957/underwater_bg_wveghg.mp4" type="video/mp4">
+        <source src="./videos/underrwater_bg.mp4" type="video/mp4">
     </video>
-
+    
     <canvas id="gameCanvas"></canvas>
+
+    <div id="fish-tooltip"></div>
 
     <button class="btn-slide-toggle" id="btn-slide-toggle" onclick="toggleSidebar(true)">🎒 DSTC</button>
 
@@ -487,27 +194,24 @@
 
         <div class="sidebar glass-panel" id="sidebar">
             <div class="close-sidebar-btn" onclick="toggleSidebar(false)">Đóng Lại ➔</div>
-            <h3
-                style="font-family: 'Outfit'; font-size: 14px; margin-bottom: 10px; color: var(--neon-blue); text-align: center;">
-                DANH SÁCH THỦY CUNG</h3>
+            <h3 style="font-family: 'Outfit'; font-size: 14px; margin-bottom: 10px; color: var(--neon-blue); text-align: center;">DANH SÁCH THỦY CUNG</h3>
             <div id="inventory-list"></div>
         </div>
 
-        <div class="tutorial">👆 <b>CHUỘT TRÁI</b> thả mồi | <b>CHUỘT PHẢI</b> dọa cá | <b>SPACE</b> mưa mồi<br>Ban đêm
-            cá bơi lững lờ & Sứa phát sáng ✨. Ban ngày cá bơi thành đàn & tự sinh sản 💖.</div>
+        <div class="tutorial">👆 <b>CHUỘT TRÁI</b> thả mồi | <b>RÀ CHUỘT LÊN CÁ</b> xem thông tin<br>Cá sẽ <b>chết nếu bị bỏ đói</b>. Tăng Level giúp cá to lên và tiến hóa Kỹ Năng ✨</div>
 
         <div class="controls">
             <button class="btn-main btn-shop" onclick="openModal('shop-overlay')">🛒 Cửa Hàng</button>
             <button class="btn-main btn-epic" onclick="summonFish()">✨ Triệu Hồi</button>
             <button class="btn-main btn-bday" onclick="openModal('bday-overlay')">🎁 Quà Bảo Anh</button>
+            <button class="btn-main" onclick="spawnShark()" style="background: linear-gradient(45deg, #ff4757, #8b0000); border: none; box-shadow: 0 0 15px rgba(255,0,0,0.5);">🦈 Thả Cá Mập</button>
             <button class="btn-main" onclick="clearSave()" style="color: #ff4757;">Reset</button>
         </div>
     </div>
 
     <div class="overlay" id="gacha-overlay" onclick="closeModal('gacha-overlay')">
         <div class="modal">
-            <div style="font-size: 14px; font-weight: 700; letter-spacing: 2px; opacity: 0.8;">THẦN BIỂN ĐÃ BAN TẶNG
-            </div>
+            <div style="font-size: 14px; font-weight: 700; letter-spacing: 2px; opacity: 0.8;">THẦN BIỂN ĐÃ BAN TẶNG</div>
             <div class="gacha-name" id="gacha-name">Tên Cá</div>
             <div class="gacha-rarity" id="gacha-rarity">ĐỘ HIẾM</div>
         </div>
@@ -515,13 +219,10 @@
 
     <div class="overlay" id="sell-overlay">
         <div class="modal sell-modal">
-            <img src="./images/sell/business-cat.gif" alt="Cat"
-                style="width: 120px; border-radius: 15px; margin-bottom: 10px;">
+            <img src="./images/sell/business-cat.gif" alt="Cat" style="width: 120px; border-radius: 15px; margin-bottom: 10px;">
             <h2 style="color: #ff4757; font-family: 'Outfit'; font-size: 24px; font-weight: 900;">Thương Nhân Mèo</h2>
             <p id="sell-text" style="color: #ff6b81; font-weight: 700; font-size: 14px;">Đang kiểm tra cá...</p>
-            <div class="loading-bar-bg">
-                <div id="sell-loading-bar" class="loading-bar-fill"></div>
-            </div>
+            <div class="loading-bar-bg"><div id="sell-loading-bar" class="loading-bar-fill"></div></div>
         </div>
     </div>
 
@@ -532,25 +233,20 @@
                 <div class="shop-item">
                     <div style="font-size: 35px; margin-bottom: 5px;">🌧️</div>
                     <div style="font-weight: 800; font-size: 14px;">Mưa Mồi Ngon</div>
-                    <button class="btn-main btn-shop" style="width: 100%; padding: 8px; margin-top: 10px;"
-                        onclick="buyItem('rain', 100)">100 💎</button>
+                    <button class="btn-main btn-shop" style="width: 100%; padding: 8px; margin-top: 10px;" onclick="buyItem('rain', 100)">100 💎</button>
                 </div>
                 <div class="shop-item">
                     <div style="font-size: 35px; margin-bottom: 5px;">🧪</div>
                     <div style="font-weight: 800; font-size: 14px;">Tăng Trọng</div>
-                    <button class="btn-main btn-shop" style="width: 100%; padding: 8px; margin-top: 10px;"
-                        onclick="buyItem('levelUp', 1500)">1500 💎</button>
+                    <button class="btn-main btn-shop" style="width: 100%; padding: 8px; margin-top: 10px;" onclick="buyItem('levelUp', 1500)">1500 💎</button>
                 </div>
                 <div class="shop-item">
                     <div style="font-size: 35px; margin-bottom: 5px;">🔮</div>
                     <div style="font-weight: 800; font-size: 14px;">Tiến Hóa</div>
-                    <button class="btn-main btn-epic" style="width: 100%; padding: 8px; margin-top: 10px;"
-                        onclick="buyItem('evolve', 3000)">3000 💎</button>
+                    <button class="btn-main btn-epic" style="width: 100%; padding: 8px; margin-top: 10px;" onclick="buyItem('evolve', 3000)">3000 💎</button>
                 </div>
             </div>
-            <button class="btn-main"
-                style="margin-top: 20px; background: transparent; border-color: rgba(255,255,255,0.3);"
-                onclick="closeModal('shop-overlay')">Đóng</button>
+            <button class="btn-main" style="margin-top: 20px; background: transparent; border-color: rgba(255,255,255,0.3);" onclick="closeModal('shop-overlay')">Đóng</button>
         </div>
     </div>
 
@@ -558,38 +254,83 @@
         <div class="modal bday-modal">
             <div style="font-size: 60px;">🎂✨</div>
             <h2 style="font-family: 'Outfit'; font-size: 28px; font-weight: 900; color: #ff0844;">Quà Cho Bảo Anh!</h2>
-            <p style="font-size: 14px; font-weight: 700; margin: 15px 0;">Đại dương gửi tặng Bảo Anh một món quà siêu
-                đặc biệt nè! 🎁</p>
-            <button class="btn-main" style="background: linear-gradient(45deg, #ff0844, #ffb199); border: none;"
-                onclick="claimBdayGift()">Nhận Cá Sinh Nhật 🎉</button>
+            <p style="font-size: 14px; font-weight: 700; margin: 15px 0;">Đại dương gửi tặng Bảo Anh một món quà siêu đặc biệt nè! 🎁</p>
+            <button class="btn-main" style="background: linear-gradient(45deg, #ff0844, #ffb199); border: none;" onclick="claimBdayGift()">Nhận Cá Sinh Nhật 🎉</button>
         </div>
     </div>
 
     <script>
+        // --- 1. DỮ LIỆU CÁ CHUẨN ---
         const FISH_DATA = [
-            { type: "Cá Hề Lạc Lối", rarity: "Thường", colors: ["#FF4500", "#FFFFFF"], speed: 2, scale: 0.8 },
-            { type: "Cá Vàng Mộng Mơ", rarity: "Thường", colors: ["#FFD700", "#FFA500"], speed: 1.5, scale: 0.7 },
-            { type: "Cá Neon Xanh", rarity: "Thường", colors: ["#00FFFF", "#000080"], speed: 3, scale: 0.6 },
-            { type: "Cá Bảy Màu", rarity: "Thường", colors: ["#FF4500", "#9400D3"], speed: 2.5, scale: 0.6 },
-            { type: "Cá Trích Bạc", rarity: "Thường", colors: ["#C0C0C0", "#E0FFFF"], speed: 3.5, scale: 0.5 },
-            { type: "Cá Betta Huyết", rarity: "Hiếm", colors: ["#FF0000", "#8B0000"], speed: 2.5, scale: 0.9 },
-            { type: "Cá Đuối Bóng Đêm", rarity: "Hiếm", colors: ["#4B0082", "#191970"], speed: 1.8, scale: 1.5 },
-            { type: "Cá Ngựa Pha Lê", rarity: "Hiếm", colors: ["#FF69B4", "#FFC0CB"], speed: 1.2, scale: 0.8 },
-            { type: "Sứa Dạ Quang", rarity: "Hiếm", colors: ["#00FF7F", "#008B8B"], speed: 1.0, scale: 1.2 },
-            { type: "Leviathan Xanh", rarity: "Huyền thoại", colors: ["#00FA9A", "#006400"], speed: 3.5, scale: 2 },
-            { type: "Long Vương Hắc Ám", rarity: "Huyền thoại", colors: ["#111111", "#FF00EA"], speed: 4, scale: 2.5 },
-            { type: "Cá Voi Ánh Sáng", rarity: "Huyền thoại", colors: ["#FFFFFF", "#00F3FF"], speed: 1.5, scale: 3 },
-            { type: "Rùa Biển Cổ Đại", rarity: "Huyền thoại", colors: ["#2E8B57", "#8B4513"], speed: 0.8, scale: 2.2 },
-            { type: "Tiên Cá Pha Lê", rarity: "Huyền thoại", colors: ["#E6E6FA", "#FFB6C1"], speed: 2.0, scale: 1.8 },
-            { type: "Cá Sinh Nhật 🎂", rarity: "Huyền thoại", colors: ["#FF1493", "#FFD700"], speed: 2.2, scale: 2.5 }
-        ];
+            // CÁ (fish)
+            { type: "Cá Đèn Lồng Deepsea", rarity: "Hiếm", shape: "fish", flockStyle: "independent", colors: ["#2F4F4F", "#00FF00"], speed: 1.4, scale: 1.0, glowType: "head", glowColor: "#00FF00" },
+            { type: "Cá Hề Lạc Lối", rarity: "Thường", shape: "fish", flockStyle: "horizontal", colors: ["#FF4500", "#FFFFFF"], speed: 2, scale: 0.8 },
+            { type: "Cá Vàng Mộng Mơ", rarity: "Thường", shape: "fish", flockStyle: "circular", colors: ["#FFD700", "#FFA500"], speed: 1.5, scale: 0.7 },
+            { type: "Cá Neon Xanh", rarity: "Thường", shape: "fish", flockStyle: "horizontal", colors: ["#00FFFF", "#000080"], speed: 3, scale: 0.6 },
+            { type: "Cá Bảy Màu", rarity: "Thường", shape: "fish", flockStyle: "horizontal", colors: ["#FF4500", "#9400D3"], speed: 2.5, scale: 0.6 },
+            { type: "Cá Trích Bạc", rarity: "Thường", shape: "fish", flockStyle: "horizontal", colors: ["#C0C0C0", "#E0FFFF"], speed: 3.5, scale: 0.5 },
+            { type: "Cá Bướm Vàng", rarity: "Thường", shape: "fish", flockStyle: "circular", colors: ["#FFFF00", "#000000"], speed: 2.2, scale: 0.7 },
+            { type: "Cá Betta Huyết", rarity: "Hiếm", shape: "fish", flockStyle: "independent", colors: ["#FF0000", "#8B0000"], speed: 2.5, scale: 0.9 },
+            { type: "Cá Kiếm U Minh", rarity: "Hiếm", shape: "fish", flockStyle: "horizontal", colors: ["#191970", "#C0C0C0"], speed: 4.5, scale: 1.4 },
+            { type: "Cá Rồng Tuyết", rarity: "Hiếm", shape: "fish", flockStyle: "independent", colors: ["#FFFFFF", "#7FFFD4"], speed: 2.4, scale: 1.8 },
+            { type: "Cá Koi Thiên Sứ", rarity: "Hiếm", shape: "fish", flockStyle: "circular", colors: ["#FF8C00", "#FFFFFF"], speed: 1.8, scale: 1.2 },
+            { type: "Leviathan Xanh", rarity: "Huyền thoại", shape: "fish", flockStyle: "horizontal", colors: ["#00FA9A", "#006400"], speed: 3.5, scale: 2 },
+            { type: "Long Vương Hắc Ám", rarity: "Huyền thoại", shape: "fish", flockStyle: "independent", colors: ["#111111", "#FF00EA"], speed: 4, scale: 2.5 },
+            { type: "Cá Voi Ánh Sáng", rarity: "Huyền thoại", shape: "fish", flockStyle: "horizontal", colors: ["#FFFFFF", "#00F3FF"], speed: 1.5, scale: 3 },
+            { type: "Megalodon Bạo Chúa", rarity: "Huyền thoại", shape: "fish", flockStyle: "independent", colors: ["#696969", "#000000"], speed: 3.0, scale: 3.5 },
+            { type: "Cá Sinh Nhật 🎂", rarity: "Huyền thoại", shape: "fish", flockStyle: "circular", colors: ["#FF1493", "#FFD700"], speed: 2.2, scale: 2.5 },
 
+            // CÁ ĐUỐI (ray)
+            { type: "Đuối Chấm Bi", rarity: "Thường", shape: "ray", flockStyle: "horizontal", colors: ["#D2B48C", "#8B4513"], speed: 1.5, scale: 1.1 },
+            { type: "Đuối Cát", rarity: "Thường", shape: "ray", flockStyle: "horizontal", colors: ["#F5DEB3", "#D2691E"], speed: 1.4, scale: 1.0 },
+            { type: "Cá Đuối Bóng Đêm", rarity: "Hiếm", shape: "ray", flockStyle: "independent", colors: ["#4B0082", "#191970"], speed: 1.8, scale: 1.5 },
+            { type: "Đuối Gai Độc", rarity: "Hiếm", shape: "ray", flockStyle: "horizontal", colors: ["#556B2F", "#000000"], speed: 2.0, scale: 1.3 },
+            { type: "Đuối Cẩm Thạch", rarity: "Hiếm", shape: "ray", flockStyle: "circular", colors: ["#008080", "#F0E68C"], speed: 1.7, scale: 1.6 },
+            { type: "Đuối Manta Quỷ", rarity: "Huyền thoại", shape: "ray", flockStyle: "independent", colors: ["#1C1C1C", "#FF4500"], speed: 2.5, scale: 3.2 },
+            { type: "Thần Đuối Nebula", rarity: "Huyền thoại", shape: "ray", flockStyle: "horizontal", colors: ["#8A2BE2", "#00FFFF"], speed: 2.0, scale: 3.0 },
+
+            // CÁ NGỰA (seahorse)
+            { type: "Ngựa Biển Lùn", rarity: "Thường", shape: "seahorse", flockStyle: "circular", colors: ["#F0E68C", "#DAA520"], speed: 0.8, scale: 0.5 },
+            { type: "Ngựa Thảo Nguyên", rarity: "Thường", shape: "seahorse", flockStyle: "circular", colors: ["#90EE90", "#006400"], speed: 0.9, scale: 0.6 },
+            { type: "Cá Ngựa Pha Lê", rarity: "Hiếm", shape: "seahorse", flockStyle: "circular", colors: ["#FF69B4", "#FFC0CB"], speed: 1.2, scale: 0.8 },
+            { type: "Hải Mã Gai Tím", rarity: "Hiếm", shape: "seahorse", flockStyle: "independent", colors: ["#9370DB", "#4B0082"], speed: 1.1, scale: 0.9 },
+            { type: "Hải Mã Hoàng Gia", rarity: "Huyền thoại", shape: "seahorse", flockStyle: "circular", colors: ["#FFD700", "#DAA520"], speed: 1.5, scale: 1.5 },
+            { type: "Hải Mã Hỏa Ngục", rarity: "Huyền thoại", shape: "seahorse", flockStyle: "independent", colors: ["#8B0000", "#FF4500"], speed: 1.8, scale: 1.6 },
+
+            // SỨA (jellyfish)
+            { type: "Sứa Mặt Trăng", rarity: "Thường", shape: "jellyfish", flockStyle: "independent", colors: ["#E0FFFF", "#AFEEEE"], speed: 0.6, scale: 0.8 },
+            { type: "Sứa Ô Đỏ", rarity: "Thường", shape: "jellyfish", flockStyle: "independent", colors: ["#FFB6C1", "#DC143C"], speed: 0.7, scale: 0.9 },
+            { type: "Sứa Dạ Quang", rarity: "Hiếm", shape: "jellyfish", flockStyle: "independent", colors: ["#00FF7F", "#008B8B"], speed: 1.0, scale: 1.2 },
+            { type: "Sứa Hộp Băng Giá", rarity: "Hiếm", shape: "jellyfish", flockStyle: "independent", colors: ["#ADD8E6", "#4169E1"], speed: 1.2, scale: 1.1 },
+            { type: "Sứa Vũ Trụ Bất Tử", rarity: "Huyền thoại", shape: "jellyfish", flockStyle: "independent", colors: ["#FFFAFA", "#FF00FF"], speed: 0.8, scale: 2.0 },
+            { type: "Sứa Chuông Linh Hồn", rarity: "Huyền thoại", shape: "jellyfish", flockStyle: "independent", colors: ["#F8F8FF", "#000080"], speed: 0.5, scale: 2.5 },
+
+            // RÙA (turtle)
+            { type: "Rùa Cỏ Ven Bờ", rarity: "Thường", shape: "turtle", flockStyle: "circular", colors: ["#8FBC8F", "#556B2F"], speed: 0.8, scale: 1.0 },
+            { type: "Rùa Lưng Gù", rarity: "Thường", shape: "turtle", flockStyle: "horizontal", colors: ["#BDB76B", "#8B4513"], speed: 0.9, scale: 1.1 },
+            { type: "Rùa Mai Xanh", rarity: "Hiếm", shape: "turtle", flockStyle: "circular", colors: ["#32CD32", "#228B22"], speed: 1.2, scale: 1.4 },
+            { type: "Rùa Đảo Hoang", rarity: "Hiếm", shape: "turtle", flockStyle: "independent", colors: ["#CD853F", "#A0522D"], speed: 1.0, scale: 1.6 },
+            { type: "Rùa Biển Cổ Đại", rarity: "Huyền thoại", shape: "turtle", flockStyle: "circular", colors: ["#2E8B57", "#8B4513"], speed: 0.8, scale: 2.2 },
+            { type: "Rùa Dung Nham", rarity: "Huyền thoại", shape: "turtle", flockStyle: "independent", colors: ["#FF0000", "#800000"], speed: 1.0, scale: 2.5 },
+            { type: "Thần Rùa Huyền Vũ", rarity: "Huyền thoại", shape: "turtle", flockStyle: "independent", colors: ["#000000", "#2F4F4F"], speed: 0.6, scale: 3.0 }        ];
+
+        // --- 2. BIẾN TOÀN CỤC & TỌA ĐỘ CHUỘT ---
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
         let width, height;
-        let gameState = { coins: 1000, fishes: [], lastId: 0 };
+        let trackedFishId = null; // ID của con cá đang bị theo dõi
+        let gameState = { coins: 1000000, fishes: [], lastId: 0 };
         let foods = []; let particles = []; let corals = []; let seaweeds = []; let planktons = [];
         let currentHour = 12; let isNight = false;
+        // TỪ ĐIỂN GIẢI THÍCH KỸ NĂNG
+        const SKILL_DESC = {
+            "Chưa có": "Đạt Level 5 để thức tỉnh kỹ năng.",
+            "Bụng Không Đáy 🛡️": "Giảm 50% tốc độ đói bụng. Trâu bò hơn!",
+            "Thợ Săn 👁️": "Tầm nhìn rộng, phát hiện mồi cách xa gấp đôi.",
+            "Phúc Lộc 💰": "Mỗi 5 giây đẻ ra 5 Kim Cương thay vì 2."
+        };
+        let isHoveringList = false; // Biến cờ để không bị đụng độ Tooltip giữa Canvas và Danh Sách
+        let mouseX = -100, mouseY = -100; // Track chuột để hiển thị Info
 
         function resize() { width = canvas.width = window.innerWidth; height = canvas.height = window.innerHeight; initEnvironment(); }
         window.addEventListener('resize', resize);
@@ -597,214 +338,703 @@
         function initEnvironment() {
             corals = []; seaweeds = [];
             for (let i = 0; i < 6; i++) {
-                corals.push({
-                    x: (width / 6) * i + 50, y: height, size: Math.random() * 40 + 40,
-                    color: ["rgba(255,99,132,0.8)", "rgba(54,162,235,0.8)", "rgba(255,206,86,0.8)", "rgba(75,192,192,0.8)"][Math.floor(Math.random() * 4)]
-                });
+                corals.push({ x: (width / 6) * i + 50, y: height, size: Math.random() * 40 + 40, color: ["rgba(255,99,132,0.8)", "rgba(54,162,235,0.8)", "rgba(255,206,86,0.8)", "rgba(75,192,192,0.8)"][Math.floor(Math.random()*4)] });
             }
             for (let i = 0; i < 15; i++) {
-                seaweeds.push({
-                    x: Math.random() * width, y: height, height: 100 + Math.random() * 150,
-                    swayOffset: Math.random() * Math.PI * 2, color: i % 2 === 0 ? "rgba(34, 197, 94, 0.4)" : "rgba(21, 128, 61, 0.6)"
-                });
+                seaweeds.push({ x: Math.random() * width, y: height, height: 100 + Math.random() * 150, swayOffset: Math.random() * Math.PI * 2, color: i % 2 === 0 ? "rgba(34, 197, 94, 0.4)" : "rgba(21, 128, 61, 0.6)" });
             }
         }
 
+        // --- 3. CÁC LỚP THỰC THỂ ---
         class Food {
-            constructor(x, y) {
-                this.x = x;
-                this.y = y;
-                this.radius = 6;
-                this.vy = Math.random() * 0.3 + 0.5;
-                this.swing = Math.random() * 100;
-                this.pulse = Math.random() * Math.PI;
-            }
-            update() {
-                this.y += this.vy;
-                this.x += Math.sin(this.y * 0.05 + this.swing) * 0.5;
-                this.pulse += 0.15;
-            }
-            draw() {
-                ctx.save();
-                let currentGlow = 10 + Math.sin(this.pulse) * 8;
-                ctx.shadowBlur = currentGlow;
-                ctx.shadowColor = "#FFEA00";
+            constructor(x, y) { this.x = x; this.y = y; this.radius = 6; this.vy = Math.random() * 0.3 + 0.5; this.swing = Math.random() * 100; this.pulse = Math.random() * Math.PI; }
+            update() { this.y += this.vy; this.x += Math.sin(this.y * 0.05 + this.swing) * 0.5; this.pulse += 0.15; }
+            draw() { 
+                ctx.save(); let currentGlow = 10 + Math.sin(this.pulse) * 8; ctx.shadowBlur = currentGlow; ctx.shadowColor = "#FFEA00"; 
                 let gradient = ctx.createRadialGradient(this.x - 2, this.y - 2, 0.5, this.x, this.y, this.radius);
-                gradient.addColorStop(0, "#FFFFFF");
-                gradient.addColorStop(0.3, "#FFD700");
-                gradient.addColorStop(1, "#FF8C00");
-                ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2); ctx.fillStyle = gradient; ctx.fill();
-                ctx.lineWidth = 1; ctx.strokeStyle = "rgba(255, 255, 255, 0.6)"; ctx.stroke();
-                ctx.restore();
+                gradient.addColorStop(0, "#FFFFFF"); gradient.addColorStop(0.3, "#FFD700"); gradient.addColorStop(1, "#FF8C00");   
+                ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI*2); ctx.fillStyle = gradient; ctx.fill(); 
+                ctx.lineWidth = 1; ctx.strokeStyle = "rgba(255, 255, 255, 0.6)"; ctx.stroke(); ctx.restore();
             }
         }
 
         class Particle {
             constructor(x, y, color, isBubble = false) {
                 this.x = x; this.y = y; this.color = color; this.isBubble = isBubble;
-                this.radius = isBubble ? Math.random() * 3 + 2 : Math.random() * 3 + 1;
-                let angle = Math.random() * Math.PI * 2; let speed = isBubble ? Math.random() * 0.5 + 0.1 : Math.random() * 4 + 1;
-                this.vx = Math.cos(angle) * speed; this.vy = isBubble ? -speed : Math.sin(angle) * speed;
+                this.radius = isBubble ? Math.random()*3+2 : Math.random()*3+1;
+                let angle = Math.random() * Math.PI * 2; let speed = isBubble ? Math.random()*0.5+0.1 : Math.random()*4+1;
+                this.vx = Math.cos(angle)*speed; this.vy = isBubble ? -speed : Math.sin(angle)*speed;
                 this.life = 1; this.decay = isBubble ? 0.005 : 0.02;
             }
-            update() { if (!this.isBubble) { this.vx *= 0.95; this.vy *= 0.95; } this.x += this.vx; this.y += this.vy; this.life -= this.decay; if (this.isBubble) this.x += Math.sin(this.y * 0.05) * 0.5; }
-            draw() { ctx.globalAlpha = Math.max(0, this.life); ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2); ctx.fillStyle = this.color; ctx.fill(); ctx.globalAlpha = 1; }
+            update() { if(!this.isBubble){this.vx*=0.95; this.vy*=0.95;} this.x+=this.vx; this.y+=this.vy; this.life-=this.decay; if(this.isBubble) this.x+=Math.sin(this.y*0.05)*0.5; }
+            draw() { ctx.globalAlpha = Math.max(0, this.life); ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI*2); ctx.fillStyle=this.color; ctx.fill(); ctx.globalAlpha=1; }
         }
 
-        // 🎇 CLASS: SỨA PHÙ DU (PLANKTON)
         class Plankton {
             constructor(x, y, color) {
-                this.x = x; this.y = y; this.color = color;
-                this.size = Math.random() * 3 + 2;
-                this.vx = (Math.random() - 0.5) * 1;
-                this.vy = -Math.random() * 1 - 0.2; // Từ từ bay lên
-                this.life = 1; this.decay = Math.random() * 0.003 + 0.002;
-                this.swimCycle = Math.random() * 100;
+                this.x = x; this.y = y; this.color = color; this.size = Math.random() * 3 + 2; 
+                this.vx = (Math.random() - 0.5) * 1; this.vy = -Math.random() * 1 - 0.2; 
+                this.life = 1; this.decay = Math.random() * 0.003 + 0.002; this.swimCycle = Math.random() * 100;
             }
-            update() {
-                this.x += this.vx + Math.sin(this.swimCycle * 0.1) * 0.5;
-                this.y += this.vy;
-                this.life -= this.decay;
-                this.swimCycle++;
-            }
+            update() { this.x += this.vx + Math.sin(this.swimCycle * 0.1) * 0.5; this.y += this.vy; this.life -= this.decay; this.swimCycle++; }
             draw() {
-                ctx.save();
-                ctx.globalAlpha = Math.max(0, this.life);
-                ctx.translate(this.x, this.y);
-
-                // Phát sáng nhẹ
-                ctx.shadowBlur = 10;
-                ctx.shadowColor = this.color;
-                ctx.fillStyle = this.color;
-                ctx.strokeStyle = this.color;
-
-                // Vẽ đầu Sứa (nửa vòm)
-                ctx.beginPath();
-                ctx.arc(0, 0, this.size, Math.PI, 0);
-                ctx.fill();
-
-                // Vẽ 3 cái xúc tu nhấp nhô
-                ctx.lineWidth = 1;
-                ctx.beginPath();
-                let sway = Math.sin(this.swimCycle * 0.2) * this.size * 0.8;
-
-                ctx.moveTo(-this.size + 1, 0);
-                ctx.quadraticCurveTo(-this.size + 1 + sway, this.size, -this.size + 1, this.size * 2.5);
-
-                ctx.moveTo(0, 0);
-                ctx.quadraticCurveTo(sway, this.size * 1.5, 0, this.size * 3);
-
-                ctx.moveTo(this.size - 1, 0);
-                ctx.quadraticCurveTo(this.size - 1 + sway, this.size, this.size - 1, this.size * 2.5);
-
-                ctx.stroke();
-                ctx.restore();
+                ctx.save(); ctx.globalAlpha = Math.max(0, this.life); ctx.translate(this.x, this.y);
+                ctx.shadowBlur = 10; ctx.shadowColor = this.color; ctx.fillStyle = this.color; ctx.strokeStyle = this.color;
+                ctx.beginPath(); ctx.arc(0, 0, this.size, Math.PI, 0); ctx.fill();
+                ctx.lineWidth = 1; ctx.beginPath(); let sway = Math.sin(this.swimCycle * 0.2) * this.size * 0.8;
+                ctx.moveTo(-this.size + 1, 0); ctx.quadraticCurveTo(-this.size + 1 + sway, this.size, -this.size + 1, this.size * 2.5);
+                ctx.moveTo(0, 0); ctx.quadraticCurveTo(sway, this.size * 1.5, 0, this.size * 3);
+                ctx.moveTo(this.size - 1, 0); ctx.quadraticCurveTo(this.size - 1 + sway, this.size, this.size - 1, this.size * 2.5);
+                ctx.stroke(); ctx.restore();
             }
         }
 
         class Fish {
             constructor(data, saveObj = null) {
                 this.id = saveObj ? saveObj.id : ++gameState.lastId;
-                this.data = data; this.level = saveObj ? saveObj.level : 1; this.xp = saveObj ? saveObj.xp : 0;
-                this.x = saveObj ? saveObj.x : Math.random() * width; this.y = saveObj ? saveObj.y : Math.random() * height;
+                this.data = data; 
+                this.level = saveObj ? saveObj.level : 1; 
+                this.xp = saveObj ? saveObj.xp : 0;
+                this.x = saveObj ? saveObj.x : Math.random() * width; 
+                this.y = saveObj ? saveObj.y : Math.random() * height;
                 this.vx = (Math.random() - 0.5) * 2; this.vy = (Math.random() - 0.5) * 2;
                 this.targetAngle = Math.atan2(this.vy, this.vx); this.currentAngle = this.targetAngle;
-                this.swimCycle = Math.random() * 100; this.baseScale = data.scale;
+                this.swimCycle = Math.random() * 100; 
+                this.baseScale = data.scale;
                 this.breedCooldown = 0;
+
+                // TÍNH NĂNG MỚI: ĐÓI BỤNG & KỸ NĂNG
+                this.hunger = saveObj ? saveObj.hunger : 100;
+                this.maxHunger = 100;
+                this.skill = saveObj ? saveObj.skill : "Chưa có";
+                this.isDead = false;
+                // (Các code cũ ở trên...)
+                this.skill = saveObj ? saveObj.skill : "Chưa có";
+                this.isDead = false;
+                // Thêm dòng này để lưu tên riêng:
+                this.customName = saveObj && saveObj.customName ? saveObj.customName : "";
+                this.hp = saveObj && saveObj.hp !== undefined ? saveObj.hp : 100;
+                this.fleeTimer = 0; 
+                this.fleeAngle = 0;
             }
 
             update() {
+                // 1. TÍNH GIỜ SINH SẢN VÀ ĐÓI BỤNG
                 if (this.breedCooldown > 0) this.breedCooldown--;
 
-                let speedBoost = 1; let turnSpeed = 0.05;
+                let hungerDepletion = isNight ? 0.005 : 0.01;
+                if (this.skill === "Bụng Không Đáy 🛡️") hungerDepletion *= 0.5;
+                this.hunger -= hungerDepletion;
+                
+                if (this.hunger <= 0) { 
+                    this.isDead = true; 
+                    return; // Ngừng tính toán nếu cá đã chết
+                }
 
-                // 🌟 FIX: LUÔN ƯU TIÊN TÌM THỨC ĂN (Cả ngày lẫn đêm)
-                let targetFood = null; let minDist = Infinity;
-                foods.forEach(f => { let d = Math.hypot(f.x - this.x, f.y - this.y); if (d < 300 && d < minDist) { minDist = d; targetFood = f; } });
+                let speedBoost = 1; 
+                let turnSpeed = 0.05;
+                const flockType = this.data.flockStyle || "horizontal";
 
-                if (targetFood) {
-                    let dx = targetFood.x - this.x; let dy = targetFood.y - this.y;
+                // ==========================================
+                // 🦈 TRƯỜNG HỢP 1: LÀ CÁ MẬP SĂN MỒI
+                // ==========================================
+                if (this.data.isPredator) {
+                    let targetPrey = null; 
+                    let minPreyDist = Infinity;
                     
-                    if (minDist < 20) { 
-                        foods = foods.filter(f => f !== targetFood); 
-                        this.gainXp(); 
-                        createExplosion(this.x, this.y, this.data.colors[0], 10);
-                    } else {
-                        this.targetAngle = Math.atan2(dy, dx); 
-                        // Mẹo nhỏ: Ban đêm buồn ngủ nên bơi ra ăn chậm hơn ban ngày một chút (1.0 so với 1.4)
-                        speedBoost = isNight ? 1.0 : 1.2; 
-                        turnSpeed = 0.3; 
-                    }
-                } else {
-                    // 🌙 KHÔNG CÓ THỨC ĂN -> BƠI THEO TẬP TÍNH NGÀY/ĐÊM
-                    if (isNight) {
-                        speedBoost = 0.3; // Chậm lại 70%
-                        turnSpeed = 0.02; // Bẻ lái mượt, chậm
-                        if (Math.random() < 0.005) this.targetAngle += (Math.random() - 0.5) * Math.PI;
-                    } else {
-                        // ☀️ LOGIC BAN NGÀY: Bơi theo bầy đàn & Sinh sản
-                        let flockDx = 0; let flockDy = 0; let neighbors = 0;
-                        gameState.fishes.forEach(other => {
-                            if (other.id !== this.id && other.data.type === this.data.type) {
-                                let d = Math.hypot(other.x - this.x, other.y - this.y);
-                                if (d > 50 && d < 200) { flockDx += (other.x - this.x); flockDy += (other.y - this.y); neighbors++; }
+                    // Tìm con cá gần nhất không phải là cá mập và chưa chết
+                    gameState.fishes.forEach(other => {
+                        if (other.id !== this.id && !other.data.isPredator && !other.isDead) {
+                            let d = Math.hypot(other.x - this.x, other.y - this.y);
+                            if (d < 600 && d < minPreyDist) { minPreyDist = d; targetPrey = other; }
+                        }
+                    });
 
-                                if (d < 40 && this.level >= 5 && other.level >= 5 && this.breedCooldown === 0 && other.breedCooldown === 0 && gameState.fishes.length < 30 && Math.random() < 0.001) {
-                                    this.breedCooldown = 1000; other.breedCooldown = 1000;
-                                    createExplosion(this.x, this.y, "var(--neon-pink)", 20);
-                                    let baby = new Fish(this.data); baby.x = this.x; baby.y = this.y;
-                                    gameState.fishes.push(baby); updateUI(); saveGame();
-                                }
-                            }
-                        });
+                    if (targetPrey) {
+                        let dx = targetPrey.x - this.x; 
+                        let dy = targetPrey.y - this.y;
+                        
+                        // [MỚI] KÍCH HOẠT ANIMATION HÁ MIỆNG KHI TỚI GẦN
+                        if (minPreyDist < 150) { 
+                            if (!this.biteTimer || this.biteTimer <= 0) this.biteTimer = 25; // Há miệng trong 25 frame
+                        }
+                        if (this.biteTimer > 0) this.biteTimer--;
 
-                        if (neighbors > 0) {
-                            this.targetAngle = Math.atan2(flockDy, flockDx); turnSpeed = 0.02;
+                        if (minPreyDist < 80) { // Cắn trúng
+                            targetPrey.hp -= 40; 
+                            targetPrey.fleeTimer = 80; 
+                            targetPrey.fleeAngle = Math.atan2(dy, dx); 
+                            targetPrey.y -= 20;
+                            this.hunger = Math.min(this.maxHunger, this.hunger + 40); 
+                            createExplosion(targetPrey.x, targetPrey.y, "#ff4757", 40); 
+                            
+                            if (targetPrey.hp <= 0) targetPrey.isDead = true;
+                            
+                            // Giật lùi sau khi cắn
+                            this.x -= Math.cos(this.currentAngle) * 30;
+                            this.y -= Math.sin(this.currentAngle) * 30;
                         } else {
-                            if (Math.random() < 0.01) this.targetAngle += (Math.random() - 0.5) * Math.PI;
+                            // Rượt đuổi
+                            this.targetAngle = Math.atan2(dy, dx); 
+                            speedBoost = 2.5; turnSpeed = 0.2; 
+                        }
+                    } else {
+                        // Đi dạo
+                        this.biteTimer = 0; // Ngậm miệng lại
+                        if (Math.random() < 0.02) this.targetAngle += (Math.random() - 0.5) * Math.PI;
+                        speedBoost = 0.8;
+                    }if (targetPrey) {
+                        let dx = targetPrey.x - this.x; 
+                        let dy = targetPrey.y - this.y;
+                        
+                        // [MỚI] KÍCH HOẠT ANIMATION HÁ MIỆNG KHI TỚI GẦN
+                        if (minPreyDist < 150) { 
+                            if (!this.biteTimer || this.biteTimer <= 0) this.biteTimer = 25; // Há miệng trong 25 frame
+                        }
+                        if (this.biteTimer > 0) this.biteTimer--;
+
+                        if (minPreyDist < 80) { // Cắn trúng
+                            targetPrey.hp -= 40; 
+                            targetPrey.fleeTimer = 80; 
+                            targetPrey.fleeAngle = Math.atan2(dy, dx); 
+                            
+                            this.hunger = Math.min(this.maxHunger, this.hunger + 40); 
+                            createExplosion(targetPrey.x, targetPrey.y, "#ff4757", 40); 
+                            
+                            if (targetPrey.hp <= 0) targetPrey.isDead = true;
+                            
+                            // Giật lùi sau khi cắn
+                            this.x -= Math.cos(this.currentAngle) * 30;
+                            this.y -= Math.sin(this.currentAngle) * 30;
+                        } else {
+                            // Rượt đuổi
+                            this.targetAngle = Math.atan2(dy, dx); 
+                            speedBoost = 2.5; turnSpeed = 0.2; 
+                        }
+                    } else {
+                        // Đi dạo
+                        this.biteTimer = 0; // Ngậm miệng lại
+                        if (Math.random() < 0.02) this.targetAngle += (Math.random() - 0.5) * Math.PI;
+                        speedBoost = 0.8;
+                    }
+                } 
+                // ==========================================
+                // 💨 TRƯỜNG HỢP 2: BỊ CẮN TRÚNG -> CHẠY TRỐN
+                // ==========================================
+                else if (this.fleeTimer > 0) {
+                    this.fleeTimer--;
+                    this.targetAngle = this.fleeAngle;
+                    speedBoost = 6.0; // Tốc độ siêu thanh
+                    turnSpeed = 0.5;
+                    
+                    if (this.fleeTimer % 3 === 0) {
+                        createExplosion(this.x, this.y, "rgba(255,255,255,0.4)", 3); // Sủi bọt
+                    }
+                } 
+                // ==========================================
+                // 🐟 TRƯỜNG HỢP 3: CÁ BÌNH THƯỜNG (KIẾM MỒI & ĐI DẠO)
+                // ==========================================
+                else {
+                    let detectRadius = this.skill === "Thợ Săn 👁️" ? 600 : 300;
+                    let targetFood = null; 
+                    let minDist = Infinity;
+                    
+                    // Tìm thức ăn
+                    foods.forEach(f => { 
+                        let d = Math.hypot(f.x - this.x, f.y - this.y); 
+                        if (d < detectRadius && d < minDist) { minDist = d; targetFood = f; } 
+                    });
+
+                    if (targetFood) {
+                        let dx = targetFood.x - this.x; 
+                        let dy = targetFood.y - this.y;
+                        
+                        if (minDist < 80) { // Ăn mồi
+                            foods = foods.filter(f => f !== targetFood); 
+                            this.hunger = Math.min(this.maxHunger, this.hunger + 35);
+                            this.gainXp(); 
+                            createExplosion(this.x, this.y, this.data.colors[0], 10);
+                        } else {
+                            // Bơi tới mồi
+                            this.targetAngle = Math.atan2(dy, dx); 
+                            speedBoost = isNight ? 1.0 : 1.4; 
+                            turnSpeed = 0.3; 
+                        }
+                    } else {
+                        // Không có mồi -> Đi dạo theo tập tính
+                        if (isNight) {
+                            speedBoost = 0.3; turnSpeed = 0.02;
+                            if (Math.random() < 0.005) this.targetAngle += (Math.random() - 0.5) * Math.PI;
+                        } else {
+                            let flockDx = 0; let flockDy = 0; let neighbors = 0; let centerX = 0; let centerY = 0; 
+                            
+                            gameState.fishes.forEach(other => {
+                                if (other.id !== this.id && other.data.type === this.data.type && !other.data.isPredator) {
+                                    let d = Math.hypot(other.x - this.x, other.y - this.y);
+                                    if (d > 50 && d < 200) { 
+                                        flockDx += (other.x - this.x); 
+                                        flockDy += (other.y - this.y); 
+                                        centerX += other.x; centerY += other.y; 
+                                        neighbors++; 
+                                    }
+                                    
+                                    // Sinh sản
+                                    if (d < 40 && this.level >= 5 && other.level >= 5 && this.breedCooldown === 0 && other.breedCooldown === 0 && gameState.fishes.length < 30 && Math.random() < 0.001) {
+                                        this.breedCooldown = 1000; other.breedCooldown = 1000;
+                                        createExplosion(this.x, this.y, "var(--neon-pink)", 20);
+                                        let baby = new Fish(this.data); baby.x = this.x; baby.y = this.y;
+                                        gameState.fishes.push(baby); updateUI(); saveGame();
+                                    }
+                                }
+                            });
+
+                            // Góc bơi theo bầy đàn
+                            if (flockType === "horizontal") {
+                                if (neighbors > 0) {
+                                    let avgAngle = Math.atan2(flockDy, flockDx);
+                                    if (Math.abs(Math.sin(avgAngle)) > 0.5) {
+                                        avgAngle = avgAngle > 0 ? (avgAngle > Math.PI/2 ? Math.PI : 0) : (avgAngle < -Math.PI/2 ? Math.PI : 0);
+                                    }
+                                    this.targetAngle = avgAngle; 
+                                    turnSpeed = 0.02; 
+                                } else {
+                                    if (Math.random() < 0.01) this.targetAngle = Math.random() > 0.5 ? 0 : Math.PI; 
+                                }
+                            } else if (flockType === "circular") {
+                                if (neighbors > 0) {
+                                    centerX /= neighbors; centerY /= neighbors; 
+                                    let angleToCenter = Math.atan2(centerY - this.y, centerX - this.x);
+                                    this.targetAngle = angleToCenter + Math.PI / 2; 
+                                    turnSpeed = 0.03;
+                                } else {
+                                    this.targetAngle += 0.01; 
+                                }
+                            } else {
+                                // Tự do
+                                if (Math.random() < 0.02) this.targetAngle += (Math.random() - 0.5) * Math.PI;
+                            }
                         }
                     }
                 }
 
-                // Giữ cá không bơi ra khỏi màn hình
-                const margin = 100;
-                if (this.x < margin) this.targetAngle = 0; if (this.x > width - margin) this.targetAngle = Math.PI;
-                if (this.y < margin) this.targetAngle = Math.PI / 2; if (this.y > height - margin) this.targetAngle = -Math.PI / 2;
+                // ==========================================
+                // VẬT LÝ DI CHUYỂN CUỐI CÙNG (An toàn tuyệt đối)
+                // ==========================================
+                
+                // Xác định viền an toàn (nếu đang có mục tiêu thì cho bơi sát mép)
+                let isHunting = this.fleeTimer > 0 || this.data.isPredator || (this.targetAngle !== this.currentAngle && turnSpeed > 0.1);
+                const margin = isHunting ? 15 : 100;
+                
+                // Tránh tường mềm mại
+                if (this.x < margin) this.targetAngle = 0; 
+                if (this.x > width - margin) this.targetAngle = Math.PI;
+                if (this.y < margin) this.targetAngle = Math.PI / 2; 
+                if (this.y > height - margin) this.targetAngle = -Math.PI / 2;
 
-                // Công thức vật lý di chuyển mượt mà
+                // TƯỜNG CỨNG: Bắt buộc ép tọa độ nằm trong màn hình (Chống mất cá)
+                this.x = Math.max(10, Math.min(width - 10, this.x));
+                this.y = Math.max(10, Math.min(height - 10, this.y));
+
+                // Bẻ lái mượt mà
                 let angleDiff = this.targetAngle - this.currentAngle;
-                while (angleDiff > Math.PI) angleDiff -= Math.PI * 2; while (angleDiff < -Math.PI) angleDiff += Math.PI * 2;
+                while (angleDiff > Math.PI) angleDiff -= Math.PI * 2; 
+                while (angleDiff < -Math.PI) angleDiff += Math.PI * 2;
                 this.currentAngle += angleDiff * turnSpeed;
 
-                let currentSpeed = this.data.speed * speedBoost;
-                this.vx = Math.cos(this.currentAngle) * currentSpeed; this.vy = Math.sin(this.currentAngle) * currentSpeed;
-                this.x += this.vx; this.y += this.vy; this.swimCycle += 0.1 * currentSpeed;
+                // Tính toán vận tốc và áp dụng vào tọa độ
+                let currentSpeed = this.data.speed * speedBoost * 0.6; // Nhân 0.6 để giảm tốc độ chung
+                this.vx = Math.cos(this.currentAngle) * currentSpeed; 
+                this.vy = Math.sin(this.currentAngle) * currentSpeed;
+                
+                // Kiểm tra an toàn cuối cùng: Nếu vx hoặc vy bị lỗi NaN thì reset về 0
+                if(isNaN(this.vx)) this.vx = 0;
+                if(isNaN(this.vy)) this.vy = 0;
+
+                this.x += this.vx; 
+                this.y += this.vy; 
+                this.swimCycle += 0.1 * currentSpeed;
             }
 
-            gainXp() { this.xp += 10; if (this.xp >= this.level * 20) { this.level++; this.xp = 0; createExplosion(this.x, this.y, "#00f3ff", 30); saveGame(); updateUI(); } }
+            // TÍNH NĂNG MỚI: MỞ KHÓA KỸ NĂNG KHI TIẾN HÓA LEVEL 5
+            gainXp() { 
+                this.xp += 10; 
+                if (this.xp >= this.level * 20) { 
+                    this.level++; this.xp = 0; 
+                    
+                    if (this.level === 5 && this.skill === "Chưa có") {
+                        if (this.data.rarity === "Thường") this.skill = "Bụng Không Đáy 🛡️";
+                        else if (this.data.rarity === "Hiếm") this.skill = "Thợ Săn 👁️";
+                        else this.skill = "Phúc Lộc 💰";
+                        createExplosion(this.x, this.y, "var(--neon-pink)", 50); // Nổ bự khi tiến hóa
+                    } else {
+                        createExplosion(this.x, this.y, "#00f3ff", 30); 
+                    }
+                    
+                    saveGame(); updateUI(); 
+                } 
+            }
 
             draw() {
                 const scale = this.baseScale * (1 + this.level * 0.05);
-                const tailWag = Math.sin(this.swimCycle) * 0.3;
-
+                const shape = this.data.shape || "fish";
+                const color1 = this.data.colors[0]; const color2 = this.data.colors[1];
+                const glowType = this.data.glowType; // Lấy kiểu phát sáng
+                const glowColor = this.data.glowColor || color2; // Lấy màu phát sáng
+                
                 ctx.save(); ctx.translate(this.x, this.y); ctx.rotate(this.currentAngle); ctx.scale(scale, scale);
-                if (this.data.rarity === "Huyền thoại") { ctx.shadowBlur = 20; ctx.shadowColor = this.data.colors[1]; }
+                // [MỚI] HIỆU ỨNG NHẤP NHÁY ĐỎ KHI BỊ THƯƠNG (Fleeing)
+                if (this.fleeTimer > 0) {
+                    ctx.shadowBlur = 20;
+                    ctx.shadowColor = "#ff0000";
+                    // Tạo lớp phủ màu đỏ nhấp nháy
+                    if (Math.floor(Date.now() / 100) % 2 === 0) {
+                        ctx.globalCompositeOperation = "source-atop";
+                        ctx.fillStyle = "rgba(255, 0, 0, 0.4)";
+                    }
+                }
+                
+                // ✨ XỬ LÝ PHÁT SÁNG TOÀN THÂN (BODY) HOẶC CÁ HUYỀN THOẠI
+                if (glowType === "body" || this.data.rarity === "Huyền thoại") { 
+                    ctx.shadowBlur = 15 + Math.sin(this.swimCycle * 0.5) * 10; // Đèn nhấp nháy nhịp thở
+                    ctx.shadowColor = glowColor; 
+                } else {
+                    ctx.shadowBlur = 0; // Reset bóng cho cá bình thường
+                }
+                const grad = ctx.createLinearGradient(-20, 0, 20, 0); grad.addColorStop(0, color2); grad.addColorStop(1, color1);
 
-                ctx.save(); ctx.translate(-20, 0); ctx.rotate(tailWag); ctx.beginPath();
-                ctx.moveTo(0, 0); ctx.lineTo(-20, -15); ctx.lineTo(-15, 0); ctx.lineTo(-20, 15); ctx.closePath();
-                ctx.fillStyle = this.data.colors[1]; ctx.fill(); ctx.restore();
+                // --- VẼ HÌNH DÁNG ---
+                // --- VẼ CÁC HÌNH DÁNG (ĐỒ HỌA CHÂN THỰC & MỀM MẠI) ---
+                if (shape === "turtle") {
+                    // 🐢 RÙA BIỂN
+                    let flap = Math.sin(this.swimCycle * 1.5) * 0.6; 
+                    
+                    // Bốn chân chèo (Dùng đường cong organic thay vì hình elip cứng)
+                    ctx.fillStyle = color2;
+                    // Chân trước phải
+                    ctx.save(); ctx.translate(8, 10); ctx.rotate(flap + Math.PI/6); ctx.beginPath(); ctx.moveTo(0,0); ctx.quadraticCurveTo(-5, 18, -18, 20); ctx.quadraticCurveTo(-8, 5, 5, -2); ctx.fill(); ctx.restore();
+                    // Chân trước trái
+                    ctx.save(); ctx.translate(8, -10); ctx.rotate(-flap - Math.PI/6); ctx.beginPath(); ctx.moveTo(0,0); ctx.quadraticCurveTo(-5, -18, -18, -20); ctx.quadraticCurveTo(-8, -5, 5, 2); ctx.fill(); ctx.restore();
+                    // Chân sau
+                    ctx.save(); ctx.translate(-12, 8); ctx.rotate(-flap + Math.PI/4); ctx.beginPath(); ctx.ellipse(0,0, 8, 4, 0, 0, Math.PI*2); ctx.fill(); ctx.restore();
+                    ctx.save(); ctx.translate(-12, -8); ctx.rotate(flap - Math.PI/4); ctx.beginPath(); ctx.ellipse(0,0, 8, 4, 0, 0, Math.PI*2); ctx.fill(); ctx.restore();
+                    
+                    // Đầu rùa & Đuôi nhỏ
+                    ctx.fillStyle = color1; 
+                    ctx.beginPath(); ctx.moveTo(-18, 0); ctx.lineTo(-22, -3); ctx.lineTo(-22, 3); ctx.fill(); // Đuôi
+                    ctx.beginPath(); ctx.ellipse(18, 0, 8, 6, 0, 0, Math.PI * 2); ctx.fill(); // Đầu
+                    
+                    // Mai rùa (Có viền và vân xù xì)
+                    ctx.fillStyle = grad; ctx.beginPath(); ctx.ellipse(0, 0, 18, 14, 0, 0, Math.PI * 2); ctx.fill();
+                    ctx.lineWidth = 2; ctx.strokeStyle = color2; ctx.stroke();
+                    ctx.beginPath(); ctx.ellipse(0, 0, 12, 8, 0, 0, Math.PI * 2); ctx.strokeStyle = 'rgba(0,0,0,0.15)'; ctx.lineWidth = 1; ctx.stroke(); // Vân trong
+                    
+                    // Mắt rùa
+                    ctx.fillStyle = "white"; ctx.beginPath(); ctx.arc(21, -3, 2, 0, Math.PI * 2); ctx.arc(21, 3, 2, 0, Math.PI * 2); ctx.fill();
+                    ctx.fillStyle = "black"; ctx.beginPath(); ctx.arc(22, -3, 1, 0, Math.PI * 2); ctx.arc(22, 3, 1, 0, Math.PI * 2); ctx.fill();
 
-                ctx.fillStyle = this.data.colors[1]; ctx.beginPath(); ctx.ellipse(0, -10, 15, 8, 0, Math.PI, 0); ctx.fill(); ctx.beginPath(); ctx.ellipse(5, 10, 10, 6, 0, 0, Math.PI); ctx.fill();
-                const grad = ctx.createLinearGradient(-20, 0, 20, 0); grad.addColorStop(0, this.data.colors[1]); grad.addColorStop(1, this.data.colors[0]);
-                ctx.beginPath(); ctx.ellipse(0, 0, 25, 12, 0, 0, Math.PI * 2); ctx.fillStyle = grad; ctx.fill();
+                } else if (shape === "ray") {
+                    // 🦇 CÁ ĐUỐI (Manta Ray)
+                    let flap = Math.sin(this.swimCycle * 1.2) * 8; 
+                    let tailWag = Math.sin(this.swimCycle * 2) * 6;
+                    
+                    // Vây ngực (Cánh vỗ mềm mại uốn lượn)
+                    ctx.fillStyle = grad; 
+                    ctx.beginPath();
+                    ctx.moveTo(22, 0); // Mũi
+                    ctx.bezierCurveTo(15, 15, 5, 25 - flap, -12, 28 - flap); // Cánh phải
+                    ctx.quadraticCurveTo(-15, 10, -20, 0); // Lượn về gốc đuôi
+                    ctx.quadraticCurveTo(-15, -10, -12, -28 + flap); // Cánh trái
+                    ctx.bezierCurveTo(5, -25 + flap, 15, -15, 22, 0); // Lượn về mũi
+                    ctx.fill();
+                    
+                    // Hai sừng nhỏ ở miệng (Cephalic fins)
+                    ctx.fillStyle = color2;
+                    ctx.beginPath(); ctx.ellipse(22, 5, 4, 2, Math.PI/6, 0, Math.PI*2); ctx.fill();
+                    ctx.beginPath(); ctx.ellipse(22, -5, 4, 2, -Math.PI/6, 0, Math.PI*2); ctx.fill();
 
-                ctx.beginPath(); ctx.arc(15, -4, 3, 0, Math.PI * 2); ctx.fillStyle = "white"; ctx.fill();
-                ctx.beginPath();
-                ctx.arc(16, -4, 1.5, 0, Math.PI * 2); ctx.fillStyle = "black"; ctx.fill(); // Luôn mở mắt vui vẻ
+                    // Đuôi roi dài cong vút
+                    ctx.strokeStyle = color2; ctx.lineWidth = 2; ctx.lineCap = "round";
+                    ctx.beginPath(); ctx.moveTo(-18, 0); ctx.bezierCurveTo(-35, tailWag, -45, -tailWag, -60, tailWag * 1.5); ctx.stroke();
+                    
+                    // Mắt dẹt
+                    ctx.fillStyle = "white"; ctx.beginPath(); ctx.ellipse(12, -7, 2.5, 1.5, -Math.PI/8, 0, Math.PI * 2); ctx.ellipse(12, 7, 2.5, 1.5, Math.PI/8, 0, Math.PI * 2); ctx.fill();
+                    ctx.fillStyle = "black"; ctx.beginPath(); ctx.arc(12.5, -7, 1, 0, Math.PI * 2); ctx.arc(12.5, 7, 1, 0, Math.PI * 2); ctx.fill();
+
+                } else if (shape === "jellyfish") {
+                    // 🎐 SỨA (Trong suốt, nấm lượn sóng)
+                    ctx.globalAlpha = 0.8; // Độ trong suốt của sứa
+                    
+                    // Xúc tu (Uốn lượn nhấp nhô)
+                    ctx.strokeStyle = color2; ctx.lineWidth = 1.2;
+                    for(let i = -10; i <= 10; i += 4) { 
+                        let sway = Math.sin(this.swimCycle * 1.5 + i) * 6; 
+                        ctx.beginPath(); ctx.moveTo(-5, i); 
+                        ctx.bezierCurveTo(-20, i + sway, -30, i - sway, -45, i + sway * 1.2); 
+                        ctx.stroke(); 
+                    }
+                    
+                    // Mũ sứa (Đầu nấm tròn cong organic)
+                    ctx.fillStyle = grad; 
+                    ctx.beginPath(); 
+                    ctx.moveTo(-5, 14);
+                    ctx.bezierCurveTo(15, 14, 22, 8, 22, 0); // Vòm trên
+                    ctx.bezierCurveTo(22, -8, 15, -14, -5, -14); // Vòm dưới
+                    ctx.quadraticCurveTo(2, 0, -5, 14); // Viền lượn sóng ở đáy
+                    ctx.fill();
+                    
+                    // Đốm sáng lấp lánh trong thân sứa
+                    ctx.fillStyle = "rgba(255,255,255,0.4)";
+                    ctx.beginPath(); ctx.arc(10, -5, 2, 0, Math.PI*2); ctx.arc(12, 4, 1.5, 0, Math.PI*2); ctx.fill();
+                    
+                    ctx.globalAlpha = 1; // Trả lại Opacity bình thường cho các con khác
+
+                } else if (shape === "seahorse") {
+                    // 🐉 CÁ NGỰA (Đồ họa chân thực & Chuyển động đa khớp)
+                    let flutter = Math.sin(this.swimCycle * 5) * 3; // Vây rung bần bật
+                    let headBob = Math.sin(this.swimCycle * 0.5) * 0.15; // Đầu gật gù theo nhịp bơi
+                    let tailCurl = Math.sin(this.swimCycle * 0.3) * 0.15; // Đuôi co giãn nhẹ
+
+                    // Vây lưng (Bán trong suốt, uốn lượn)
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+                    ctx.beginPath(); 
+                    ctx.moveTo(-6, -5); 
+                    ctx.quadraticCurveTo(-15 + flutter, 0, -18 + flutter, 2); 
+                    ctx.quadraticCurveTo(-12, 6, -5, 8); 
+                    ctx.fill();
+
+                    // Thân chính (Đường cong chữ S mềm mại hơn)
+                    ctx.fillStyle = grad;
+                    ctx.beginPath();
+                    ctx.moveTo(8, -12); // Gốc cổ
+                    ctx.bezierCurveTo(-5, -8, 12, 10, 0, 18); // Bụng phình
+                    ctx.bezierCurveTo(-12, 18, -12, 0, -5, -10); // Lưng cong
+                    ctx.fill();
+
+                    // Gân lưng (Tạo độ gai góc đặc trưng của cá ngựa)
+                    ctx.strokeStyle = 'rgba(0, 0, 0, 0.15)';
+                    ctx.lineWidth = 1;
+                    for(let i= -8; i < 15; i+=4) {
+                        ctx.beginPath(); ctx.moveTo(-5, i); ctx.lineTo(i < 5 ? 5 : 2, i+2); ctx.stroke();
+                    }
+
+                    // Đầu và Vòi (Tách ra để gật gù)
+                    ctx.save();
+                    ctx.translate(5, -12);
+                    ctx.rotate(headBob);
+                    // Sọ & Vương miện
+                    ctx.beginPath(); ctx.arc(4, -3, 6, 0, Math.PI*2); ctx.fill(); 
+                    ctx.fillStyle = color2;
+                    ctx.beginPath(); ctx.moveTo(4, -9); ctx.lineTo(2, -12); ctx.lineTo(6, -11); ctx.fill();
+                    ctx.fillStyle = grad;
+                    // Vòi ống chi tiết hơn
+                    ctx.beginPath(); ctx.moveTo(8, -6); ctx.quadraticCurveTo(15, -6, 18, -4); ctx.lineTo(18, -1); ctx.quadraticCurveTo(12, 0, 6, 2); ctx.fill(); 
+                    // Mắt biểu cảm
+                    ctx.fillStyle = "white"; ctx.beginPath(); ctx.arc(6, -4, 2.5, 0, Math.PI * 2); ctx.fill(); 
+                    ctx.fillStyle = "black"; ctx.beginPath(); ctx.arc(7, -4, 1.2, 0, Math.PI * 2); ctx.fill();
+                    ctx.fillStyle = "white"; ctx.beginPath(); ctx.arc(7.5, -4.5, 0.5, 0, Math.PI*2); ctx.fill();
+                    ctx.restore();
+
+                    // Đuôi cuộn xoắn ốc (Có nhịp điệu co giãn)
+                    ctx.save();
+                    ctx.translate(0, 18);
+                    ctx.rotate(tailCurl);
+                    ctx.strokeStyle = color2; ctx.lineWidth = 3; ctx.lineCap = "round";
+                    ctx.beginPath(); ctx.moveTo(0, 0); 
+                    ctx.bezierCurveTo(2, 10, -15, 15, -15, 5); 
+                    ctx.arc(-10, 5, 5, Math.PI, 0); 
+                    ctx.stroke();
+                    ctx.restore();
+
+                }else if (shape === "shark") {
+                    // 1. Chuyển động Đuôi (Classic quạt dứt khoát)
+                    let tailWag = Math.sin(this.swimCycle * 1.5) * 0.3;
+                    ctx.save(); ctx.translate(-25, 0); ctx.rotate(tailWag); ctx.beginPath();
+                    ctx.moveTo(0, 0); ctx.quadraticCurveTo(-15, -20, -32, -22); // Thùy trên to
+                    ctx.quadraticCurveTo(-22, 0, -32, 18); // Thùy dưới nhỏ
+                    ctx.quadraticCurveTo(-15, 18, 0, 0); ctx.fillStyle = color2; ctx.fill(); ctx.restore();
+
+                    // 2. Thân hình khí động học & Cơ bắp (bezierCurveTo)
+                    ctx.fillStyle = grad; 
+                    ctx.beginPath(); 
+                    ctx.moveTo(35, -5); // Mũi cá mập nhọn
+                    ctx.bezierCurveTo(20, -20, -25, -20, -35, -5); // Lưng
+                    ctx.bezierCurveTo(-25, 15, 25, 25, 35, -5); // Bụng phình nhẹ
+                    ctx.fill();
+
+                    // 3. Mắt Cá Mập dữ dằn (Lạnh lùng, đồng tử nhỏ)
+                    ctx.beginPath(); ctx.arc(22, -6, 4, 0, Math.PI * 2); ctx.fillStyle = "white"; ctx.fill();
+                    ctx.beginPath(); ctx.arc(23, -6, 1.8, 0, Math.PI * 2); ctx.fillStyle = "#111111"; ctx.fill(); // Đồng tử đen nhỏ
+
+                    // 4. Vây Lưng (Classic Shark Fin - Dáng tam giác ngược)
+                    ctx.beginPath(); ctx.moveTo(0, -14); ctx.quadraticCurveTo(-5, -30, -20, -18); ctx.fillStyle = color2; ctx.fill();
+                    
+                    // 5. Khe Mang (3 sọc nhỏ chân thực)
+                    ctx.strokeStyle = 'rgba(0,0,0,0.2)'; ctx.lineWidth = 1;
+                    ctx.beginPath(); ctx.moveTo(12, -2); ctx.lineTo(12, 6); ctx.stroke();
+                    ctx.beginPath(); ctx.moveTo(15, -1); ctx.lineTo(15, 5); ctx.stroke();
+                    ctx.beginPath(); ctx.moveTo(18, 0); ctx.lineTo(18, 4); ctx.stroke();
+
+                    // ==========================================
+                    // 💥 CHỈNH SỬA CHÍNH: BỘ HÀM VÀ ANIMATION ĐỚP MỒI
+                    // ==========================================
+                    let mouthPulse = Math.abs(Math.sin(Date.now() * 0.003)) * 10;
+                    ctx.shadowBlur = 10 + mouthPulse; ctx.shadowColor = "#800000"; 
+
+                    // Tính độ trễ của hàm dưới (Há to dứt khoát rồi khép lại)
+                    let jawDrop = (this.biteTimer && this.biteTimer > 0) ? Math.sin((this.biteTimer/25)*Math.PI) * 12 : 0;
+
+                    // Nếu há miệng, vẽ vòm họng đỏ sẫm lộ ra bên trong
+                    if (jawDrop > 0) {
+                        ctx.fillStyle = "#4b0000";
+                        ctx.beginPath(); ctx.moveTo(15, 6); 
+                        ctx.quadraticCurveTo(25, 6 + jawDrop*1.5, 32, 4); ctx.fill();
+                    }
+                    
+                    // Vẽ răng (Lặp vẽ nhiều tam giác nhỏ nhọn hoắt)
+                    for (let i = 15; i < 30; i += 3) {
+                        // 1. Hàng Răng Hàm Trên (Cố định)
+                        ctx.fillStyle = "#FFFFFF"; 
+                        ctx.beginPath(); ctx.moveTo(i, 4); ctx.lineTo(i + 1.5, 9); ctx.lineTo(i + 3, 4); ctx.fill();
+                        
+                        // 2. Hàng Răng Hàm Dưới (Tụt xuống khi há miệng)
+                        ctx.beginPath(); ctx.moveTo(i, 11 + jawDrop); ctx.lineTo(i + 1.5, 6 + jawDrop); ctx.lineTo(i + 3, 11 + jawDrop); ctx.fill();
+                    }
+                    
+                    ctx.shadowBlur = 0; // Reset bóng
+                    // ==========================================
+    
+                }
+                
+                else {
+                    // 🐟 CÁ THƯỜNG (Dáng Streamlined - Chuyển động uốn éo mượt mà)
+                    let tailWag = Math.sin(this.swimCycle * 1.5);
+                    let bodyFlex = Math.sin(this.swimCycle * 1.5 - Math.PI/4) * 2; // Thân uốn éo bơi theo nhịp đuôi
+                    let finPuddle = Math.sin(this.swimCycle * 2) * 2; // Vây ngực quạt nước
+
+                    // Vây Lưng & Vây Bụng (Gắn liền với thân uốn éo)
+                    ctx.fillStyle = color2; 
+                    ctx.beginPath(); ctx.moveTo(5, -8 + bodyFlex*0.5); ctx.quadraticCurveTo(-5, -22, -15, -4 - bodyFlex); ctx.fill(); // Lưng
+                    ctx.beginPath(); ctx.moveTo(5, 8 + bodyFlex*0.5); ctx.quadraticCurveTo(-5, 20, -12, 4 - bodyFlex); ctx.fill(); // Bụng
+
+                    // Đuôi (Chẻ đôi xẻ quạt, uốn lượn theo tailWag)
+                    ctx.save(); 
+                    ctx.translate(-12, -bodyFlex); // Nối khớp vào đuôi thân cá
+                    ctx.rotate(tailWag * 0.3); 
+                    ctx.beginPath(); 
+                    ctx.moveTo(0, 0); 
+                    ctx.quadraticCurveTo(-10, -18, -25, -20); // Nhánh trên
+                    ctx.quadraticCurveTo(-15, 0, -25, 20); // Nhánh dưới
+                    ctx.quadraticCurveTo(-10, 18, 0, 0); 
+                    ctx.fillStyle = color2; ctx.fill(); 
+                    ctx.restore();
+
+                    // Thân hình giọt nước (Uốn éo phần đuôi tạo cảm giác bơi tiến tới)
+                    ctx.beginPath(); 
+                    ctx.moveTo(24, 0); // Mũi cá
+                    ctx.quadraticCurveTo(10, -18, -15, -6 - bodyFlex); // Lưng
+                    ctx.quadraticCurveTo(-15, 6 - bodyFlex, 10, 18); // Bụng
+                    ctx.fillStyle = grad; ctx.fill();
+
+                    // Vây ngực (Hoạt ảnh quạt nước, bán trong suốt)
+                    ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
+                    ctx.save();
+                    ctx.translate(5, 2);
+                    ctx.rotate(finPuddle * 0.2);
+                    ctx.beginPath(); ctx.ellipse(0, 0, 7, 3, Math.PI/6, 0, Math.PI*2); ctx.fill();
+                    ctx.restore();
+
+                    // Mắt cá to tròn hơn
+                    ctx.beginPath(); ctx.arc(14, -4, 3.5, 0, Math.PI * 2); ctx.fillStyle = "white"; ctx.fill();
+                    ctx.beginPath(); ctx.arc(15, -4, 1.8, 0, Math.PI * 2); ctx.fillStyle = "black"; ctx.fill(); 
+                    // Đốm sáng nhỏ xíu trong mắt (Catchlight)
+                    ctx.fillStyle = "white"; ctx.beginPath(); ctx.arc(15.5, -4.5, 0.8, 0, Math.PI*2); ctx.fill();
+                }
+                // ... (Phần vẽ đuôi, mắt cá, mai rùa... giữ nguyên) ...
+
+                // ✨ XỬ LÝ ĐÈN LỒNG MỌC TRÊN ĐẦU CÁ (ANGLERFISH)
+                if (glowType === "head") {
+                    let glowPulse = 10 + Math.sin(this.swimCycle * 2) * 8; // Ánh sáng chớp tắt liên tục
+                    
+                    // 1. Vẽ cần câu uốn cong ra trước mặt cá
+                    ctx.beginPath();
+                    ctx.moveTo(10, -10); // Bắt đầu từ trán
+                    ctx.quadraticCurveTo(20, -25, 35, -5); // Cong vút ra trước mõm cá
+                    ctx.strokeStyle = color2; ctx.lineWidth = 1.5; ctx.stroke();
+                    
+                    // 2. Vẽ bóng đèn LED ở đầu cần câu
+                    ctx.beginPath();
+                    ctx.arc(35, -5, 3, 0, Math.PI * 2);
+                    ctx.fillStyle = glowColor;
+                    
+                    // Kích hoạt Glow cực mạnh cho bóng đèn
+                    ctx.shadowBlur = glowPulse + 10;
+                    ctx.shadowColor = glowColor;
+                    ctx.fill();
+                    
+                    // Đốm sáng lõi trắng cho đèn
+                    ctx.shadowBlur = 0;
+                    ctx.fillStyle = "white"; ctx.beginPath(); ctx.arc(35, -5, 1.5, 0, Math.PI * 2); ctx.fill();
+                }
+
+                ctx.restore(); // <-- Đây là dòng ctx.restore() cũ đã có sẵn// ... (Phần vẽ đuôi, mắt cá, mai rùa... giữ nguyên) ...
+
+                // ✨ XỬ LÝ ĐÈN LỒNG MỌC TRÊN ĐẦU CÁ (ANGLERFISH)
+                if (glowType === "head") {
+                    // --- CẬP NHẬT: TÍNH TOÁN QUẦNG SÁNG LAN TỎA MẠNH HƠN ---
+                    // Nền xung 30 (tăng từ 10) + Biên độ dao động 100 (tăng từ 8)
+                    // Kết quả glowPulse sẽ dao động trong khoảng từ -70 đến 130
+                    let glowPulse = 30 + Math.sin(this.swimCycle * 2) * 100;
+                    
+                    // 1. Vẽ cần câu uốn cong ra trước mặt cá (giữ nguyên)
+                    ctx.beginPath();
+                    ctx.moveTo(10, -10); // Bắt đầu từ trán
+                    ctx.quadraticCurveTo(20, -25, 35, -5); // Cong vút ra trước mõm cá
+                    ctx.strokeStyle = color2; ctx.lineWidth = 1.5; ctx.stroke();
+                    
+                    // 2. Vẽ bóng đèn LED ở đầu cần câu
+                    ctx.beginPath();
+                    ctx.arc(35, -5, 3, 0, Math.PI * 2);
+                    ctx.fillStyle = glowColor;
+                    
+                    // --- CẬP NHẬT: KÍCH HOẠT QUẦNG SÁNG LAN TỎA ---
+                    // shadowBlur sẽ dao động trong khoảng từ 300 - 70 = 230 đến 300 + 130 = 430
+                    // Con số 300 là nền cơ bản, đảm bảo ánh sáng luôn tỏa rộng
+                    // glowPulse tạo hiệu ứng phập phồng mạnh
+                    // Math.max(150, ...) đảm bảo ánh sáng không bao giờ biến mất hoàn toàn
+                    ctx.shadowBlur = Math.max(150, 300 + glowPulse);
+                    
+                    ctx.shadowColor = glowColor;
+                    ctx.fill();
+                    
+                    // Đốm sáng lõi trắng cho đèn (giữ nguyên)
+                    ctx.shadowBlur = 0;
+                    ctx.fillStyle = "white"; ctx.beginPath(); ctx.arc(35, -5, 1.5, 0, Math.PI * 2); ctx.fill();
+                }
+
+
                 ctx.restore();
 
-                ctx.font = "bold 10px Quicksand"; ctx.fillStyle = "rgba(255,255,255,0.8)"; ctx.textAlign = "center";
-                ctx.fillText(`Lv.${this.level}`, this.x, this.y - 30 * scale);
+                // Cảnh báo khi đói sắp chết (Icon nhấp nháy đỏ)
+                if (this.hunger < 20) {
+                    ctx.font = "14px Quicksand"; ctx.textAlign = "center"; 
+                    ctx.globalAlpha = Math.abs(Math.sin(Date.now() * 0.005)); // Nhấp nháy
+                    ctx.fillText(`⚠️ Mồi!`, this.x, this.y - 45 * scale);
+                    ctx.globalAlpha = 1;
+                }
+
+            // [MỚI] HIỂN THỊ TRẠNG THÁI TRÊN ĐẦU CÁ
+                ctx.font = "bold 10px Quicksand"; ctx.textAlign = "center";
+                
+                if (this.hunger < 20) {
+                    ctx.fillStyle = "#ff4757";
+                    ctx.fillText("HẾT ĐÓI!", 0, -40); // Hiển thị "Hết đói" khi sắp chết đói
+                } else if (this.fleeTimer > 0) {
+                    ctx.fillStyle = "#ff0000";
+                    ctx.fillText("ÚI!!!", 0, -45); // Hiển thị khi bị cắn
+                } else {
+                    ctx.fillStyle = "rgba(255,255,255,0.8)";
+                    ctx.fillText(this.customName ? this.customName : `Lv.${this.level}`, 0, -30);
+                }
             }
         }
 
@@ -812,11 +1042,9 @@
 
         // --- 5. RENDER MÔI TRƯỜNG & GAME LOOP ---
         function drawEnvironment() {
-            let now = new Date();
-            currentHour = now.getHours();
-            let mins = now.getMinutes().toString().padStart(2, '0');
+            let now = new Date(); currentHour = now.getHours(); let mins = now.getMinutes().toString().padStart(2, '0');
             document.getElementById('clock-ui').innerText = `${currentHour}:${mins}`;
-
+            
             isNight = (currentHour >= 19 || currentHour < 6);
             let isSunset = (currentHour >= 17 && currentHour < 19);
 
@@ -830,12 +1058,12 @@
             }
 
             const time = Date.now() * 0.0005;
-
+            
             corals.forEach(c => {
                 ctx.fillStyle = c.color; ctx.beginPath(); ctx.moveTo(c.x, c.y);
                 for (let i = 0; i < 7; i++) {
-                    let a = (i / 7) * Math.PI - Math.PI / 2; let d = c.size + Math.sin(i * 2) * 10;
-                    ctx.lineTo(c.x + Math.cos(a) * d, c.y + Math.sin(a) * d); ctx.lineTo(c.x + Math.cos(a) * (c.size * 0.4), c.y + 10);
+                    let a = (i/7)*Math.PI - Math.PI/2; let d = c.size + Math.sin(i*2)*10;
+                    ctx.lineTo(c.x + Math.cos(a)*d, c.y + Math.sin(a)*d); ctx.lineTo(c.x + Math.cos(a)*(c.size*0.4), c.y+10);
                 }
                 ctx.fill();
             });
@@ -844,37 +1072,165 @@
             seaweeds.forEach(s => {
                 ctx.lineWidth = 12; ctx.strokeStyle = s.color; ctx.beginPath(); ctx.moveTo(s.x, s.y);
                 let sway = Math.sin(time + s.swayOffset) * 30;
-                ctx.quadraticCurveTo(s.x + sway / 2, s.y - s.height / 2, s.x + sway, s.y - s.height); ctx.stroke();
+                ctx.quadraticCurveTo(s.x + sway/2, s.y - s.height/2, s.x + sway, s.y - s.height); ctx.stroke();
             });
 
             ctx.save(); ctx.globalCompositeOperation = "overlay";
             const overlayGrad = ctx.createLinearGradient(0, 0, width, height);
-            if (isNight) {
-                overlayGrad.addColorStop(0, `rgba(0, 0, 50, 0.4)`); overlayGrad.addColorStop(1, "rgba(0,0,0,0.8)");
-            } else if (isSunset) {
-                overlayGrad.addColorStop(0, `rgba(255, 100, 100, 0.2)`); overlayGrad.addColorStop(1, "rgba(0,0,0,0.2)");
-            } else {
-                overlayGrad.addColorStop(0, `rgba(0, 243, 255, ${0.05 + Math.sin(time) * 0.02})`); overlayGrad.addColorStop(1, "rgba(0,0,0,0)");
-            }
+            if (isNight) { overlayGrad.addColorStop(0, `rgba(0, 0, 50, 0.4)`); overlayGrad.addColorStop(1, "rgba(0,0,0,0.8)"); } 
+            else if (isSunset) { overlayGrad.addColorStop(0, `rgba(255, 100, 100, 0.2)`); overlayGrad.addColorStop(1, "rgba(0,0,0,0.2)"); } 
+            else { overlayGrad.addColorStop(0, `rgba(0, 243, 255, ${0.05 + Math.sin(time) * 0.02})`); overlayGrad.addColorStop(1, "rgba(0,0,0,0)"); }
             ctx.fillStyle = overlayGrad; ctx.fillRect(0, 0, width, height); ctx.restore();
 
-            // 🌟 LOGIC SPAWN BONG BÓNG & SỨA
             if (isNight) {
-                if (Math.random() < 0.15) {
+                if (Math.random() < 0.15) { 
                     let planktonColor = Math.random() > 0.5 ? "#00ffff" : "#ff00ea";
-                    planktons.push(new Plankton(Math.random() * width, Math.random() * height + 100, planktonColor));
+                    planktons.push(new Plankton(Math.random() * width, Math.random() * height + 100, planktonColor)); 
                 }
             } else {
                 if (Math.random() < 0.1) particles.push(new Particle(Math.random() * width, height + 10, "rgba(255,255,255,0.3)", true));
             }
         }
 
+        // Cập nhật bảng thông tin Tooltip
+        // Cập nhật bảng thông tin Tooltip khi bơi
+        function updateTooltip() {
+            // Nếu đang rà chuột ở Sidebar thì không cho Canvas can thiệp
+            if (isHoveringList) return; 
+
+            const tooltip = document.getElementById('fish-tooltip');
+            let hoveredFish = null;
+
+            for (let i = gameState.fishes.length - 1; i >= 0; i--) {
+                let fish = gameState.fishes[i];
+                let hitbox = 40 * fish.baseScale * (1 + fish.level * 0.05); 
+                if (Math.hypot(mouseX - fish.x, mouseY - fish.y) < hitbox) {
+                    hoveredFish = fish; break;
+                }
+            }
+
+            if (hoveredFish) {
+                let sizeCm = (hoveredFish.baseScale * (1 + hoveredFish.level * 0.05) * 25).toFixed(1);
+                let rarityColor = hoveredFish.data.rarity === "Huyền thoại" ? "var(--neon-pink)" : hoveredFish.data.rarity === "Hiếm" ? "var(--neon-blue)" : "white";
+                let hungerColor = hoveredFish.hunger > 60 ? "#32CD32" : hoveredFish.hunger > 25 ? "var(--gold)" : "#ff4757";
+                let hungerStatus = hoveredFish.hunger > 60 ? "No Nê" : hoveredFish.hunger > 25 ? "Hơi đói" : "Sắp chết đói!";
+                
+                // Lấy giải thích kỹ năng
+                let skillDesc = SKILL_DESC[hoveredFish.skill] || "";
+
+                tooltip.innerHTML = `
+                    <div class="tt-title" style="color: ${rarityColor};">${hoveredFish.data.type}</div>
+                    <div class="tt-row"><span>Độ hiếm:</span> <b>${hoveredFish.data.rarity}</b></div>
+                    <div class="tt-row"><span>Cấp độ:</span> <b>Lv.${hoveredFish.level}</b></div>
+                    <div class="tt-row"><span>Kích cỡ:</span> <b>${sizeCm} cm</b></div>
+                    <div class="tt-row"><span>Kỹ năng:</span> <b style="color: var(--gold);">${hoveredFish.skill}</b></div>
+                    <div class="tt-skill-desc" style="font-size: 11px; color: rgba(255,255,255,0.7); text-align: right; font-style: italic; margin-bottom: 8px;">${skillDesc}</div>
+                    <div class="tt-row" style="margin-top: 10px; color: ${hungerColor};"><span>Trạng thái:</span> <b>${hungerStatus}</b></div>
+                    <div class="tt-bar-bg"><div class="tt-bar-fill" style="width: ${hoveredFish.hunger}%; background: ${hungerColor};"></div></div>
+                `;
+                tooltip.style.left = (mouseX + 20) + 'px';
+                tooltip.style.top = (mouseY + 20) + 'px';
+                tooltip.style.display = 'block';
+            } else {
+                tooltip.style.display = 'none';
+            }
+        }
+
         function animate() {
             drawEnvironment();
             foods.forEach((f, i) => { f.update(); f.draw(); if (f.y > height + 20) foods.splice(i, 1); });
-            gameState.fishes.forEach(fish => { fish.update(); fish.draw(); });
+            
+            for (let i = gameState.fishes.length - 1; i >= 0; i--) { 
+                let fish = gameState.fishes[i]; 
+                
+                if (fish.isDead) {
+                    createExplosion(fish.x, fish.y, "#ff4757", 50); 
+                    let tag = document.createElement('div'); 
+                    tag.className = 'floating-price'; 
+                    
+                    // [MỚI] PHÂN LOẠI NGUYÊN NHÂN CHẾT
+                    if (fish.hunger <= 0) {
+                        tag.innerText = '💀 HẾT ĐÓI RỒI...';
+                        tag.style.color = '#ffa502'; // Màu cam đói khát
+                    } else {
+                        tag.innerText = '💀 BỊ THỊT RỒI!';
+                        tag.style.color = '#ff4757'; // Màu đỏ máu
+                    }
 
-            // Xóa rác mảng Particles & Planktons
+                    tag.style.left = (fish.x - 40) + 'px'; 
+                    tag.style.top = (fish.y - 40) + 'px';
+                    document.body.appendChild(tag); 
+                    setTimeout(() => tag.remove(), 2500);
+
+                    gameState.fishes.splice(i, 1); 
+                    if (trackedFishId === fish.id) trackedFishId = null;
+                    updateUI(); saveGame();
+                }if (fish.isDead) {
+                    createExplosion(fish.x, fish.y, "#ff4757", 50); 
+                    let tag = document.createElement('div'); 
+                    tag.className = 'floating-price'; 
+                    
+                    // [MỚI] PHÂN LOẠI NGUYÊN NHÂN CHẾT
+                    if (fish.hunger <= 0) {
+                        tag.innerText = '💀 HẾT ĐÓI RỒI...';
+                        tag.style.color = '#ffa502'; // Màu cam đói khát
+                    } else {
+                        tag.innerText = '💀 BỊ THỊT RỒI!';
+                        tag.style.color = '#ff4757'; // Màu đỏ máu
+                    }
+
+                    tag.style.left = (fish.x - 40) + 'px'; 
+                    tag.style.top = (fish.y - 40) + 'px';
+                    document.body.appendChild(tag); 
+                    setTimeout(() => tag.remove(), 2500);
+
+                    gameState.fishes.splice(i, 1); 
+                    if (trackedFishId === fish.id) trackedFishId = null;
+                    updateUI(); saveGame();
+                } else {
+                    fish.update(); fish.draw(); 
+                }
+            }
+
+            // --- BẮT ĐẦU: VẼ MŨI TÊN TRACKING ---
+            if (trackedFishId !== null) {
+                let trackedFish = gameState.fishes.find(f => f.id === trackedFishId);
+                if (trackedFish) {
+                    let bounce = Math.sin(Date.now() * 0.005) * 5; // Hiệu ứng nảy lên xuống
+                    let arrowY = trackedFish.y - 50 * trackedFish.baseScale * (1 + trackedFish.level * 0.05) - bounce;
+
+                    ctx.save();
+                    ctx.translate(trackedFish.x, arrowY);
+                    
+                    // Quầng sáng mờ quanh mũi tên
+                    ctx.shadowBlur = 15;
+                    ctx.shadowColor = "var(--neon-pink)";
+                    ctx.fillStyle = "#ff00ea";
+                    
+                    // Vẽ hình mũi tên tam giác chĩa xuống
+                    ctx.beginPath();
+                    ctx.moveTo(0, 0); // Đỉnh mũi tên (chỉ xuống cá)
+                    ctx.lineTo(-8, -12); // Góc trên trái
+                    ctx.lineTo(8, -12); // Góc trên phải
+                    ctx.closePath();
+                    ctx.fill();
+
+                    // Chữ "HERE" nhấp nháy trên mũi tên
+                    ctx.globalAlpha = Math.abs(Math.sin(Date.now() * 0.002)) * 0.5 + 0.5; // Chớp mờ
+                    ctx.font = "bold 12px Outfit";
+                    ctx.fillStyle = "white";
+                    ctx.textAlign = "center";
+                    ctx.fillText("ĐÂY NÈ", 0, -18);
+                    
+                    ctx.restore();
+                } else {
+                    trackedFishId = null; // Tránh lỗi nếu bán nhầm con đang theo dõi
+                }
+            }
+            // --- KẾT THÚC: VẼ MŨI TÊN TRACKING ---
+            
+            updateTooltip();
+
             for (let i = particles.length - 1; i >= 0; i--) { let p = particles[i]; p.update(); p.draw(); if (p.life <= 0) particles.splice(i, 1); }
             for (let i = planktons.length - 1; i >= 0; i--) { let p = planktons[i]; p.update(); p.draw(); if (p.life <= 0) planktons.splice(i, 1); }
 
@@ -884,15 +1240,18 @@
         // --- 6. TƯƠNG TÁC & SỰ KIỆN ---
         window.addEventListener('mousedown', (e) => {
             if (e.target.tagName !== 'BUTTON' && !e.target.closest('.glass-panel') && !e.target.closest('.modal')) {
-                if (e.button === 2) {
+                if (e.button === 2) { 
                     createExplosion(e.clientX, e.clientY, "rgba(0, 243, 255, 0.8)", 40);
                     gameState.fishes.forEach(fish => { if (Math.hypot(fish.x - e.clientX, fish.y - e.clientY) < 300) { fish.targetAngle = Math.atan2(fish.y - e.clientY, fish.x - e.clientX); fish.vx *= 3; fish.vy *= 3; } });
-                } else if (e.button === 0) {
+                } else if(e.button === 0) { 
                     foods.push(new Food(e.clientX, e.clientY)); createExplosion(e.clientX, e.clientY, "rgba(255,255,255,0.5)", 5);
                 }
             }
         });
-        window.addEventListener('mousemove', (e) => { if (Math.random() < 0.3) particles.push(new Particle(e.clientX, e.clientY, "rgba(0, 243, 255, 0.6)", true)); });
+        window.addEventListener('mousemove', (e) => { 
+            mouseX = e.clientX; mouseY = e.clientY; // Cập nhật chuột liên tục cho Tooltip
+            if (Math.random() < 0.2) particles.push(new Particle(e.clientX, e.clientY, "rgba(0, 243, 255, 0.6)", true)); 
+        });
         window.addEventListener('contextmenu', e => e.preventDefault());
         window.addEventListener('keydown', (e) => {
             if (e.code === 'Space' && gameState.coins >= 50) {
@@ -906,11 +1265,8 @@
             }
         });
 
-        // --- 7. UI & SHOP LOGIC ---
-        function toggleSidebar(show) {
-            document.getElementById('sidebar').classList.toggle('active', show);
-            document.getElementById('btn-slide-toggle').classList.toggle('hidden', show);
-        }
+        // --- 7. UI & LƯU GAME ---
+        function toggleSidebar(show) { document.getElementById('sidebar').classList.toggle('active', show); document.getElementById('btn-slide-toggle').classList.toggle('hidden', show); }
         function openModal(id) { document.getElementById(id).classList.add('active'); }
         function closeModal(id) { document.getElementById(id).classList.remove('active'); }
 
@@ -918,20 +1274,19 @@
             if (gameState.coins < 200) return alert("Hết Kim Cương rồi fen ơi!");
             if (gameState.fishes.length >= 30) return alert("Hồ cá đã đầy (Max 30)!");
             gameState.coins -= 200;
-            const r = Math.random() * 100; let pool = r < 5 ? FISH_DATA.filter(f => f.rarity === "Huyền thoại") : r < 30 ? FISH_DATA.filter(f => f.rarity === "Hiếm") : FISH_DATA.filter(f => f.rarity === "Thường");
+            const r = Math.random() * 100; let pool = r < 5 ? FISH_DATA.filter(f=>f.rarity==="Huyền thoại") : r < 30 ? FISH_DATA.filter(f=>f.rarity==="Hiếm") : FISH_DATA.filter(f=>f.rarity==="Thường");
             const tmpl = pool[Math.floor(Math.random() * pool.length)];
-            const fish = new Fish(tmpl); fish.x = width / 2; fish.y = height / 2; gameState.fishes.push(fish);
-            createExplosion(width / 2, height / 2, tmpl.colors[0], 100);
+            const fish = new Fish(tmpl); fish.x = width/2; fish.y = height/2; gameState.fishes.push(fish);
+            createExplosion(width/2, height/2, tmpl.colors[0], 100);
             document.getElementById('gacha-name').innerText = tmpl.type; document.getElementById('gacha-rarity').innerText = tmpl.rarity;
-            document.getElementById('gacha-rarity').style.color = tmpl.rarity === "Huyền thoại" ? "var(--neon-pink)" : tmpl.rarity === "Hiếm" ? "var(--neon-blue)" : "white";
+            document.getElementById('gacha-rarity').style.color = tmpl.rarity==="Huyền thoại"?"var(--neon-pink)":tmpl.rarity==="Hiếm"?"var(--neon-blue)":"white";
             openModal('gacha-overlay'); saveGame(); updateUI();
         }
 
         function sellFish(id) {
             const idx = gameState.fishes.findIndex(f => f.id === id); if (idx === -1) return;
             const fish = gameState.fishes[idx];
-            let price = (fish.data.rarity === "Huyền thoại" ? 500 : fish.data.rarity === "Hiếm" ? 200 : 50) + fish.level * (fish.data.rarity === "Huyền thoại" ? 150 : fish.data.rarity === "Hiếm" ? 50 : 20);
-
+            let price = (fish.data.rarity==="Huyền thoại"?500:fish.data.rarity==="Hiếm"?200:50) + fish.level*(fish.data.rarity==="Huyền thoại"?150:fish.data.rarity==="Hiếm"?50:20);
             openModal('sell-overlay'); document.getElementById('sell-text').innerText = `Đang định giá ${fish.data.type}...`;
             let bar = document.getElementById('sell-loading-bar'); bar.style.transition = 'none'; bar.style.width = '0%';
             setTimeout(() => { bar.style.transition = 'width 1.5s linear'; bar.style.width = '100%'; }, 50);
@@ -939,23 +1294,37 @@
                 closeModal('sell-overlay'); gameState.coins += price; gameState.fishes.splice(idx, 1);
                 createExplosion(fish.x, fish.y, "#FFD700", 40);
                 let tag = document.createElement('div'); tag.className = 'floating-price'; tag.innerText = `+${price} 💎`;
-                tag.style.left = (fish.x - 40) + 'px'; tag.style.top = (fish.y - 40) + 'px'; document.body.appendChild(tag); setTimeout(() => tag.remove(), 2500);
+                tag.style.left = (fish.x-40)+'px'; tag.style.top = (fish.y-40)+'px'; document.body.appendChild(tag); setTimeout(()=>tag.remove(), 2500);
                 updateUI(); saveGame();
             }, 1600);
         }
-
+        // HÀM ĐỔI TÊN CÁ
+        function renameFish(id) {
+            let fish = gameState.fishes.find(f => f.id === id);
+            if(!fish) return;
+            
+            // Hiện bảng nhập tên
+            let newName = prompt(`Bể bơi Abyss & Light\nĐặt tên cúng cơm cho [${fish.data.type}]:\n(Để trống nếu muốn dùng tên gốc)`, fish.customName || "");
+            
+            if (newName !== null) {
+                // Xóa khoảng trắng thừa và giới hạn 15 ký tự cho đỡ tràn giao diện
+                fish.customName = newName.trim().substring(0, 15); 
+                updateUI();
+                saveGame();
+            }
+        }
         function buyItem(type, price) {
             if (gameState.coins < price) return alert("Không đủ Kim Cương!");
             if (type === 'rain') {
                 gameState.coins -= price; closeModal('shop-overlay');
-                for (let i = 0; i < 20; i++) setTimeout(() => { let rx = Math.random() * (width - 100) + 50; foods.push(new Food(rx, -10)); createExplosion(rx, 10, "#FFD700", 5); }, i * 150);
+                for(let i=0; i<20; i++) setTimeout(() => { let rx = Math.random()*(width-100)+50; foods.push(new Food(rx, -10)); createExplosion(rx, 10, "#FFD700", 5); }, i*150);
             } else if (type === 'levelUp') {
-                if (gameState.fishes.length === 0) return alert("Hồ chưa có cá!"); gameState.coins -= price; closeModal('shop-overlay');
+                if(gameState.fishes.length===0) return alert("Hồ chưa có cá!"); gameState.coins -= price; closeModal('shop-overlay');
                 gameState.fishes.forEach(fish => { fish.level++; createExplosion(fish.x, fish.y, "#00f3ff", 30); });
             } else if (type === 'evolve') {
-                let pool = gameState.fishes.filter(f => f.data.rarity !== "Huyền thoại"); if (pool.length === 0) return alert("Cá đã Max Huyền Thoại!");
+                let pool = gameState.fishes.filter(f=>f.data.rarity!=="Huyền thoại"); if(pool.length===0) return alert("Cá đã Max Huyền Thoại!");
                 gameState.coins -= price; closeModal('shop-overlay');
-                let t = pool[Math.floor(Math.random() * pool.length)]; let newForm = FISH_DATA.filter(f => f.rarity === "Huyền thoại")[Math.floor(Math.random() * 3)];
+                let t = pool[Math.floor(Math.random()*pool.length)]; let newForm = FISH_DATA.filter(f=>f.rarity==="Huyền thoại")[Math.floor(Math.random()*3)];
                 t.data = newForm; t.baseScale = newForm.scale; createExplosion(t.x, t.y, "var(--neon-pink)", 100);
             }
             updateUI(); saveGame();
@@ -963,38 +1332,113 @@
 
         function claimBdayGift() {
             if (gameState.fishes.length >= 30) return alert("Bán bớt cá để nhận quà nhé!"); closeModal('bday-overlay');
-            let fish = new Fish(FISH_DATA.find(f => f.type === "Cá Sinh Nhật 🎂")); fish.x = width / 2; fish.y = height / 2; fish.level = 10; gameState.fishes.push(fish);
-            for (let i = 0; i < 8; i++) setTimeout(() => { createExplosion(width / 2 + (Math.random() * 200 - 100), height / 2 + (Math.random() * 200 - 100), "#FF1493", 50); }, i * 250);
+            let fish = new Fish(FISH_DATA.find(f=>f.type==="Cá Sinh Nhật 🎂")); fish.x = width/2; fish.y = height/2; fish.level = 10; gameState.fishes.push(fish);
+            for(let i=0;i<8;i++) setTimeout(() => { createExplosion(width/2+(Math.random()*200-100), height/2+(Math.random()*200-100), "#FF1493", 50); }, i*250);
             updateUI(); saveGame();
         }
 
+        // HIỂN THỊ TOOLTIP KHI HOVER TRONG DANH SÁCH
+        function showListTooltip(e, id) {
+            isHoveringList = true;
+            const fish = gameState.fishes.find(f => f.id === id);
+            if (!fish) return;
+            
+            const tooltip = document.getElementById('fish-tooltip');
+            let sizeCm = (fish.baseScale * (1 + fish.level * 0.05) * 25).toFixed(1);
+            let rarityColor = fish.data.rarity === "Huyền thoại" ? "var(--neon-pink)" : fish.data.rarity === "Hiếm" ? "var(--neon-blue)" : "white";
+            let hungerColor = fish.hunger > 60 ? "#32CD32" : fish.hunger > 25 ? "var(--gold)" : "#ff4757";
+            let hungerStatus = fish.hunger > 60 ? "No Nê" : fish.hunger > 25 ? "Hơi đói" : "Sắp chết đói!";
+            let skillDesc = SKILL_DESC[fish.skill] || "";
+
+            tooltip.innerHTML = `
+                <div class="tt-title" style="color: ${rarityColor};">${fish.data.type}</div>
+                <div class="tt-row"><span>Độ hiếm:</span> <b>${fish.data.rarity}</b></div>
+                <div class="tt-row"><span>Cấp độ:</span> <b>Lv.${fish.level}</b></div>
+                <div class="tt-row"><span>Kích cỡ:</span> <b>${sizeCm} cm</b></div>
+                <div class="tt-row"><span>Kỹ năng:</span> <b style="color: var(--gold);">${fish.skill}</b></div>
+                <div class="tt-skill-desc" style="font-size: 11px; color: rgba(255,255,255,0.7); text-align: right; font-style: italic; margin-bottom: 8px;">${skillDesc}</div>
+                <div class="tt-row" style="margin-top: 10px; color: ${hungerColor};"><span>Trạng thái:</span> <b>${hungerStatus}</b></div>
+                <div class="tt-bar-bg"><div class="tt-bar-fill" style="width: ${fish.hunger}%; background: ${hungerColor};"></div></div>
+            `;
+            
+            // Canh lề sang trái để không bị tràn màn hình
+            tooltip.style.left = (e.clientX - 240) + 'px'; 
+            tooltip.style.top = (e.clientY + 10) + 'px';
+            tooltip.style.display = 'block';
+        }
+
+        function hideListTooltip() {
+            isHoveringList = false;
+            document.getElementById('fish-tooltip').style.display = 'none';
+        }
         function updateUI() {
             document.getElementById('coin-ui').innerText = gameState.coins + " 💎";
             document.getElementById('fish-count-ui').innerText = gameState.fishes.length;
-            document.getElementById('inventory-list').innerHTML = gameState.fishes.sort((a, b) => b.level - a.level).map(f => `
-                <div class="fish-item">
-                    <div><div style="font-family:'Outfit';font-weight:800;color:${f.data.colors[0]}">${f.data.type}</div><div style="font-size:11px;opacity:0.6">${f.data.rarity} - Lv.${f.level}</div></div>
-                    <button onclick="sellFish(${f.id})" style="padding:6px 15px; font-family:'Outfit'; font-size:12px; background:linear-gradient(45deg,#ff6b81,#ff4757); color:white; border:none; border-radius:20px; cursor:pointer;">BÁN</button>
-                </div>`).join('');
+            document.getElementById('inventory-list').innerHTML = gameState.fishes.sort((a,b)=>b.level-a.level).map(f => {
+                let displayName = f.customName ? `${f.customName}` : f.data.type;
+                let subName = f.customName ? `(${f.data.type})` : "";
+                
+                return `
+                <div class="fish-item" 
+                     onclick="trackedFishId = ${f.id}; hideListTooltip();" 
+                     onmousemove="showListTooltip(event, ${f.id})" 
+                     onmouseleave="hideListTooltip()">
+                    <div style="flex-grow: 1; max-width: 140px; cursor: pointer;">
+                        <div style="font-family:'Outfit';font-weight:800;color:${f.data.colors[0]}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${displayName}</div>
+                        <div style="font-size:11px;opacity:0.6">${f.data.rarity} - Lv.${f.level} ${subName}</div>
+                    </div>
+                    <div style="display: flex; gap: 5px;">
+                        <button onclick="event.stopPropagation(); renameFish(${f.id})" style="padding:6px 8px; font-size:12px; background:rgba(255,255,255,0.1); color:white; border:1px solid rgba(255,255,255,0.2); border-radius:10px; cursor:pointer;" title="Đổi tên">✏️</button>
+                        <button onclick="event.stopPropagation(); sellFish(${f.id})" style="padding:6px 12px; font-family:'Outfit'; font-size:12px; background:linear-gradient(45deg,#ff6b81,#ff4757); color:white; border:none; border-radius:10px; cursor:pointer;">BÁN</button>
+                    </div>
+                </div>`
+            }).join('');
         }
 
-        function saveGame() { localStorage.setItem('abyss_save', JSON.stringify({ coins: gameState.coins, lastId: gameState.lastId, fishes: gameState.fishes.map(f => ({ id: f.id, type: f.data.type, level: f.level, xp: f.xp, x: f.x, y: f.y })) })); }
+        // HÀM THẢ CÁ MẬP VÀO HỒ
+        function spawnShark() {
+            const SHARK_DATA = { type: "Cá Mập Sát Thủ", rarity: "Đặc biệt", shape: "shark", flockStyle: "independent", colors: ["#192A56", "#718093"], speed: 1.0, scale: 3.5, isPredator: true };
+            let shark = new Fish(SHARK_DATA);
+            shark.x = width / 2; 
+            shark.y = -50; // Thả từ trên trời rớt xuống
+            gameState.fishes.push(shark);
+            createExplosion(width/2, 50, "#ff4757", 50); // Bọt nước đỏ nổ lớn
+            updateUI(); saveGame();
+        }
+
+        // CẬP NHẬT HÀM LƯU GAME ĐỂ LƯU HP
+        function saveGame() { 
+            localStorage.setItem('abyss_save', JSON.stringify({ 
+                coins: gameState.coins, lastId: gameState.lastId, 
+                fishes: gameState.fishes.map(f => ({ 
+                    id: f.id, type: f.data.type, level: f.level, xp: f.xp, x: f.x, y: f.y, 
+                    hunger: f.hunger, skill: f.skill, customName: f.customName,
+                    hp: f.hp // <-- Đã thêm thuộc tính lưu HP
+                })) 
+            })); 
+        }
         function loadGame() {
             let data = localStorage.getItem('abyss_save');
-            if (data) { let p = JSON.parse(data); gameState.coins = p.coins; gameState.lastId = p.lastId; p.fishes.forEach(o => { let t = FISH_DATA.find(x => x.type === o.type); if (t) gameState.fishes.push(new Fish(t, o)); }); }
-            if (window.innerWidth > 768) toggleSidebar(true);
+            if (data) { let p = JSON.parse(data); gameState.coins = p.coins; gameState.lastId = p.lastId; p.fishes.forEach(o => { let t = FISH_DATA.find(x=>x.type===o.type); if(t) gameState.fishes.push(new Fish(t, o)); }); }
+            if(window.innerWidth > 768) toggleSidebar(true);
         }
         function clearSave() { if (confirm("Xóa hết dữ liệu chơi lại?")) { localStorage.removeItem('abyss_save'); location.reload(); } }
 
         resize(); loadGame(); updateUI(); animate();
 
+        // Kỹ năng Phúc Lộc đẻ nhiều kim cương hơn
         setInterval(() => {
             let earned = 0;
-            gameState.fishes.forEach(f => { if (f.level >= 5) { earned += 2; createExplosion(f.x, f.y + 15, "#FFD700", 3); } });
-            if (earned > 0) { gameState.coins += earned; updateUI(); saveGame(); }
+            gameState.fishes.forEach(f => { 
+                if(f.level >= 5) { 
+                    let coin = f.skill === "Phúc Lộc 💰" ? 5 : 2; // Skill đẻ nhiều tiền
+                    earned += coin; 
+                    createExplosion(f.x, f.y+15, "#FFD700", 3); 
+                } 
+            });
+            if(earned>0) { gameState.coins+=earned; updateUI(); saveGame(); }
         }, 5000);
 
     </script>
 </body>
-
 </html>
