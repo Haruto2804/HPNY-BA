@@ -59,7 +59,7 @@
         /* UI COMPONENTS */
         #ui-layer {
             position: absolute;
-            left: 70px;
+            left: 0px;
             z-index: 10;
             width: 100%;
             height: 100%;
@@ -173,7 +173,7 @@
         .btn-slide-toggle {
             position: absolute;
             top: 100px;
-            right: -70px;
+            right: 0px;
             background: linear-gradient(45deg, #00f3ff, #0088ff);
             color: white;
             border: none;
@@ -189,7 +189,7 @@
         }
 
         .btn-slide-toggle:hover {
-            right: -60px;
+            right: 2px;
             padding-right: 20px;
         }
 
@@ -617,7 +617,7 @@
             <button class="btn-main btn-shop" onclick="openModal('shop-overlay')">🛒 Cửa Hàng</button>
             <button class="btn-main btn-epic" onclick="summonFish()">✨ Triệu Hồi</button>
             <button class="btn-main btn-epic" onclick="toggleCinema()">Cinema</button>
-            <button class="btn-main btn-bday" onclick="openModal('bday-overlay')">🎁 Quà Bảo Anh</button>
+            <button class="btn-main btn-bday" onclick="openModal('bday-overlay')">🎁 CÁ SINH NHẬT</button>
             <button class="btn-main" onclick="spawnShark()"
                 style="background: linear-gradient(45deg, #ff4757, #8b0000); border: none; box-shadow: 0 0 15px rgba(255,0,0,0.5);">🦈
                 Thả Cá Mập</button>
@@ -744,6 +744,7 @@
             { type: "Thần Rùa Huyền Vũ", rarity: "Huyền thoại", shape: "turtle", flockStyle: "independent", colors: ["#000000", "#2F4F4F"], speed: 0.6, scale: 3.0 }];
 
         // --- 2. BIẾN TOÀN CỤC & TỌA ĐỘ CHUỘT ---
+        const SAFE_DISTANCE = 150; // Khoảng cách cá bắt đầu thấy sợ và bỏ chạy
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
         let width, height;
@@ -751,6 +752,7 @@
         let gameState = { coins: 1000000, fishes: [], lastId: 0 };
         let foods = []; let particles = []; let corals = []; let seaweeds = []; let planktons = [];
         let currentHour = 12; let isNight = false;
+
         // TỪ ĐIỂN GIẢI THÍCH KỸ NĂNG
         const SKILL_DESC = {
             "Chưa có": "Đạt Level 5 để thức tỉnh kỹ năng.",
@@ -760,7 +762,7 @@
         };
         let isHoveringList = false; // Biến cờ để không bị đụng độ Tooltip giữa Canvas và Danh Sách
         let mouseX = -100, mouseY = -100; // Track chuột để hiển thị Info
-
+        let draggedFish = null; // Thêm dòng này để lưu con cá đang bị nắm kéo
         function resize() { width = canvas.width = window.innerWidth; height = canvas.height = window.innerHeight; initEnvironment(); }
         window.addEventListener('resize', resize);
 
@@ -845,10 +847,13 @@
                 this.hp = saveObj && saveObj.hp !== undefined ? saveObj.hp : 100;
                 this.fleeTimer = 0;
                 this.fleeAngle = 0;
+                this.isDragged = false; // <-- THÊM DÒNG NÀY
             }
             update() {
+                if (this.isDragged) return; // Nếu đang bị kéo thì đứng im không tự bơi nữa
                 if (this.breedCooldown > 0) this.breedCooldown--;
 
+                // Logic đói bụng & sống sót
                 // Logic đói bụng & sống sót
                 if (this.data.isPredator) {
                     this.hunger = 100;
@@ -856,14 +861,26 @@
                     let hungerDepletion = (typeof isNight !== 'undefined' && isNight) ? 0.003 : 0.006;
                     if (this.skill === "Bụng Không Đáy 🛡️") hungerDepletion *= 0.5;
                     this.hunger -= hungerDepletion;
-                    if (this.hunger <= 0) { this.isDead = true; return; }
+
+                    // 🩸 XỬ LÝ MẤT MÁU KHI ĐÓI BỤNG
+                    if (this.hunger <= 0) {
+                        this.hunger = 0;
+                        this.hp -= 0.15; // Tụt máu từ từ
+                        this.fleeTimer = 5; // Liên tục kích hoạt chớp đỏ kêu cứu
+                        if (this.hp <= 0) {
+                            this.isDead = true;
+                            return;
+                        }
+                    } else if (this.hunger > 50 && this.hp < 100) {
+                        this.hp += 0.05; // Tự hồi máu nếu đang no nê
+                    }
                 }
 
                 let speedBoost = 1;
                 let turnSpeed = 0.04;
-                
+
                 // [QUAN TRỌNG] Biến kiểm tra xem cá có đang bận đi ăn không
-                let isHunting = false; 
+                let isHunting = false;
 
                 // 🦈 TRƯỜNG HỢP 1: CÁ MẬP SĂN MỒI
                 if (this.data.isPredator) {
@@ -872,8 +889,8 @@
                     gameState.fishes.forEach(other => {
                         if (other.id !== this.id && !other.data.isPredator && !other.isDead) {
                             let d = Math.hypot(other.x - this.x, other.y - this.y);
-                            let inSanctuary = (typeof sanctuary !== 'undefined' && sanctuary) ? 
-                                              Math.hypot(other.x - sanctuary.x, other.y - sanctuary.y) < sanctuary.radius : false;
+                            let inSanctuary = (typeof sanctuary !== 'undefined' && sanctuary) ?
+                                Math.hypot(other.x - sanctuary.x, other.y - sanctuary.y) < sanctuary.radius : false;
                             if (!inSanctuary && d < 500 && d < minPreyDist) { minPreyDist = d; targetPrey = other; }
                         }
                     });
@@ -885,36 +902,57 @@
                         if (minPreyDist < 150 && this.biteTimer <= 0) this.biteTimer = 25;
                         if (this.biteTimer > 0) this.biteTimer--;
 
-                        if (minPreyDist < 70) { 
+                        if (minPreyDist < 70) {
                             targetPrey.hp -= 40;
                             targetPrey.fleeTimer = 120;
                             targetPrey.fleeAngle = Math.atan2(dy, dx);
-                            targetPrey.y -= 15; 
+                            targetPrey.y -= 15;
                             if (typeof createExplosion === 'function') createExplosion(targetPrey.x, targetPrey.y, "#ff4757", 30);
                             if (targetPrey.hp <= 0) targetPrey.isDead = true;
-                            this.x -= Math.cos(this.currentAngle) * 20; 
+                            this.x -= Math.cos(this.currentAngle) * 20;
                         } else {
                             this.targetAngle = Math.atan2(dy, dx);
-                            speedBoost = 2.2; turnSpeed = 0.12; 
+                            speedBoost = 2.2; turnSpeed = 0.12;
                         }
                     } else {
                         if (Math.random() < 0.01) this.targetAngle += (Math.random() - 0.5) * Math.PI;
                         speedBoost = 0.6;
                     }
-                } 
+                }
                 // 💨 TRƯỜNG HỢP 2: BỊ TẤN CÔNG
                 else if (this.fleeTimer > 0) {
                     this.fleeTimer--;
                     this.targetAngle = this.fleeAngle;
-                    speedBoost = 1.0 + (this.fleeTimer / 30); 
-                    turnSpeed = 0.1;
-                } 
+                    speedBoost = 2.5 + (this.fleeTimer / 30); // Ép tốc độ chạy cực nhanh
+                    turnSpeed = 0.2;
+                    this.swimCycle += 0.3; // ⚡ Vẫy đuôi cực điên cuồng (Animation sinh động)
+                }
                 // 🐟 TRƯỜNG HỢP 3: CÁ KIẾM MỒI / ĐI DẠO
                 else {
+                    let closestShark = null;
+                    let minSharkDist = Infinity;
+
+                    // Tìm con cá mập gần nhất
+                    gameState.fishes.forEach(other => {
+                        if (other.data.isPredator) { // Kiểm tra nếu là cá mập
+                            let d = Math.hypot(other.x - this.x, other.y - this.y);
+                            if (d < minSharkDist) {
+                                minSharkDist = d;
+                                closestShark = other;
+                            }
+                        }
+                    });
+
+                    // Nếu cá mập ở quá gần -> Kích hoạt trạng thái chạy trốn
+                    if (closestShark && minSharkDist < SAFE_DISTANCE) {
+                        this.fleeTimer = 70; // Chạy trốn trong 60 khung hình (khoảng 1 giây)
+                        // Góc chạy trốn = Góc ngược lại với vị trí cá mập
+                        this.fleeAngle = Math.atan2(this.y - closestShark.y, this.x - closestShark.x);
+                    }
                     let detectRadius = this.skill === "Thợ Săn 👁️" ? 500 : 250;
                     let targetFood = null;
                     let minDist = Infinity;
-                    
+
                     if (typeof foods !== 'undefined') {
                         foods.forEach(f => {
                             let d = Math.hypot(f.x - this.x, f.y - this.y);
@@ -926,8 +964,8 @@
                         isHunting = true; // Đang đuổi theo mồi
                         this.targetAngle = Math.atan2(targetFood.y - this.y, targetFood.x - this.x);
                         speedBoost = 1.3; turnSpeed = 0.2;
-                        
-                        if (minDist < 80 && typeof foods !== 'undefined' && foods.includes(targetFood)) {
+
+                        if (minDist < 30 && typeof foods !== 'undefined' && foods.includes(targetFood)) {
                             foods = foods.filter(f => f !== targetFood);
                             this.hunger = Math.min(100, this.hunger + 35);
                             this.gainXp();
@@ -940,7 +978,7 @@
                 // ==========================================
                 // ✨ PHẦN FIX LỖI GIẬT LẮC (JITTER) ✨
                 // ==========================================
-                
+
                 // Chỉ ép cá quay đầu khi nó đang "đi dạo" (không phải lúc đang ăn hay chạy trốn)
                 if (!isHunting && this.fleeTimer <= 0) {
                     const softMargin = 100;
@@ -995,14 +1033,25 @@
                 const glowColor = this.data.glowColor || color2; // Lấy màu phát sáng
 
                 ctx.save(); ctx.translate(this.x, this.y); ctx.rotate(this.currentAngle); ctx.scale(scale, scale);
+
                 // [MỚI] HIỆU ỨNG NHẤP NHÁY ĐỎ KHI BỊ THƯƠNG (Fleeing)
                 if (this.fleeTimer > 0) {
-                    ctx.shadowBlur = 20;
-                    ctx.shadowColor = "#ff0000";
-                    // Tạo lớp phủ màu đỏ nhấp nháy
-                    if (Math.floor(Date.now() / 100) % 2 === 0) {
-                        ctx.globalCompositeOperation = "source-atop";
-                        ctx.fillStyle = "rgba(255, 0, 0, 0.4)";
+                    const t = Date.now() / 80;
+
+                    if (Math.random() > 0.7) {
+                        ctx.filter = "none";
+                    } else {
+                        const pulse = (Math.sin(t) + 1) / 2;
+
+                        ctx.filter = `
+                                brightness(0)
+                                invert(1)
+                                sepia(100%)
+                                saturate(${8000 + pulse * 4000}%)
+                                hue-rotate(0deg)
+                                brightness(${0.55 + pulse * 0.25})
+                                contrast(1.4)
+                                `;
                     }
                 }
 
@@ -1045,26 +1094,7 @@
                     // Mắt rùa
                     ctx.fillStyle = "white"; ctx.beginPath(); ctx.arc(21, -3, 2, 0, Math.PI * 2); ctx.arc(21, 3, 2, 0, Math.PI * 2); ctx.fill();
                     ctx.fillStyle = "black"; ctx.beginPath(); ctx.arc(22, -3, 1, 0, Math.PI * 2); ctx.arc(22, 3, 1, 0, Math.PI * 2); ctx.fill();
-                    if (this.fleeTimer > 0) {
-                        // Tạo quầng sáng đỏ lan tỏa
-                        ctx.shadowBlur = 15;
-                        ctx.shadowColor = "#ff0000";
 
-                        // Hiệu ứng nhấp nháy (chớp tắt 5 lần/giây)
-                        if (Math.floor(Date.now() / 200) % 2 === 0) {
-                            // Chế độ hòa trộn source-atop: vẽ màu đỏ đè lên hình con cá
-                            ctx.globalCompositeOperation = "source-atop";
-                            ctx.fillStyle = "rgba(255, 0, 0, 0.6)"; // Màu đỏ bán trong suốt
-
-                            // Vẽ một hình chữ nhật bao phủ toàn bộ vùng vẽ cá
-                            // (source-atop sẽ tự cắt để chỉ giữ lại phần màu đỏ nằm trên cá)
-                            ctx.fillRect(-40, -40, 80, 80);
-
-                            // Reset lại chế độ hòa trộn mặc định
-                            ctx.globalCompositeOperation = "source-over";
-                        }
-                        ctx.shadowBlur = 0; // Reset bóng
-                    }
                 } else if (shape === "ray") {
                     // 🦇 CÁ ĐUỐI (Manta Ray)
                     let flap = Math.sin(this.swimCycle * 1.2) * 8;
@@ -1092,26 +1122,7 @@
                     // Mắt dẹt
                     ctx.fillStyle = "white"; ctx.beginPath(); ctx.ellipse(12, -7, 2.5, 1.5, -Math.PI / 8, 0, Math.PI * 2); ctx.ellipse(12, 7, 2.5, 1.5, Math.PI / 8, 0, Math.PI * 2); ctx.fill();
                     ctx.fillStyle = "black"; ctx.beginPath(); ctx.arc(12.5, -7, 1, 0, Math.PI * 2); ctx.arc(12.5, 7, 1, 0, Math.PI * 2); ctx.fill();
-                    if (this.fleeTimer > 0) {
-                        // Tạo quầng sáng đỏ lan tỏa
-                        ctx.shadowBlur = 15;
-                        ctx.shadowColor = "#ff0000";
 
-                        // Hiệu ứng nhấp nháy (chớp tắt 5 lần/giây)
-                        if (Math.floor(Date.now() / 200) % 2 === 0) {
-                            // Chế độ hòa trộn source-atop: vẽ màu đỏ đè lên hình con cá
-                            ctx.globalCompositeOperation = "source-atop";
-                            ctx.fillStyle = "rgba(255, 0, 0, 0.6)"; // Màu đỏ bán trong suốt
-
-                            // Vẽ một hình chữ nhật bao phủ toàn bộ vùng vẽ cá
-                            // (source-atop sẽ tự cắt để chỉ giữ lại phần màu đỏ nằm trên cá)
-                            ctx.fillRect(-40, -40, 80, 80);
-
-                            // Reset lại chế độ hòa trộn mặc định
-                            ctx.globalCompositeOperation = "source-over";
-                        }
-                        ctx.shadowBlur = 0; // Reset bóng
-                    }
                 } else if (shape === "jellyfish") {
                     // 🎐 SỨA (Trong suốt, nấm lượn sóng)
                     ctx.globalAlpha = 0.8; // Độ trong suốt của sứa
@@ -1139,26 +1150,7 @@
                     ctx.beginPath(); ctx.arc(10, -5, 2, 0, Math.PI * 2); ctx.arc(12, 4, 1.5, 0, Math.PI * 2); ctx.fill();
 
                     ctx.globalAlpha = 1; // Trả lại Opacity bình thường cho các con khác
-                    if (this.fleeTimer > 0) {
-                        // Tạo quầng sáng đỏ lan tỏa
-                        ctx.shadowBlur = 15;
-                        ctx.shadowColor = "#ff0000";
 
-                        // Hiệu ứng nhấp nháy (chớp tắt 5 lần/giây)
-                        if (Math.floor(Date.now() / 200) % 2 === 0) {
-                            // Chế độ hòa trộn source-atop: vẽ màu đỏ đè lên hình con cá
-                            ctx.globalCompositeOperation = "source-atop";
-                            ctx.fillStyle = "rgba(255, 0, 0, 0.6)"; // Màu đỏ bán trong suốt
-
-                            // Vẽ một hình chữ nhật bao phủ toàn bộ vùng vẽ cá
-                            // (source-atop sẽ tự cắt để chỉ giữ lại phần màu đỏ nằm trên cá)
-                            ctx.fillRect(-40, -40, 80, 80);
-
-                            // Reset lại chế độ hòa trộn mặc định
-                            ctx.globalCompositeOperation = "source-over";
-                        }
-                        ctx.shadowBlur = 0; // Reset bóng
-                    }
                 } else if (shape === "seahorse") {
                     // 🐉 CÁ NGỰA (Đồ họa chân thực & Chuyển động đa khớp)
                     let flutter = Math.sin(this.swimCycle * 5) * 3; // Vây rung bần bật
@@ -1215,26 +1207,7 @@
                     ctx.arc(-10, 5, 5, Math.PI, 0);
                     ctx.stroke();
                     ctx.restore();
-                    if (this.fleeTimer > 0) {
-                        // Tạo quầng sáng đỏ lan tỏa
-                        ctx.shadowBlur = 15;
-                        ctx.shadowColor = "#ff0000";
 
-                        // Hiệu ứng nhấp nháy (chớp tắt 5 lần/giây)
-                        if (Math.floor(Date.now() / 200) % 2 === 0) {
-                            // Chế độ hòa trộn source-atop: vẽ màu đỏ đè lên hình con cá
-                            ctx.globalCompositeOperation = "source-atop";
-                            ctx.fillStyle = "rgba(255, 0, 0, 0.6)"; // Màu đỏ bán trong suốt
-
-                            // Vẽ một hình chữ nhật bao phủ toàn bộ vùng vẽ cá
-                            // (source-atop sẽ tự cắt để chỉ giữ lại phần màu đỏ nằm trên cá)
-                            ctx.fillRect(-40, -40, 80, 80);
-
-                            // Reset lại chế độ hòa trộn mặc định
-                            ctx.globalCompositeOperation = "source-over";
-                        }
-                        ctx.shadowBlur = 0; // Reset bóng
-                    }
                 } else if (shape === "shark") {
                     // 1. Chuyển động Đuôi (Classic quạt dứt khoát)
                     let tailWag = Math.sin(this.swimCycle * 1.5) * 0.3;
@@ -1292,26 +1265,7 @@
 
                     ctx.shadowBlur = 0; // Reset bóng
                     // ==========================================
-                    if (this.fleeTimer > 0) {
-                        // Tạo quầng sáng đỏ lan tỏa
-                        ctx.shadowBlur = 15;
-                        ctx.shadowColor = "#ff0000";
 
-                        // Hiệu ứng nhấp nháy (chớp tắt 5 lần/giây)
-                        if (Math.floor(Date.now() / 200) % 2 === 0) {
-                            // Chế độ hòa trộn source-atop: vẽ màu đỏ đè lên hình con cá
-                            ctx.globalCompositeOperation = "source-atop";
-                            ctx.fillStyle = "rgba(255, 0, 0, 0.6)"; // Màu đỏ bán trong suốt
-
-                            // Vẽ một hình chữ nhật bao phủ toàn bộ vùng vẽ cá
-                            // (source-atop sẽ tự cắt để chỉ giữ lại phần màu đỏ nằm trên cá)
-                            ctx.fillRect(-40, -40, 80, 80);
-
-                            // Reset lại chế độ hòa trộn mặc định
-                            ctx.globalCompositeOperation = "source-over";
-                        }
-                        ctx.shadowBlur = 0; // Reset bóng
-                    }
                 }
 
                 else {
@@ -1361,26 +1315,7 @@
                     // ✨ [MỚI] HIỆU ỨNG NHẤP NHÁY ĐỎ KHI BỊ THƯƠNG (BỊ CẮN)
                     // ==========================================
                     // Chỉ áp dụng cho cá con khi đang fleeTimer > 0
-                    if (this.fleeTimer > 0) {
-                        // Tạo quầng sáng đỏ lan tỏa
-                        ctx.shadowBlur = 15;
-                        ctx.shadowColor = "#ff0000";
 
-                        // Hiệu ứng nhấp nháy (chớp tắt 5 lần/giây)
-                        if (Math.floor(Date.now() / 200) % 2 === 0) {
-                            // Chế độ hòa trộn source-atop: vẽ màu đỏ đè lên hình con cá
-                            ctx.globalCompositeOperation = "source-atop";
-                            ctx.fillStyle = "rgba(255, 0, 0, 0.6)"; // Màu đỏ bán trong suốt
-
-                            // Vẽ một hình chữ nhật bao phủ toàn bộ vùng vẽ cá
-                            // (source-atop sẽ tự cắt để chỉ giữ lại phần màu đỏ nằm trên cá)
-                            ctx.fillRect(-40, -40, 80, 80);
-
-                            // Reset lại chế độ hòa trộn mặc định
-                            ctx.globalCompositeOperation = "source-over";
-                        }
-                        ctx.shadowBlur = 0; // Reset bóng
-                    }
                     // ==========================================
 
                 }
@@ -1448,29 +1383,36 @@
 
 
                 ctx.restore();
+                if (this.hp < 100 && !this.isDead) {
+                    let barW = 30 * scale;
+                    let barH = 4 * scale;
+                    let barX = this.x - barW / 2;
+                    let barY = this.y - 35 * scale;
 
-                // Cảnh báo khi đói sắp chết (Icon nhấp nháy đỏ)
-                if (this.hunger < 20) {
-                    ctx.font = "14px Quicksand"; ctx.textAlign = "center";
-                    ctx.globalAlpha = Math.abs(Math.sin(Date.now() * 0.005)); // Nhấp nháy
-                    ctx.fillText(`⚠️ Mồi!`, this.x, this.y - 45 * scale);
-                    ctx.globalAlpha = 1;
+                    ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
+                    ctx.fillRect(barX, barY, barW, barH); // Nền máu đen
+                    ctx.fillStyle = "#ff4757";
+                    ctx.fillRect(barX, barY, barW * (Math.max(0, this.hp) / 100), barH); // Máu đỏ
                 }
 
                 // [MỚI] HIỂN THỊ TRẠNG THÁI TRÊN ĐẦU CÁ
                 ctx.font = "bold 10px Quicksand"; ctx.textAlign = "center";
+                let textY = this.y - 45 * scale;
 
-                if (this.hunger < 20) {
+                if (this.hunger <= 0) {
                     ctx.fillStyle = "#ff4757";
-                    ctx.fillText("HẾT ĐÓI!", 0, -40); // Hiển thị "Hết đói" khi sắp chết đói
+                    ctx.fillText("MẤT MÁU!", this.x, textY);
+                } else if (this.hunger < 20) {
+                    ctx.fillStyle = "#ffa502";
+                    ctx.fillText("ĐÓI LẢ!", this.x, textY);
                 } else if (this.fleeTimer > 0) {
                     ctx.fillStyle = "#ff0000";
-                    ctx.fillText("ÚI!!!", 0, -45); // Hiển thị khi bị cắn
+                    ctx.fillText("!!!!!", this.x, textY);
                 } else {
                     ctx.fillStyle = "rgba(255,255,255,0.8)";
-                    ctx.fillText(this.customName ? this.customName : `Lv.${this.level}`, 0, -30);
+                    ctx.fillText(this.customName ? this.customName : `Lv.${this.level}`, this.x, textY);
                 }
-            }
+            } // Kết thúc hàm draw()
         }
 
         function createExplosion(x, y, color, count) { for (let i = 0; i < count; i++) particles.push(new Particle(x, y, color)); }
@@ -1673,26 +1615,63 @@
         }
 
         // --- 6. TƯƠNG TÁC & SỰ KIỆN ---
+
         window.addEventListener('mousedown', (e) => {
-            // [QUAN TRỌNG NHẤT] NẾU ĐANG BẬT CINEMA -> CLICK ĐỂ THOÁT VÀ DỪNG LẠI NGAY LẬP TỨC
             if (document.body.classList.contains('cinema-active')) {
                 toggleCinema();
-                return; // Kết thúc ở đây, không thả mồi hay nổ nước gì hết
+                return;
             }
 
-            // CÁC LOGIC CHƠI GAME BÌNH THƯỜNG CỦA BẠN:
             if (e.target.tagName !== 'BUTTON' && !e.target.closest('.glass-panel') && !e.target.closest('.modal')) {
                 if (e.button === 2) {
+                    // Chuột phải (Giữ nguyên code cũ)
                     createExplosion(e.clientX, e.clientY, "rgba(0, 243, 255, 0.8)", 40);
                     gameState.fishes.forEach(fish => { if (Math.hypot(fish.x - e.clientX, fish.y - e.clientY) < 300) { fish.targetAngle = Math.atan2(fish.y - e.clientY, fish.x - e.clientX); fish.vx *= 3; fish.vy *= 3; } });
-                } else if (e.button === 0) {
-                    foods.push(new Food(e.clientX, e.clientY)); createExplosion(e.clientX, e.clientY, "rgba(255,255,255,0.5)", 5);
+                } else if (e.button === 0) { // Chuột trái
+
+                    // THÊM MỚI: Xử lý ưu tiên bắt cá trước khi thả mồi
+                    let clickedFish = null;
+                    for (let i = gameState.fishes.length - 1; i >= 0; i--) {
+                        let fish = gameState.fishes[i];
+                        let hitbox = 40 * fish.baseScale * (1 + fish.level * 0.05);
+                        if (Math.hypot(e.clientX - fish.x, e.clientY - fish.y) < hitbox) {
+                            clickedFish = fish;
+                            break;
+                        }
+                    }
+
+                    if (clickedFish) {
+                        // Nếu click trúng cá -> Kéo cá
+                        draggedFish = clickedFish;
+                        draggedFish.isDragged = true;
+                    } else {
+                        // Nếu không trúng cá -> Thả mồi (Code cũ)
+                        foods.push(new Food(e.clientX, e.clientY));
+                        createExplosion(e.clientX, e.clientY, "rgba(255,255,255,0.5)", 5);
+                    }
                 }
             }
         });
         window.addEventListener('mousemove', (e) => {
-            mouseX = e.clientX; mouseY = e.clientY; // Cập nhật chuột liên tục cho Tooltip
-            if (Math.random() < 0.2) particles.push(new Particle(e.clientX, e.clientY, "rgba(0, 243, 255, 0.6)", true));
+            mouseX = e.clientX; mouseY = e.clientY;
+
+            // THÊM MỚI: Di chuyển cá nếu đang có con bị kéo
+            if (draggedFish) {
+                draggedFish.x = mouseX;
+                draggedFish.y = mouseY;
+            } else {
+                // Chỉ tạo bọt biển nếu KHÔNG kéo cá (để đỡ rối mắt)
+                if (Math.random() < 0.2) particles.push(new Particle(e.clientX, e.clientY, "rgba(0, 243, 255, 0.6)", true));
+            }
+        });
+        // THÊM MỚI TOÀN BỘ SỰ KIỆN NÀY ĐỂ THẢ CÁ RA
+        window.addEventListener('mouseup', () => {
+            if (draggedFish) {
+                draggedFish.isDragged = false; // Cho phép cá bơi lại
+                // (Tùy chọn) Tính toán lại góc quay dựa vào vị trí hiện tại để cá bơi tiếp tự nhiên hơn
+                draggedFish.targetAngle = draggedFish.currentAngle;
+                draggedFish = null; // Xóa trạng thái đang kéo
+            }
         });
         window.addEventListener('contextmenu', e => e.preventDefault());
         window.addEventListener('keydown', (e) => {
