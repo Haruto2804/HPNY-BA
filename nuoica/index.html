@@ -278,7 +278,7 @@
             { type: "Long Vương Hắc Ám", rarity: "Huyền thoại", shape: "fish", flockStyle: "independent", colors: ["#111111", "#FF00EA"], speed: 4, scale: 2.5 },
             { type: "Cá Voi Ánh Sáng", rarity: "Huyền thoại", shape: "fish", flockStyle: "horizontal", colors: ["#FFFFFF", "#00F3FF"], speed: 1.5, scale: 3 },
             { type: "Megalodon Bạo Chúa", rarity: "Huyền thoại", shape: "fish", flockStyle: "independent", colors: ["#696969", "#000000"], speed: 3.0, scale: 3.5 },
-            { type: "Cá Sinh Nhật 🎂", rarity: "Huyền thoại", shape: "fish", flockStyle: "circular", colors: ["#FF1493", "#FFD700"], speed: 2.2, scale: 2.5 },
+            { type: "Cá Sinh Nhật 🎂", rarity: "Huyền thoại", shape: "fish", flockStyle: "independent", colors: ["#FF1493", "#FFD700"], speed: 2.2, scale: 2.5 },
 
             // CÁ ĐUỐI (ray)
             { type: "Đuối Chấm Bi", rarity: "Thường", shape: "ray", flockStyle: "horizontal", colors: ["#D2B48C", "#8B4513"], speed: 1.5, scale: 1.1 },
@@ -402,7 +402,7 @@
                 this.swimCycle = Math.random() * 100; 
                 this.baseScale = data.scale;
                 this.breedCooldown = 0;
-
+                this.biteTimer = 0; // FIX LỖI: Khai báo biến đếm nhịp đớp
                 // TÍNH NĂNG MỚI: ĐÓI BỤNG & KỸ NĂNG
                 this.hunger = saveObj ? saveObj.hunger : 100;
                 this.maxHunger = 100;
@@ -417,242 +417,109 @@
                 this.fleeTimer = 0; 
                 this.fleeAngle = 0;
             }
-
             update() {
-                // 1. TÍNH GIỜ SINH SẢN VÀ ĐÓI BỤNG
                 if (this.breedCooldown > 0) this.breedCooldown--;
 
-                let hungerDepletion = isNight ? 0.005 : 0.01;
-                if (this.skill === "Bụng Không Đáy 🛡️") hungerDepletion *= 0.5;
-                this.hunger -= hungerDepletion;
-                
-                if (this.hunger <= 0) { 
-                    this.isDead = true; 
-                    return; // Ngừng tính toán nếu cá đã chết
+                // --- FIX LỖI CÁ MẬP TỰ CHẾT ---
+                if (this.data.isPredator) {
+                    this.hunger = 100; // Cá mập luôn no để không bao giờ chết đói
+                } else {
+                    let hungerDepletion = isNight ? 0.003 : 0.006; // Tốc độ đói chill hơn
+                    if (this.skill === "Bụng Không Đáy 🛡️") hungerDepletion *= 0.5;
+                    this.hunger -= hungerDepletion;
+                    if (this.hunger <= 0) { this.isDead = true; return; }
                 }
 
-                let speedBoost = 1; 
-                let turnSpeed = 0.05;
+                let speedBoost = 1;
+                let turnSpeed = 0.04;
                 const flockType = this.data.flockStyle || "horizontal";
 
-                // ==========================================
                 // 🦈 TRƯỜNG HỢP 1: LÀ CÁ MẬP SĂN MỒI
-                // ==========================================
                 if (this.data.isPredator) {
-                    let targetPrey = null; 
+                    let targetPrey = null;
                     let minPreyDist = Infinity;
-                    
-                    // Tìm con cá gần nhất không phải là cá mập và chưa chết
                     gameState.fishes.forEach(other => {
                         if (other.id !== this.id && !other.data.isPredator && !other.isDead) {
                             let d = Math.hypot(other.x - this.x, other.y - this.y);
-                            if (d < 600 && d < minPreyDist) { minPreyDist = d; targetPrey = other; }
+                            if (d < 500 && d < minPreyDist) { minPreyDist = d; targetPrey = other; }
                         }
                     });
 
                     if (targetPrey) {
-                        let dx = targetPrey.x - this.x; 
+                        let dx = targetPrey.x - this.x;
                         let dy = targetPrey.y - this.y;
-                        
-                        // [MỚI] KÍCH HOẠT ANIMATION HÁ MIỆNG KHI TỚI GẦN
-                        if (minPreyDist < 150) { 
-                            if (!this.biteTimer || this.biteTimer <= 0) this.biteTimer = 25; // Há miệng trong 25 frame
-                        }
+                        if (minPreyDist < 150) { if (this.biteTimer <= 0) this.biteTimer = 25; }
                         if (this.biteTimer > 0) this.biteTimer--;
 
-                        if (minPreyDist < 80) { // Cắn trúng
-                            targetPrey.hp -= 40; 
-                            targetPrey.fleeTimer = 80; 
-                            targetPrey.fleeAngle = Math.atan2(dy, dx); 
-                            targetPrey.y -= 20;
-                            this.hunger = Math.min(this.maxHunger, this.hunger + 40); 
-                            createExplosion(targetPrey.x, targetPrey.y, "#ff4757", 40); 
-                            
+                        if (minPreyDist < 120) { 
+                            targetPrey.hp -= 40;
+                            targetPrey.fleeTimer = 120; // Cá con chạy trốn lâu hơn cho mượt
+                            targetPrey.fleeAngle = Math.atan2(dy, dx);
+                            targetPrey.y -= 15; // Giật nảy lên
+                            createExplosion(targetPrey.x, targetPrey.y, "#ff4757", 30);
                             if (targetPrey.hp <= 0) targetPrey.isDead = true;
-                            
-                            // Giật lùi sau khi cắn
-                            this.x -= Math.cos(this.currentAngle) * 30;
-                            this.y -= Math.sin(this.currentAngle) * 30;
+                            this.x -= Math.cos(this.currentAngle) * 20; // Phản lực giật lùi
                         } else {
-                            // Rượt đuổi
-                            this.targetAngle = Math.atan2(dy, dx); 
-                            speedBoost = 2.5; turnSpeed = 0.2; 
+                            this.targetAngle = Math.atan2(dy, dx);
+                            speedBoost = 2.2; turnSpeed = 0.12; 
                         }
                     } else {
-                        // Đi dạo
-                        this.biteTimer = 0; // Ngậm miệng lại
-                        if (Math.random() < 0.02) this.targetAngle += (Math.random() - 0.5) * Math.PI;
-                        speedBoost = 0.8;
-                    }if (targetPrey) {
-                        let dx = targetPrey.x - this.x; 
-                        let dy = targetPrey.y - this.y;
-                        
-                        // [MỚI] KÍCH HOẠT ANIMATION HÁ MIỆNG KHI TỚI GẦN
-                        if (minPreyDist < 150) { 
-                            if (!this.biteTimer || this.biteTimer <= 0) this.biteTimer = 25; // Há miệng trong 25 frame
-                        }
-                        if (this.biteTimer > 0) this.biteTimer--;
-
-                        if (minPreyDist < 80) { // Cắn trúng
-                            targetPrey.hp -= 40; 
-                            targetPrey.fleeTimer = 80; 
-                            targetPrey.fleeAngle = Math.atan2(dy, dx); 
-                            
-                            this.hunger = Math.min(this.maxHunger, this.hunger + 40); 
-                            createExplosion(targetPrey.x, targetPrey.y, "#ff4757", 40); 
-                            
-                            if (targetPrey.hp <= 0) targetPrey.isDead = true;
-                            
-                            // Giật lùi sau khi cắn
-                            this.x -= Math.cos(this.currentAngle) * 30;
-                            this.y -= Math.sin(this.currentAngle) * 30;
-                        } else {
-                            // Rượt đuổi
-                            this.targetAngle = Math.atan2(dy, dx); 
-                            speedBoost = 2.5; turnSpeed = 0.2; 
-                        }
-                    } else {
-                        // Đi dạo
-                        this.biteTimer = 0; // Ngậm miệng lại
-                        if (Math.random() < 0.02) this.targetAngle += (Math.random() - 0.5) * Math.PI;
-                        speedBoost = 0.8;
+                        this.biteTimer = 0;
+                        if (Math.random() < 0.01) this.targetAngle += (Math.random() - 0.5) * Math.PI;
+                        speedBoost = 0.6;
                     }
                 } 
-                // ==========================================
-                // 💨 TRƯỜNG HỢP 2: BỊ CẮN TRÚNG -> CHẠY TRỐN
-                // ==========================================
+                // 💨 TRƯỜNG HỢP 2: BỊ TẤN CÔNG (CHẠY TRỐN)
                 else if (this.fleeTimer > 0) {
                     this.fleeTimer--;
                     this.targetAngle = this.fleeAngle;
-                    speedBoost = 6.0; // Tốc độ siêu thanh
-                    turnSpeed = 0.5;
-                    
-                    if (this.fleeTimer % 3 === 0) {
-                        createExplosion(this.x, this.y, "rgba(255,255,255,0.4)", 3); // Sủi bọt
-                    }
+                    speedBoost = 1.0 + (this.fleeTimer / 30); // Giảm tốc độ từ từ cho mượt
+                    turnSpeed = 0.1;
+                    if (this.fleeTimer % 8 === 0) createExplosion(this.x, this.y, "rgba(255,255,255,0.2)", 1);
                 } 
-                // ==========================================
-                // 🐟 TRƯỜNG HỢP 3: CÁ BÌNH THƯỜNG (KIẾM MỒI & ĐI DẠO)
-                // ==========================================
+                // 🐟 TRƯỜNG HỢP 3: CÁ BÌNH THƯỜNG
                 else {
-                    let detectRadius = this.skill === "Thợ Săn 👁️" ? 600 : 300;
-                    let targetFood = null; 
+                    let detectRadius = this.skill === "Thợ Săn 👁️" ? 500 : 250;
+                    let targetFood = null;
                     let minDist = Infinity;
-                    
-                    // Tìm thức ăn
-                    foods.forEach(f => { 
-                        let d = Math.hypot(f.x - this.x, f.y - this.y); 
-                        if (d < detectRadius && d < minDist) { minDist = d; targetFood = f; } 
+                    foods.forEach(f => {
+                        let d = Math.hypot(f.x - this.x, f.y - this.y);
+                        if (d < detectRadius && d < minDist) { minDist = d; targetFood = f; }
                     });
 
                     if (targetFood) {
-                        let dx = targetFood.x - this.x; 
-                        let dy = targetFood.y - this.y;
-                        
-                        if (minDist < 80) { // Ăn mồi
-                            foods = foods.filter(f => f !== targetFood); 
-                            this.hunger = Math.min(this.maxHunger, this.hunger + 35);
-                            this.gainXp(); 
-                            createExplosion(this.x, this.y, this.data.colors[0], 10);
-                        } else {
-                            // Bơi tới mồi
-                            this.targetAngle = Math.atan2(dy, dx); 
-                            speedBoost = isNight ? 1.0 : 1.4; 
-                            turnSpeed = 0.3; 
+                        this.targetAngle = Math.atan2(targetFood.y - this.y, targetFood.x - this.x);
+                        speedBoost = 1.3; turnSpeed = 0.2;
+                        if (minDist < 80) {
+                            foods = foods.filter(f => f !== targetFood);
+                            this.hunger = Math.min(100, this.hunger + 35);
+                            this.gainXp();
                         }
-                    } else {
-                        // Không có mồi -> Đi dạo theo tập tính
-                        if (isNight) {
-                            speedBoost = 0.3; turnSpeed = 0.02;
-                            if (Math.random() < 0.005) this.targetAngle += (Math.random() - 0.5) * Math.PI;
-                        } else {
-                            let flockDx = 0; let flockDy = 0; let neighbors = 0; let centerX = 0; let centerY = 0; 
-                            
-                            gameState.fishes.forEach(other => {
-                                if (other.id !== this.id && other.data.type === this.data.type && !other.data.isPredator) {
-                                    let d = Math.hypot(other.x - this.x, other.y - this.y);
-                                    if (d > 50 && d < 200) { 
-                                        flockDx += (other.x - this.x); 
-                                        flockDy += (other.y - this.y); 
-                                        centerX += other.x; centerY += other.y; 
-                                        neighbors++; 
-                                    }
-                                    
-                                    // Sinh sản
-                                    if (d < 40 && this.level >= 5 && other.level >= 5 && this.breedCooldown === 0 && other.breedCooldown === 0 && gameState.fishes.length < 30 && Math.random() < 0.001) {
-                                        this.breedCooldown = 1000; other.breedCooldown = 1000;
-                                        createExplosion(this.x, this.y, "var(--neon-pink)", 20);
-                                        let baby = new Fish(this.data); baby.x = this.x; baby.y = this.y;
-                                        gameState.fishes.push(baby); updateUI(); saveGame();
-                                    }
-                                }
-                            });
-
-                            // Góc bơi theo bầy đàn
-                            if (flockType === "horizontal") {
-                                if (neighbors > 0) {
-                                    let avgAngle = Math.atan2(flockDy, flockDx);
-                                    if (Math.abs(Math.sin(avgAngle)) > 0.5) {
-                                        avgAngle = avgAngle > 0 ? (avgAngle > Math.PI/2 ? Math.PI : 0) : (avgAngle < -Math.PI/2 ? Math.PI : 0);
-                                    }
-                                    this.targetAngle = avgAngle; 
-                                    turnSpeed = 0.02; 
-                                } else {
-                                    if (Math.random() < 0.01) this.targetAngle = Math.random() > 0.5 ? 0 : Math.PI; 
-                                }
-                            } else if (flockType === "circular") {
-                                if (neighbors > 0) {
-                                    centerX /= neighbors; centerY /= neighbors; 
-                                    let angleToCenter = Math.atan2(centerY - this.y, centerX - this.x);
-                                    this.targetAngle = angleToCenter + Math.PI / 2; 
-                                    turnSpeed = 0.03;
-                                } else {
-                                    this.targetAngle += 0.01; 
-                                }
-                            } else {
-                                // Tự do
-                                if (Math.random() < 0.02) this.targetAngle += (Math.random() - 0.5) * Math.PI;
-                            }
-                        }
+                    } else if (Math.random() < 0.005) {
+                        this.targetAngle += (Math.random() - 0.5) * 2;
                     }
                 }
 
-                // ==========================================
-                // VẬT LÝ DI CHUYỂN CUỐI CÙNG (An toàn tuyệt đối)
-                // ==========================================
-                
-                // Xác định viền an toàn (nếu đang có mục tiêu thì cho bơi sát mép)
-                let isHunting = this.fleeTimer > 0 || this.data.isPredator || (this.targetAngle !== this.currentAngle && turnSpeed > 0.1);
-                const margin = isHunting ? 15 : 100;
-                
-                // Tránh tường mềm mại
-                if (this.x < margin) this.targetAngle = 0; 
+                // VẬT LÝ BIÊN AN TOÀN
+                const margin = (this.fleeTimer > 0 || this.data.isPredator) ? 20 : 120;
+                if (this.x < margin) this.targetAngle = 0;
                 if (this.x > width - margin) this.targetAngle = Math.PI;
-                if (this.y < margin) this.targetAngle = Math.PI / 2; 
+                if (this.y < margin) this.targetAngle = Math.PI / 2;
                 if (this.y > height - margin) this.targetAngle = -Math.PI / 2;
 
-                // TƯỜNG CỨNG: Bắt buộc ép tọa độ nằm trong màn hình (Chống mất cá)
                 this.x = Math.max(10, Math.min(width - 10, this.x));
                 this.y = Math.max(10, Math.min(height - 10, this.y));
 
-                // Bẻ lái mượt mà
                 let angleDiff = this.targetAngle - this.currentAngle;
-                while (angleDiff > Math.PI) angleDiff -= Math.PI * 2; 
+                while (angleDiff > Math.PI) angleDiff -= Math.PI * 2;
                 while (angleDiff < -Math.PI) angleDiff += Math.PI * 2;
                 this.currentAngle += angleDiff * turnSpeed;
 
-                // Tính toán vận tốc và áp dụng vào tọa độ
-                let currentSpeed = this.data.speed * speedBoost * 0.6; // Nhân 0.6 để giảm tốc độ chung
-                this.vx = Math.cos(this.currentAngle) * currentSpeed; 
-                this.vy = Math.sin(this.currentAngle) * currentSpeed;
-                
-                // Kiểm tra an toàn cuối cùng: Nếu vx hoặc vy bị lỗi NaN thì reset về 0
-                if(isNaN(this.vx)) this.vx = 0;
-                if(isNaN(this.vy)) this.vy = 0;
-
-                this.x += this.vx; 
-                this.y += this.vy; 
-                this.swimCycle += 0.1 * currentSpeed;
+                // TỐC ĐỘ CHILL
+                let currentSpeed = this.data.speed * speedBoost * 0.45;
+                this.x += Math.cos(this.currentAngle) * currentSpeed;
+                this.y += Math.sin(this.currentAngle) * currentSpeed;
+                this.swimCycle += 0.08 * speedBoost;
             }
 
             // TÍNH NĂNG MỚI: MỞ KHÓA KỸ NĂNG KHI TIẾN HÓA LEVEL 5
@@ -704,6 +571,7 @@
 
                 // --- VẼ HÌNH DÁNG ---
                 // --- VẼ CÁC HÌNH DÁNG (ĐỒ HỌA CHÂN THỰC & MỀM MẠI) ---
+                
                 if (shape === "turtle") {
                     // 🐢 RÙA BIỂN
                     let flap = Math.sin(this.swimCycle * 1.5) * 0.6; 
@@ -731,7 +599,26 @@
                     // Mắt rùa
                     ctx.fillStyle = "white"; ctx.beginPath(); ctx.arc(21, -3, 2, 0, Math.PI * 2); ctx.arc(21, 3, 2, 0, Math.PI * 2); ctx.fill();
                     ctx.fillStyle = "black"; ctx.beginPath(); ctx.arc(22, -3, 1, 0, Math.PI * 2); ctx.arc(22, 3, 1, 0, Math.PI * 2); ctx.fill();
-
+                    if (this.fleeTimer > 0) {
+                    // Tạo quầng sáng đỏ lan tỏa
+                    ctx.shadowBlur = 15;
+                    ctx.shadowColor = "#ff0000";
+                    
+                    // Hiệu ứng nhấp nháy (chớp tắt 5 lần/giây)
+                    if (Math.floor(Date.now() / 200) % 2 === 0) {
+                        // Chế độ hòa trộn source-atop: vẽ màu đỏ đè lên hình con cá
+                        ctx.globalCompositeOperation = "source-atop";
+                        ctx.fillStyle = "rgba(255, 0, 0, 0.6)"; // Màu đỏ bán trong suốt
+                        
+                        // Vẽ một hình chữ nhật bao phủ toàn bộ vùng vẽ cá
+                        // (source-atop sẽ tự cắt để chỉ giữ lại phần màu đỏ nằm trên cá)
+                        ctx.fillRect(-40, -40, 80, 80); 
+                        
+                        // Reset lại chế độ hòa trộn mặc định
+                        ctx.globalCompositeOperation = "source-over";
+                    }
+                    ctx.shadowBlur = 0; // Reset bóng
+                }
                 } else if (shape === "ray") {
                     // 🦇 CÁ ĐUỐI (Manta Ray)
                     let flap = Math.sin(this.swimCycle * 1.2) * 8; 
@@ -759,7 +646,26 @@
                     // Mắt dẹt
                     ctx.fillStyle = "white"; ctx.beginPath(); ctx.ellipse(12, -7, 2.5, 1.5, -Math.PI/8, 0, Math.PI * 2); ctx.ellipse(12, 7, 2.5, 1.5, Math.PI/8, 0, Math.PI * 2); ctx.fill();
                     ctx.fillStyle = "black"; ctx.beginPath(); ctx.arc(12.5, -7, 1, 0, Math.PI * 2); ctx.arc(12.5, 7, 1, 0, Math.PI * 2); ctx.fill();
-
+                    if (this.fleeTimer > 0) {
+                    // Tạo quầng sáng đỏ lan tỏa
+                    ctx.shadowBlur = 15;
+                    ctx.shadowColor = "#ff0000";
+                    
+                    // Hiệu ứng nhấp nháy (chớp tắt 5 lần/giây)
+                    if (Math.floor(Date.now() / 200) % 2 === 0) {
+                        // Chế độ hòa trộn source-atop: vẽ màu đỏ đè lên hình con cá
+                        ctx.globalCompositeOperation = "source-atop";
+                        ctx.fillStyle = "rgba(255, 0, 0, 0.6)"; // Màu đỏ bán trong suốt
+                        
+                        // Vẽ một hình chữ nhật bao phủ toàn bộ vùng vẽ cá
+                        // (source-atop sẽ tự cắt để chỉ giữ lại phần màu đỏ nằm trên cá)
+                        ctx.fillRect(-40, -40, 80, 80); 
+                        
+                        // Reset lại chế độ hòa trộn mặc định
+                        ctx.globalCompositeOperation = "source-over";
+                    }
+                    ctx.shadowBlur = 0; // Reset bóng
+                }
                 } else if (shape === "jellyfish") {
                     // 🎐 SỨA (Trong suốt, nấm lượn sóng)
                     ctx.globalAlpha = 0.8; // Độ trong suốt của sứa
@@ -787,7 +693,26 @@
                     ctx.beginPath(); ctx.arc(10, -5, 2, 0, Math.PI*2); ctx.arc(12, 4, 1.5, 0, Math.PI*2); ctx.fill();
                     
                     ctx.globalAlpha = 1; // Trả lại Opacity bình thường cho các con khác
-
+                    if (this.fleeTimer > 0) {
+                    // Tạo quầng sáng đỏ lan tỏa
+                    ctx.shadowBlur = 15;
+                    ctx.shadowColor = "#ff0000";
+                    
+                    // Hiệu ứng nhấp nháy (chớp tắt 5 lần/giây)
+                    if (Math.floor(Date.now() / 200) % 2 === 0) {
+                        // Chế độ hòa trộn source-atop: vẽ màu đỏ đè lên hình con cá
+                        ctx.globalCompositeOperation = "source-atop";
+                        ctx.fillStyle = "rgba(255, 0, 0, 0.6)"; // Màu đỏ bán trong suốt
+                        
+                        // Vẽ một hình chữ nhật bao phủ toàn bộ vùng vẽ cá
+                        // (source-atop sẽ tự cắt để chỉ giữ lại phần màu đỏ nằm trên cá)
+                        ctx.fillRect(-40, -40, 80, 80); 
+                        
+                        // Reset lại chế độ hòa trộn mặc định
+                        ctx.globalCompositeOperation = "source-over";
+                    }
+                    ctx.shadowBlur = 0; // Reset bóng
+                }
                 } else if (shape === "seahorse") {
                     // 🐉 CÁ NGỰA (Đồ họa chân thực & Chuyển động đa khớp)
                     let flutter = Math.sin(this.swimCycle * 5) * 3; // Vây rung bần bật
@@ -844,7 +769,26 @@
                     ctx.arc(-10, 5, 5, Math.PI, 0); 
                     ctx.stroke();
                     ctx.restore();
-
+                    if (this.fleeTimer > 0) {
+                    // Tạo quầng sáng đỏ lan tỏa
+                    ctx.shadowBlur = 15;
+                    ctx.shadowColor = "#ff0000";
+                    
+                    // Hiệu ứng nhấp nháy (chớp tắt 5 lần/giây)
+                    if (Math.floor(Date.now() / 200) % 2 === 0) {
+                        // Chế độ hòa trộn source-atop: vẽ màu đỏ đè lên hình con cá
+                        ctx.globalCompositeOperation = "source-atop";
+                        ctx.fillStyle = "rgba(255, 0, 0, 0.6)"; // Màu đỏ bán trong suốt
+                        
+                        // Vẽ một hình chữ nhật bao phủ toàn bộ vùng vẽ cá
+                        // (source-atop sẽ tự cắt để chỉ giữ lại phần màu đỏ nằm trên cá)
+                        ctx.fillRect(-40, -40, 80, 80); 
+                        
+                        // Reset lại chế độ hòa trộn mặc định
+                        ctx.globalCompositeOperation = "source-over";
+                    }
+                    ctx.shadowBlur = 0; // Reset bóng
+                }
                 }else if (shape === "shark") {
                     // 1. Chuyển động Đuôi (Classic quạt dứt khoát)
                     let tailWag = Math.sin(this.swimCycle * 1.5) * 0.3;
@@ -902,7 +846,26 @@
                     
                     ctx.shadowBlur = 0; // Reset bóng
                     // ==========================================
-    
+                    if (this.fleeTimer > 0) {
+                    // Tạo quầng sáng đỏ lan tỏa
+                    ctx.shadowBlur = 15;
+                    ctx.shadowColor = "#ff0000";
+                    
+                    // Hiệu ứng nhấp nháy (chớp tắt 5 lần/giây)
+                    if (Math.floor(Date.now() / 200) % 2 === 0) {
+                        // Chế độ hòa trộn source-atop: vẽ màu đỏ đè lên hình con cá
+                        ctx.globalCompositeOperation = "source-atop";
+                        ctx.fillStyle = "rgba(255, 0, 0, 0.6)"; // Màu đỏ bán trong suốt
+                        
+                        // Vẽ một hình chữ nhật bao phủ toàn bộ vùng vẽ cá
+                        // (source-atop sẽ tự cắt để chỉ giữ lại phần màu đỏ nằm trên cá)
+                        ctx.fillRect(-40, -40, 80, 80); 
+                        
+                        // Reset lại chế độ hòa trộn mặc định
+                        ctx.globalCompositeOperation = "source-over";
+                    }
+                    ctx.shadowBlur = 0; // Reset bóng
+                }
                 }
                 
                 else {
@@ -948,6 +911,32 @@
                     ctx.beginPath(); ctx.arc(15, -4, 1.8, 0, Math.PI * 2); ctx.fillStyle = "black"; ctx.fill(); 
                     // Đốm sáng nhỏ xíu trong mắt (Catchlight)
                     ctx.fillStyle = "white"; ctx.beginPath(); ctx.arc(15.5, -4.5, 0.8, 0, Math.PI*2); ctx.fill();
+                    // ==========================================
+                // ✨ [MỚI] HIỆU ỨNG NHẤP NHÁY ĐỎ KHI BỊ THƯƠNG (BỊ CẮN)
+                // ==========================================
+                // Chỉ áp dụng cho cá con khi đang fleeTimer > 0
+                if (this.fleeTimer > 0) {
+                    // Tạo quầng sáng đỏ lan tỏa
+                    ctx.shadowBlur = 15;
+                    ctx.shadowColor = "#ff0000";
+                    
+                    // Hiệu ứng nhấp nháy (chớp tắt 5 lần/giây)
+                    if (Math.floor(Date.now() / 200) % 2 === 0) {
+                        // Chế độ hòa trộn source-atop: vẽ màu đỏ đè lên hình con cá
+                        ctx.globalCompositeOperation = "source-atop";
+                        ctx.fillStyle = "rgba(255, 0, 0, 0.6)"; // Màu đỏ bán trong suốt
+                        
+                        // Vẽ một hình chữ nhật bao phủ toàn bộ vùng vẽ cá
+                        // (source-atop sẽ tự cắt để chỉ giữ lại phần màu đỏ nằm trên cá)
+                        ctx.fillRect(-40, -40, 80, 80); 
+                        
+                        // Reset lại chế độ hòa trộn mặc định
+                        ctx.globalCompositeOperation = "source-over";
+                    }
+                    ctx.shadowBlur = 0; // Reset bóng
+                }
+                // ==========================================
+                    
                 }
                 // ... (Phần vẽ đuôi, mắt cá, mai rùa... giữ nguyên) ...
 
