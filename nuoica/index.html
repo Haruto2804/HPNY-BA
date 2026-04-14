@@ -848,9 +848,18 @@
                 this.fleeTimer = 0;
                 this.fleeAngle = 0;
                 this.isDragged = false; // <-- THÊM DÒNG NÀY
+                this.targetHp = this.hp; // <-- THÊM DÒNG NÀY (Máu mục tiêu)
             }
             update() {
                 if (this.isDragged) return; // Nếu đang bị kéo thì đứng im không tự bơi nữa
+                // ✨ [MỚI] HIỆU ỨNG TỤT MÁU MƯỢT MÀ
+                // Hp sẽ trượt dần về targetHp với tốc độ 5% mỗi khung hình
+                if (this.hp !== this.targetHp) {
+                    this.hp += (this.targetHp - this.hp) * 0.05;
+
+                    // Nếu máu đã rất gần mục tiêu thì cho bằng luôn để tránh số thập phân vô hạn
+                    if (Math.abs(this.hp - this.targetHp) < 0.1) this.hp = this.targetHp;
+                }
                 if (this.breedCooldown > 0) this.breedCooldown--;
 
                 // Logic đói bụng & sống sót
@@ -862,17 +871,18 @@
                     if (this.skill === "Bụng Không Đáy 🛡️") hungerDepletion *= 0.5;
                     this.hunger -= hungerDepletion;
 
+
                     // 🩸 XỬ LÝ MẤT MÁU KHI ĐÓI BỤNG
                     if (this.hunger <= 0) {
                         this.hunger = 0;
-                        this.hp -= 0.15; // Tụt máu từ từ
-                        this.fleeTimer = 5; // Liên tục kích hoạt chớp đỏ kêu cứu
-                        if (this.hp <= 0) {
+                        this.targetHp -= 0.15; // ĐỔI THÀNH targetHp
+                        this.fleeTimer = 5;
+                        if (this.targetHp <= 0) { // ĐỔI THÀNH targetHp
                             this.isDead = true;
                             return;
                         }
-                    } else if (this.hunger > 50 && this.hp < 100) {
-                        this.hp += 0.05; // Tự hồi máu nếu đang no nê
+                    } else if (this.hunger > 50 && this.targetHp < 100) { // ĐỔI THÀNH targetHp
+                        this.targetHp += 0.05; // Tự hồi máu nếu đang no nê
                     }
                 }
 
@@ -883,38 +893,65 @@
                 let isHunting = false;
 
                 // 🦈 TRƯỜNG HỢP 1: CÁ MẬP SĂN MỒI
+                // 🦈 TRƯỜNG HỢP 1: CÁ MẬP SĂN MỒI
                 if (this.data.isPredator) {
+                    this.hunger = 100; // Cá mập không bao giờ đói
+
+                    // 🛡️ CHỐT CHẶN AN TOÀN: Tránh lỗi NaN làm cá mập tàng hình
+                    if (isNaN(this.targetHp)) this.targetHp = 100;
+                    if (isNaN(this.hp)) this.hp = 100;
+                    if (isNaN(this.x) || isNaN(this.y)) { this.x = width / 2; this.y = height / 2; } // Reset về giữa hồ nếu lỗi tọa độ
+
                     let targetPrey = null;
                     let minPreyDist = Infinity;
+
+                    // Tìm con mồi gần nhất
                     gameState.fishes.forEach(other => {
                         if (other.id !== this.id && !other.data.isPredator && !other.isDead) {
                             let d = Math.hypot(other.x - this.x, other.y - this.y);
-                            let inSanctuary = (typeof sanctuary !== 'undefined' && sanctuary) ?
-                                Math.hypot(other.x - sanctuary.x, other.y - sanctuary.y) < sanctuary.radius : false;
-                            if (!inSanctuary && d < 500 && d < minPreyDist) { minPreyDist = d; targetPrey = other; }
+                            if (d < 500 && d < minPreyDist) {
+                                minPreyDist = d;
+                                targetPrey = other;
+                            }
                         }
                     });
 
                     if (targetPrey) {
-                        isHunting = true; // Đang đi săn, bỏ qua né tường
+                        isHunting = true;
                         let dx = targetPrey.x - this.x;
                         let dy = targetPrey.y - this.y;
+
                         if (minPreyDist < 150 && this.biteTimer <= 0) this.biteTimer = 25;
                         if (this.biteTimer > 0) this.biteTimer--;
 
+                        // 💥 KHI ÁP SÁT -> NGOẠM!
                         if (minPreyDist < 70) {
-                            targetPrey.hp -= 40;
+                            // Chốt chặn an toàn cho con mồi
+                            if (isNaN(targetPrey.targetHp)) targetPrey.targetHp = targetPrey.hp || 100;
+
+                            targetPrey.targetHp -= 40;
                             targetPrey.fleeTimer = 120;
                             targetPrey.fleeAngle = Math.atan2(dy, dx);
-                            targetPrey.y -= 15;
+
                             if (typeof createExplosion === 'function') createExplosion(targetPrey.x, targetPrey.y, "#ff4757", 30);
-                            if (targetPrey.hp <= 0) targetPrey.isDead = true;
-                            this.x -= Math.cos(this.currentAngle) * 20;
+
+                            // Nếu mồi chết
+                            if (targetPrey.targetHp <= 0) {
+                                targetPrey.isDead = true;
+                                this.targetHp = Math.min(100, this.targetHp + 20); // Cá mập hồi máu 
+                            }
+
+                            // ✅ CÁCH KHỰNG LẠI CHUẨN: Dùng speedBoost thay vì đổi tọa độ
+                            speedBoost = 0.3; // Chậm lại 70% để "nhai" mồi
+                            turnSpeed = 0.05;
                         } else {
+                            // Đuổi theo
                             this.targetAngle = Math.atan2(dy, dx);
-                            speedBoost = 2.2; turnSpeed = 0.12;
+                            speedBoost = 2.2;
+                            turnSpeed = 0.12;
                         }
                     } else {
+                        // Đi dạo nếu không có mồi
                         if (Math.random() < 0.01) this.targetAngle += (Math.random() - 0.5) * Math.PI;
                         speedBoost = 0.6;
                     }
@@ -1394,7 +1431,39 @@
                     ctx.fillStyle = "#ff4757";
                     ctx.fillRect(barX, barY, barW * (Math.max(0, this.hp) / 100), barH); // Máu đỏ
                 }
+                // 🩸 [MỚI] HIỂN THỊ THANH MÁU (HP BAR) - BO TRÒN ĐẸP MẮT
+                // 🩸 [MỚI] HIỂN THỊ THANH MÁU TỤT MƯỢT (HP BAR TWEENING)
+                if (this.fleeTimer > 0 && !this.isDead) {
+                    let barW = 30 * scale;
+                    let barH = 4 * scale;
+                    let barX = this.x - barW / 2;
+                    let barY = this.y - 35 * scale;
+                    let radius = 2 * scale;
 
+                    // 1. Nền thanh máu (Đen)
+                    ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
+                    ctx.beginPath();
+                    ctx.roundRect(barX, barY, barW, barH, radius);
+                    ctx.fill();
+
+                    // 2. Vệt máu tụt (Màu cam/trắng mờ) - Trượt dần theo HP
+                    let tweenHpWidth = barW * (Math.max(0, this.hp) / 100);
+                    if (tweenHpWidth > 0) {
+                        ctx.fillStyle = "rgba(255, 165, 0, 0.8)"; // Màu cam
+                        ctx.beginPath();
+                        ctx.roundRect(barX, barY, tweenHpWidth, barH, radius);
+                        ctx.fill();
+                    }
+
+                    // 3. Máu thực tế (Đỏ đậm) - Cập nhật ngay lập tức theo targetHp
+                    let actualHpWidth = barW * (Math.max(0, this.targetHp) / 100);
+                    if (actualHpWidth > 0) {
+                        ctx.fillStyle = "#ff4757";
+                        ctx.beginPath();
+                        ctx.roundRect(barX, barY, actualHpWidth, barH, radius);
+                        ctx.fill();
+                    }
+                }
                 // [MỚI] HIỂN THỊ TRẠNG THÁI TRÊN ĐẦU CÁ
                 ctx.font = "bold 10px Quicksand"; ctx.textAlign = "center";
                 let textY = this.y - 45 * scale;
@@ -1491,20 +1560,21 @@
                 let rarityColor = hoveredFish.data.rarity === "Huyền thoại" ? "var(--neon-pink)" : hoveredFish.data.rarity === "Hiếm" ? "var(--neon-blue)" : "white";
                 let hungerColor = hoveredFish.hunger > 60 ? "#32CD32" : hoveredFish.hunger > 25 ? "var(--gold)" : "#ff4757";
                 let hungerStatus = hoveredFish.hunger > 60 ? "No Nê" : hoveredFish.hunger > 25 ? "Hơi đói" : "Sắp chết đói!";
-
+                let hpColor = hoveredFish.hp > 60 ? "#2ed573" : hoveredFish.hp > 25 ? "#ffa502" : "#ff4757";
                 // Lấy giải thích kỹ năng
                 let skillDesc = SKILL_DESC[hoveredFish.skill] || "";
 
                 tooltip.innerHTML = `
-                    <div class="tt-title" style="color: ${rarityColor};">${hoveredFish.data.type}</div>
-                    <div class="tt-row"><span>Độ hiếm:</span> <b>${hoveredFish.data.rarity}</b></div>
-                    <div class="tt-row"><span>Cấp độ:</span> <b>Lv.${hoveredFish.level}</b></div>
-                    <div class="tt-row"><span>Kích cỡ:</span> <b>${sizeCm} cm</b></div>
-                    <div class="tt-row"><span>Kỹ năng:</span> <b style="color: var(--gold);">${hoveredFish.skill}</b></div>
-                    <div class="tt-skill-desc" style="font-size: 11px; color: rgba(255,255,255,0.7); text-align: right; font-style: italic; margin-bottom: 8px;">${skillDesc}</div>
-                    <div class="tt-row" style="margin-top: 10px; color: ${hungerColor};"><span>Trạng thái:</span> <b>${hungerStatus}</b></div>
-                    <div class="tt-bar-bg"><div class="tt-bar-fill" style="width: ${hoveredFish.hunger}%; background: ${hungerColor};"></div></div>
-                `;
+            <div class="tt-title" style="color: ${rarityColor};">${hoveredFish.data.type}</div>
+            <div class="tt-row"><span>Cấp độ:</span> <b>Lv.${hoveredFish.level}</b></div>
+            <div class="tt-row"><span>Kỹ năng:</span> <b style="color: var(--gold);">${hoveredFish.skill}</b></div>
+            
+            <div class="tt-row" style="margin-top: 10px; color: ${hpColor};"><span>Sinh lực (HP):</span> <b>${Math.ceil(hoveredFish.hp)}%</b></div>
+            <div class="tt-bar-bg"><div class="tt-bar-fill" style="width: ${hoveredFish.hp}%; background: ${hpColor};"></div></div>
+
+            <div class="tt-row" style="margin-top: 5px; color: ${hungerColor};"><span>Trạng thái:</span> <b>${hungerStatus}</b></div>
+            <div class="tt-bar-bg"><div class="tt-bar-fill" style="width: ${hoveredFish.hunger}%; background: ${hungerColor};"></div></div>
+        `;
                 tooltip.style.left = (mouseX + 20) + 'px';
                 tooltip.style.top = (mouseY + 20) + 'px';
                 tooltip.style.display = 'block';
@@ -1770,17 +1840,17 @@
             let hungerColor = fish.hunger > 60 ? "#32CD32" : fish.hunger > 25 ? "var(--gold)" : "#ff4757";
             let hungerStatus = fish.hunger > 60 ? "No Nê" : fish.hunger > 25 ? "Hơi đói" : "Sắp chết đói!";
             let skillDesc = SKILL_DESC[fish.skill] || "";
-
+            let hpColor = fish.hp > 60 ? "#2ed573" : fish.hp > 25 ? "#ffa502" : "#ff4757";
             tooltip.innerHTML = `
-                <div class="tt-title" style="color: ${rarityColor};">${fish.data.type}</div>
-                <div class="tt-row"><span>Độ hiếm:</span> <b>${fish.data.rarity}</b></div>
-                <div class="tt-row"><span>Cấp độ:</span> <b>Lv.${fish.level}</b></div>
-                <div class="tt-row"><span>Kích cỡ:</span> <b>${sizeCm} cm</b></div>
-                <div class="tt-row"><span>Kỹ năng:</span> <b style="color: var(--gold);">${fish.skill}</b></div>
-                <div class="tt-skill-desc" style="font-size: 11px; color: rgba(255,255,255,0.7); text-align: right; font-style: italic; margin-bottom: 8px;">${skillDesc}</div>
-                <div class="tt-row" style="margin-top: 10px; color: ${hungerColor};"><span>Trạng thái:</span> <b>${hungerStatus}</b></div>
-                <div class="tt-bar-bg"><div class="tt-bar-fill" style="width: ${fish.hunger}%; background: ${hungerColor};"></div></div>
-            `;
+            <div class="tt-title" style="color: ${rarityColor};">${fish.data.type}</div>
+            <div class="tt-row"><span>Cấp độ:</span> <b>Lv.${fish.level}</b></div>
+            
+            <div class="tt-row" style="margin-top: 10px; color: ${hpColor};"><span>Sinh lực (HP):</span> <b>${Math.ceil(fish.hp)}%</b></div>
+            <div class="tt-bar-bg"><div class="tt-bar-fill" style="width: ${fish.hp}%; background: ${hpColor};"></div></div>
+
+            <div class="tt-row" style="margin-top: 5px; color: ${hungerColor};"><span>Trạng thái:</span> <b>${hungerStatus}</b></div>
+            <div class="tt-bar-bg"><div class="tt-bar-fill" style="width: ${fish.hunger}%; background: ${hungerColor};"></div></div>
+        `;
 
             // Canh lề sang trái để không bị tràn màn hình
             tooltip.style.left = (e.clientX - 240) + 'px';
@@ -1818,7 +1888,7 @@
 
         // HÀM THẢ CÁ MẬP VÀO HỒ
         function spawnShark() {
-            const SHARK_DATA = { type: "Cá Mập Sát Thủ", rarity: "Đặc biệt", shape: "shark", flockStyle: "independent", colors: ["#192A56", "#718093"], speed: 1.0, scale: 3.5, isPredator: true };
+            const SHARK_DATA = { type: "Cá Mập Sát Thủ", rarity: "Đặc biệt", shape: "shark", flockStyle: "independent", colors: ["#192A56", "#718093"], speed: 4.0, scale: 3.5, isPredator: true };
             let shark = new Fish(SHARK_DATA);
             shark.x = width / 2;
             shark.y = -50; // Thả từ trên trời rớt xuống
