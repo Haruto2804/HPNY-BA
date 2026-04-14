@@ -170,22 +170,112 @@
             border-color: var(--neon-blue);
         }
 
-        .btn-slide-toggle {
+        /* 🛠️ THIẾT KẾ 2 NÚT BẰNG NHAU */
+        .btn-slide-toggle,
+        .btn-controls-toggle {
             position: absolute;
-            top: 100px;
             right: 0px;
-            background: linear-gradient(45deg, #00f3ff, #0088ff);
+            width: 120px;
+            /* Độ rộng bằng nhau */
+            height: 45px;
+            /* Chiều cao bằng nhau */
             color: white;
             border: none;
-            padding: 12px 15px 12px 12px;
-            border-radius: 20px 0 0 20px;
+            padding: 0 15px 0 10px;
+            border-radius: 25px 0 0 25px;
+            /* Bo tròn bên trái */
             cursor: pointer;
             font-weight: 900;
-            box-shadow: -5px 0 15px rgba(0, 243, 255, 0.4);
-            transition: 0.4s;
-            z-index: 9999;
-            pointer-events: auto;
             font-family: 'Quicksand';
+            font-size: 13px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 999;
+            pointer-events: auto;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+        }
+
+        /* Khác màu sắc */
+        .btn-slide-toggle {
+            top: 100px;
+            background: linear-gradient(45deg, #00f3ff, #0088ff);
+            box-shadow: -5px 0 15px rgba(0, 243, 255, 0.4);
+        }
+
+        .btn-controls-toggle {
+            top: 155px;
+            /* Cách nút trên 10px (100 + 45 + 10) */
+            background: linear-gradient(45deg, #ff00ea, #7000ff);
+            box-shadow: -5px 0 15px rgba(255, 0, 234, 0.4);
+        }
+
+        /* Hiệu ứng khi ẩn nút */
+        .btn-slide-toggle.hidden,
+        .btn-controls-toggle.hidden {
+            transform: translateX(100%);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .btn-slide-toggle:hover,
+        .btn-controls-toggle:hover {
+            padding-right: 25px;
+            width: 130px;
+        }
+
+        /* 🛠️ THIẾT KẾ 2 NÚT BẰNG NHAU */
+        .btn-slide-toggle,
+        .btn-controls-toggle {
+            position: absolute;
+            right: 0px;
+            width: 120px;
+            /* Độ rộng bằng nhau */
+            height: 45px;
+            /* Chiều cao bằng nhau */
+            color: white;
+            border: none;
+            padding: 0 15px 0 10px;
+            border-radius: 25px 0 0 25px;
+            /* Bo tròn bên trái */
+            cursor: pointer;
+            font-weight: 900;
+            font-family: 'Quicksand';
+            font-size: 13px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 999;
+            pointer-events: auto;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+        }
+
+        /* Khác màu sắc */
+        .btn-slide-toggle {
+            top: 100px;
+            background: linear-gradient(45deg, #00f3ff, #0088ff);
+            box-shadow: -5px 0 15px rgba(0, 243, 255, 0.4);
+        }
+
+        .btn-controls-toggle {
+            top: 155px;
+            /* Cách nút trên 10px (100 + 45 + 10) */
+            background: linear-gradient(45deg, #ff00ea, #7000ff);
+            box-shadow: -5px 0 15px rgba(255, 0, 234, 0.4);
+        }
+
+        /* Hiệu ứng khi ẩn nút */
+        .btn-slide-toggle.hidden,
+        .btn-controls-toggle.hidden {
+            transform: translateX(100%);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .btn-slide-toggle:hover,
+        .btn-controls-toggle:hover {
+            padding-right: 25px;
+            width: 130px;
         }
 
         .btn-slide-toggle:hover {
@@ -209,6 +299,62 @@
             left: 50%;
             transform: translateX(-50%);
             pointer-events: all;
+        }
+
+        /* Menu Điều Khiển Trượt */
+        .controls-sidebar {
+            position: absolute;
+            top: 145px;
+            /* Nằm ngay dưới nút DSTC (100px + 45px) */
+            right: 15px;
+            width: 200px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            padding: 15px;
+            transform: translateX(calc(100% + 50px));
+            /* Ẩn sang phải */
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 100;
+        }
+
+        .controls-sidebar.active {
+            transform: translateX(0);
+            /* Hiện ra */
+        }
+
+        /* Nút mở Menu Điều Khiển */
+        .btn-controls-toggle {
+            position: absolute;
+            top: 155px;
+            /* Dưới nút DSTC một chút */
+            right: 0px;
+            background: linear-gradient(45deg, #ff00ea, #7000ff);
+            color: white;
+            border: none;
+            padding: 12px 15px 12px 12px;
+            border-radius: 20px 0 0 20px;
+            cursor: pointer;
+            font-weight: 900;
+            box-shadow: -5px 0 15px rgba(255, 0, 234, 0.4);
+            transition: 0.4s;
+            z-index: 999;
+            pointer-events: auto;
+            font-family: 'Quicksand';
+        }
+
+        .btn-controls-toggle.hidden {
+            transform: translateX(150%);
+            opacity: 0;
+        }
+
+        /* Tùy chỉnh nút bên trong menu trượt */
+        .controls-sidebar .btn-main {
+            width: 100%;
+            border-radius: 12px;
+            text-align: center;
+            padding: 10px;
+            margin: 0;
         }
 
         /* Mặc định cho màn hình lớn (PC) */
@@ -274,18 +420,56 @@
             border: none !important;
         }
 
+        /* 💡 THIẾT KẾ LẠI PHẦN HƯỚNG DẪN */
         .tutorial {
             position: absolute;
-            bottom: 85px;
-            left: 50%;
-            transform: translateX(-50%);
-            color: rgba(255, 255, 255, 0.8);
-            text-align: center;
-            font-size: 12px;
-            pointer-events: none;
-            width: 90%;
-            line-height: 1.5;
-            text-shadow: 0 2px 4px #000;
+            top: 300px;
+            left: 15px;
+            width: 280px;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 15px;
+            color: white;
+            font-size: 13px;
+            line-height: 1.6;
+            z-index: 1000;
+            pointer-events: auto;
+            /* Cho phép tương tác để đóng */
+            transition: all 0.5s ease;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .tutorial b {
+            color: var(--neon-blue);
+        }
+
+        /* Nút ẩn hướng dẫn */
+        .close-tutorial {
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            opacity: 0.5;
+        }
+
+        .close-tutorial:hover {
+            opacity: 1;
+        }
+
+        /* Trạng thái khi thu nhỏ */
+        .tutorial.minimized {
+            width: 45px;
+            height: 45px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            cursor: pointer;
+            overflow: hidden;
         }
 
         /* ✨ TOOLTIP HIỂN THỊ THÔNG TIN CÁ */
@@ -420,11 +604,32 @@
             border-color: rgba(0, 243, 255, 0.4);
         }
 
+        /* 🛒 CẬP NHẬT SHOP GRID RESPONSIVE */
         .shop-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 15px;
+            /* Mặc định cho di động cực nhỏ: 2 cột */
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
             margin-top: 15px;
+            max-height: 400px;
+            /* Thêm cuộn nếu quá nhiều đồ */
+            overflow-y: auto;
+            padding: 5px;
+        }
+
+        /* Cho điện thoại trung bình (iPhone, Samsung...) */
+        @media (min-width: 400px) {
+            .shop-grid {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            }
+        }
+
+        /* Cho máy tính hoặc máy tính bảng */
+        @media (min-width: 768px) {
+            .shop-grid {
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+                gap: 15px;
+            }
         }
 
         .shop-item {
@@ -570,6 +775,42 @@
                 width: 240px;
             }
         }
+
+        /* 🗑️ THÙNG RÁC XÓA ĐỒ */
+        #trash-zone {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            width: 70px;
+            height: 70px;
+            background: rgba(255, 71, 87, 0.2);
+            border: 2px dashed #ff4757;
+            border-radius: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #ff4757;
+            font-size: 24px;
+            opacity: 0;
+            /* Mặc định ẩn */
+            pointer-events: none;
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+
+        #trash-zone.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: scale(1.1);
+            box-shadow: 0 0 20px rgba(255, 71, 87, 0.4);
+        }
+
+        #trash-zone.hover {
+            background: rgba(255, 71, 87, 0.6);
+            color: white;
+            transform: scale(1.3);
+        }
     </style>
 </head>
 
@@ -578,6 +819,10 @@
         <source src="./videos/underrwater_bg.mp4" type="video/mp4">
     </video>
 
+    <div id="trash-zone" id="trash-zone">
+        <span>🗑️</span>
+        <span style="font-size: 10px; font-weight: 900;">XÓA</span>
+    </div>
     <canvas id="gameCanvas"></canvas>
 
     <div id="fish-tooltip"></div>
@@ -610,18 +855,35 @@
             <div id="inventory-list"></div>
         </div>
 
-        <div class="tutorial">👆 <b>CHUỘT TRÁI</b> thả mồi | <b>RÀ CHUỘT LÊN CÁ</b> xem thông tin<br>Cá sẽ <b>chết nếu
-                bị bỏ đói</b>. Tăng Level giúp cá to lên và tiến hóa Kỹ Năng ✨</div>
+        <div class="tutorial" id="tutorial-box" onclick="toggleTutorial(true)">
+            <span class="close-tutorial" id="close-tuto-btn"
+                onclick="event.stopPropagation(); toggleTutorial(false)">×</span>
+            <div id="tutorial-content">
+                <span style="font-size: 18px;">💡</span> <b>HƯỚNG DẪN</b><br>
+                👆 <b>Chuột trái:</b> Thả mồi / Tương tác<br>
+                🖱️ <b>Cuộn chuột:</b> Phóng to/nhỏ đồ vật<br>
+                🔍 <b>Rà chuột:</b> Xem thông tin chi tiết cá<br>
+                ⚠️ <b>Lưu ý:</b> Cá sẽ chết nếu bị bỏ đói hoặc bị cá mập tấn công!
+            </div>
+            <div id="tutorial-icon" style="display: none; font-size: 20px;">❓</div>
+        </div>
 
-        <div class="controls">
+        <button class="btn-controls-toggle" id="btn-controls-toggle" onclick="toggleControls(true)">🛠️ CÀI ĐẶT</button>
+
+        <div class="controls-sidebar glass-panel" id="controls-sidebar">
+            <div class="close-sidebar-btn"
+                style="background: rgba(0, 243, 255, 0.1); color: #00f3ff; border-color: rgba(0, 243, 255, 0.3);"
+                onclick="toggleControls(false)">Đóng Lại ➔</div>
+
             <button class="btn-main btn-shop" onclick="openModal('shop-overlay')">🛒 Cửa Hàng</button>
             <button class="btn-main btn-epic" onclick="summonFish()">✨ Triệu Hồi</button>
-            <button class="btn-main btn-epic" onclick="toggleCinema()">Cinema</button>
-            <button class="btn-main btn-bday" onclick="openModal('bday-overlay')">🎁 CÁ SINH NHẬT</button>
+            <button class="btn-main btn-epic" style="background: #444 !important;" onclick="toggleCinema()">🎬
+                Cinema</button>
+            <button class="btn-main btn-bday" onclick="openModal('bday-overlay')">🎁 Quà Tặng</button>
             <button class="btn-main" onclick="spawnShark()"
-                style="background: linear-gradient(45deg, #ff4757, #8b0000); border: none; box-shadow: 0 0 15px rgba(255,0,0,0.5);">🦈
-                Thả Cá Mập</button>
-            <button class="btn-main" onclick="clearSave()" style="color: #ff4757;">Reset</button>
+                style="background: linear-gradient(45deg, #ff4757, #8b0000); border:none;">🦈 Thả Cá Mập</button>
+            <button class="btn-main" onclick="clearSave()"
+                style="color: #ff4757; background: rgba(255,255,255,0.1) !important;">♻️ Reset</button>
         </div>
     </div>
 
@@ -663,12 +925,43 @@
                     <button class="btn-main btn-shop" style="width: 100%; padding: 8px; margin-top: 10px;"
                         onclick="buyItem('levelUp', 1500)">1500 💎</button>
                 </div>
+
                 <div class="shop-item">
                     <div style="font-size: 35px; margin-bottom: 5px;">🔮</div>
                     <div style="font-weight: 800; font-size: 14px;">Tiến Hóa</div>
                     <button class="btn-main btn-epic" style="width: 100%; padding: 8px; margin-top: 10px;"
                         onclick="buyItem('evolve', 3000)">3000 💎</button>
                 </div>
+                <div class="shop-item">
+                    <img src="./images/decor/ransanho_1.png"
+                        style="width: 50px; height: 50px; object-fit: contain; margin-bottom: 5px; filter: drop-shadow(0 0 10px #ff4757);"
+                        alt="San Hô">
+
+                    <div style="font-size: 12px; font-weight:800;">Rạn san hô 1</div>
+                    <button class="btn-main btn-shop" style="width:100%; padding:5px; font-size:12px;"
+                        onclick="buyItem('coral_1', 300)">300 💎</button>
+                </div>
+                <div class="shop-item">
+                    <img src="./images/decor/ransanho_2.png"
+                        style="width: 50px; height: 50px; object-fit: contain; margin-bottom: 5px; filter: drop-shadow(0 0 10px #ff4757);"
+                        alt="San Hô">
+
+                    <div style="font-size: 12px; font-weight:800;">Rạn san hô 2</div>
+                    <button class="btn-main btn-shop" style="width:100%; padding:5px; font-size:12px;"
+                        onclick="buyItem('coral_2', 300)">300 💎</button>
+                </div>
+
+                <div class="shop-item">
+                    <img src="./images/decor/shipwreck_1.png"
+                        style="width: 50px; height: 50px; object-fit: contain; margin-bottom: 5px; filter: drop-shadow(0 0 10px #FFD700);"
+                        alt="Rương">
+
+                    <div style="font-size: 12px; font-weight:800;">Tàu chìm 1</div>
+                    <button class="btn-main btn-shop" style="width:100%; padding:5px; font-size:12px;"
+                        onclick="buyItem('shipwreck_1', 700)">500 💎</button>
+                </div>
+
+
             </div>
             <button class="btn-main"
                 style="margin-top: 20px; background: transparent; border-color: rgba(255,255,255,0.3);"
@@ -744,15 +1037,15 @@
             { type: "Thần Rùa Huyền Vũ", rarity: "Huyền thoại", shape: "turtle", flockStyle: "independent", colors: ["#000000", "#2F4F4F"], speed: 0.6, scale: 3.0 }];
 
         // --- 2. BIẾN TOÀN CỤC & TỌA ĐỘ CHUỘT ---
+
         const SAFE_DISTANCE = 150; // Khoảng cách cá bắt đầu thấy sợ và bỏ chạy
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
         let width, height;
         let trackedFishId = null; // ID của con cá đang bị theo dõi
-        let gameState = { coins: 1000000, fishes: [], lastId: 0 };
-        let foods = []; let particles = []; let corals = []; let seaweeds = []; let planktons = [];
+        let gameState = { coins: 1000000, fishes: [], decorations: [], lastId: 0 }; let foods = []; let particles = []; let corals = []; let seaweeds = []; let planktons = [];
         let currentHour = 12; let isNight = false;
-
+        let draggedDecor = null;
         // TỪ ĐIỂN GIẢI THÍCH KỸ NĂNG
         const SKILL_DESC = {
             "Chưa có": "Đạt Level 5 để thức tỉnh kỹ năng.",
@@ -819,7 +1112,77 @@
                 ctx.stroke(); ctx.restore();
             }
         }
+        class Decoration {
+            constructor(type, saveObj = null) {
+                this.id = saveObj ? saveObj.id : ++gameState.lastId;
+                this.type = type;
+                this.x = saveObj ? saveObj.x : width / 2;
+                this.y = saveObj ? saveObj.y : height - 100;
+                this.isDragged = false;
 
+                // THƯ VIỆN CÓ CẢ SRC (ẢNH) VÀ EMOJI (DỰ PHÒNG)
+                const CONFIG = {
+                    'chest': { src: "./images/decor/chest.png", emoji: "📦", size: 60, glow: "#FFD700" },
+                    'anchor': { src: "./images/decor/anchor.png", emoji: "⚓", size: 80, glow: "#00f3ff" },
+                    'shipwreck_1': { src: "./images/decor/shipwreck_1.png", emoji: "🏛️", size: 500, glow: "#a29bfe" },
+                    'coral_1': { src: "./images/decor/ransanho_1.png", emoji: "🪸", size: 400, glow: "#ff4757" },
+                    'coral_2': { src: "./images/decor/ransanho_2.png", emoji: "🪸", size: 400, glow: "#54a0ff" },
+                    'seaweed': { src: "./images/decor/seaweed.png", emoji: "🌿", size: 80, glow: "#55efc4" },
+                    'kelp': { src: "./images/decor/kelp.png", emoji: "🎋", size: 90, glow: "#00b894" },
+                    'skull': { src: "./images/decor/skull.png", emoji: "💀", size: 50, glow: "#dfe6e9" },
+                    'crystal': { src: "./images/decor/crystal.png", emoji: "💎", size: 45, glow: "#00f3ff" },
+                    'statue': { src: "./images/decor/statue.png", emoji: "🗿", size: 100, glow: "#636e72" },
+                    'reef_large': { src: "./images/decor/reef_large.png", emoji: "🪸", size: 160, glow: "#ff7f50" }
+                };
+
+                const item = CONFIG[type] || CONFIG['chest'];
+                this.size = item.size;
+                this.glow = item.glow;
+                this.emoji = item.emoji; // Lưu lại emoji để dự phòng
+
+                // KIỂM SOÁT TRẠNG THÁI TẢI ẢNH (Bảo vệ Canvas khỏi lỗi)
+                this.isImageReady = false;
+                this.isImageBroken = false;
+
+                this.image = new Image();
+
+                // Khi ảnh tải thành công
+                this.image.onload = () => {
+                    this.isImageReady = true;
+                };
+
+                // Khi ảnh bị lỗi (sai đường dẫn, mất file...)
+                this.image.onerror = () => {
+                    console.warn(`Không tìm thấy ảnh cho: ${this.type}. Chuyển sang dùng Emoji.`);
+                    this.isImageBroken = true;
+                };
+
+                this.image.src = item.src;
+            }
+
+            draw() {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.shadowBlur = this.isDragged ? 30 : 15;
+                ctx.shadowColor = this.glow;
+
+                let floatY = this.isDragged ? 0 : Math.sin(Date.now() * 0.002 + this.id) * 3;
+
+                // NẾU ẢNH NGON LÀNH -> VẼ ẢNH
+                if (this.isImageReady) {
+                    ctx.drawImage(this.image, -this.size / 2, floatY - this.size / 2, this.size, this.size);
+                }
+                // NẾU ẢNH LỖI HOẶC ĐANG LOAD CHƯA XONG -> VẼ EMOJI CHỮA CHÁY
+                else if (this.isImageBroken || !this.isImageReady) {
+                    ctx.font = `${this.size}px Arial`;
+                    ctx.textAlign = "center";
+                    ctx.textBaseline = "middle";
+                    ctx.fillText(this.emoji, 0, floatY);
+                }
+
+                ctx.restore();
+            }
+        }
         class Fish {
             constructor(data, saveObj = null) {
                 this.id = saveObj ? saveObj.id : ++gameState.lastId;
@@ -1585,6 +1948,7 @@
 
         function animate() {
             drawEnvironment();
+            gameState.decorations.forEach(decor => decor.draw());
             foods.forEach((f, i) => { f.update(); f.draw(); if (f.y > height + 20) foods.splice(i, 1); });
 
             for (let i = gameState.fishes.length - 1; i >= 0; i--) {
@@ -1686,61 +2050,131 @@
 
         // --- 6. TƯƠNG TÁC & SỰ KIỆN ---
 
+        // 1. Sửa mousedown (thêm đoạn kiểm tra decor)
         window.addEventListener('mousedown', (e) => {
-            if (document.body.classList.contains('cinema-active')) {
-                toggleCinema();
-                return;
-            }
+            if (document.body.classList.contains('cinema-active')) { toggleCinema(); return; }
 
             if (e.target.tagName !== 'BUTTON' && !e.target.closest('.glass-panel') && !e.target.closest('.modal')) {
                 if (e.button === 2) {
-                    // Chuột phải (Giữ nguyên code cũ)
-                    createExplosion(e.clientX, e.clientY, "rgba(0, 243, 255, 0.8)", 40);
-                    gameState.fishes.forEach(fish => { if (Math.hypot(fish.x - e.clientX, fish.y - e.clientY) < 300) { fish.targetAngle = Math.atan2(fish.y - e.clientY, fish.x - e.clientX); fish.vx *= 3; fish.vy *= 3; } });
-                } else if (e.button === 0) { // Chuột trái
-
-                    // THÊM MỚI: Xử lý ưu tiên bắt cá trước khi thả mồi
+                    // ... (Code thả bom chuột phải giữ nguyên)
+                } else if (e.button === 0) {
+                    // Check xem có click trúng cá không
                     let clickedFish = null;
                     for (let i = gameState.fishes.length - 1; i >= 0; i--) {
                         let fish = gameState.fishes[i];
                         let hitbox = 40 * fish.baseScale * (1 + fish.level * 0.05);
-                        if (Math.hypot(e.clientX - fish.x, e.clientY - fish.y) < hitbox) {
-                            clickedFish = fish;
-                            break;
-                        }
+                        if (Math.hypot(e.clientX - fish.x, e.clientY - fish.y) < hitbox) { clickedFish = fish; break; }
                     }
 
                     if (clickedFish) {
-                        // Nếu click trúng cá -> Kéo cá
-                        draggedFish = clickedFish;
-                        draggedFish.isDragged = true;
+                        draggedFish = clickedFish; draggedFish.isDragged = true;
                     } else {
-                        // Nếu không trúng cá -> Thả mồi (Code cũ)
-                        foods.push(new Food(e.clientX, e.clientY));
-                        createExplosion(e.clientX, e.clientY, "rgba(255,255,255,0.5)", 5);
+                        // 👉 NẾU KHÔNG TRÚNG CÁ, CHECK XEM CÓ TRÚNG NỘI THẤT KHÔNG
+                        let clickedDecor = null;
+                        for (let i = gameState.decorations.length - 1; i >= 0; i--) {
+                            let decor = gameState.decorations[i];
+                            if (Math.hypot(e.clientX - decor.x, e.clientY - decor.y) < decor.size / 2) { clickedDecor = decor; break; }
+                        }
+
+                        if (clickedDecor) {
+                            draggedDecor = clickedDecor; draggedDecor.isDragged = true;
+                        } else {
+                            // Nếu bấm ra khoảng trống -> Thả mồi
+                            foods.push(new Food(e.clientX, e.clientY)); createExplosion(e.clientX, e.clientY, "rgba(255,255,255,0.5)", 5);
+                        }
                     }
                 }
+            }
+        });
+
+        // 2. Sửa mousemove (Để kéo nội thất đi)
+        window.addEventListener('mousemove', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+
+            if (draggedDecor) {
+                draggedDecor.x = mouseX;
+                draggedDecor.y = mouseY;
+
+                // Hiện thùng rác khi đang kéo đồ
+                const trash = document.getElementById('trash-zone');
+                trash.classList.add('active');
+
+                // Kiểm tra nếu chuột đang đè lên thùng rác (Vị trí góc dưới bên trái)
+                if (e.clientX < 100 && e.clientY > window.innerHeight - 100) {
+                    trash.classList.add('hover');
+                } else {
+                    trash.classList.remove('hover');
+                }
+            }
+            mouseX = e.clientX; mouseY = e.clientY;
+
+            if (draggedFish) {
+                draggedFish.x = mouseX; draggedFish.y = mouseY;
+            } else if (draggedDecor) {
+                // 👉 Kéo nội thất
+                draggedDecor.x = mouseX; draggedDecor.y = mouseY;
+            } else {
+                if (Math.random() < 0.2) particles.push(new Particle(e.clientX, e.clientY, "rgba(0, 243, 255, 0.6)", true));
+            }
+        });
+
+        // 3. Sửa mouseup (Thả ra)
+        window.addEventListener('mouseup', () => {
+            const trash = document.getElementById('trash-zone');
+
+            if (draggedDecor) {
+                // Nếu đang hover thùng rác thì xóa
+                if (trash.classList.contains('hover')) {
+                    // Lọc bỏ vật phẩm có ID hiện tại khỏi mảng decorations
+                    gameState.decorations = gameState.decorations.filter(d => d.id !== draggedDecor.id);
+                    saveGame(); // Lưu lại trạng thái sau khi xóa
+                }
+
+                draggedDecor.isDragged = false;
+                draggedDecor = null;
+            }
+
+            // Ẩn thùng rác đi
+            trash.classList.remove('active');
+            trash.classList.remove('hover');
+            if (draggedFish) {
+                draggedFish.isDragged = false;
+                draggedFish.targetAngle = draggedFish.currentAngle;
+                draggedFish = null;
+            }
+            // 👉 Thả nội thất
+            if (draggedDecor) {
+                draggedDecor.isDragged = false;
+                draggedDecor = null;
+                saveGame(); // Lưu lại vị trí mới
             }
         });
         window.addEventListener('mousemove', (e) => {
             mouseX = e.clientX; mouseY = e.clientY;
 
-            // THÊM MỚI: Di chuyển cá nếu đang có con bị kéo
             if (draggedFish) {
-                draggedFish.x = mouseX;
-                draggedFish.y = mouseY;
+                draggedFish.x = mouseX; draggedFish.y = mouseY;
+            } else if (draggedDecor) {
+                // 👉 Kéo nội thất
+                draggedDecor.x = mouseX; draggedDecor.y = mouseY;
             } else {
-                // Chỉ tạo bọt biển nếu KHÔNG kéo cá (để đỡ rối mắt)
                 if (Math.random() < 0.2) particles.push(new Particle(e.clientX, e.clientY, "rgba(0, 243, 255, 0.6)", true));
             }
         });
         // THÊM MỚI TOÀN BỘ SỰ KIỆN NÀY ĐỂ THẢ CÁ RA
         window.addEventListener('mouseup', () => {
             if (draggedFish) {
-                draggedFish.isDragged = false; // Cho phép cá bơi lại
-                // (Tùy chọn) Tính toán lại góc quay dựa vào vị trí hiện tại để cá bơi tiếp tự nhiên hơn
+                draggedFish.isDragged = false;
                 draggedFish.targetAngle = draggedFish.currentAngle;
-                draggedFish = null; // Xóa trạng thái đang kéo
+                draggedFish = null;
+            }
+            // 👉 Thả nội thất
+            if (draggedDecor) {
+                draggedDecor.isDragged = false;
+                draggedDecor = null;
+                saveGame(); // Lưu lại vị trí mới
             }
         });
         window.addEventListener('contextmenu', e => e.preventDefault());
@@ -1757,8 +2191,23 @@
         });
 
         // --- 7. UI & LƯU GAME ---
-        function toggleSidebar(show) { document.getElementById('sidebar').classList.toggle('active', show); document.getElementById('btn-slide-toggle').classList.toggle('hidden', show); }
-        function openModal(id) { document.getElementById(id).classList.add('active'); }
+        function toggleSidebar(show) {
+            const sidebar = document.getElementById('sidebar');
+            const btnDSTC = document.getElementById('btn-slide-toggle');
+            const btnSetting = document.getElementById('btn-controls-toggle');
+
+            if (show) {
+                // Nếu mở DSTC: đóng Cài đặt trước
+                toggleControls(false);
+                sidebar.classList.add('active');
+                btnDSTC.classList.add('hidden');
+                btnSetting.classList.add('hidden'); // Ẩn luôn nút Cài đặt cho đẹp
+            } else {
+                sidebar.classList.remove('active');
+                btnDSTC.classList.remove('hidden');
+                btnSetting.classList.remove('hidden'); // Hiện lại nút Cài đặt
+            }
+        } function openModal(id) { document.getElementById(id).classList.add('active'); }
         function closeModal(id) { document.getElementById(id).classList.remove('active'); }
 
         function summonFish() {
@@ -1817,6 +2266,23 @@
                 gameState.coins -= price; closeModal('shop-overlay');
                 let t = pool[Math.floor(Math.random() * pool.length)]; let newForm = FISH_DATA.filter(f => f.rarity === "Huyền thoại")[Math.floor(Math.random() * 3)];
                 t.data = newForm; t.baseScale = newForm.scale; createExplosion(t.x, t.y, "var(--neon-pink)", 100);
+            }
+            // Thêm đoạn này vào bên trong hàm buyItem(type, price)
+            else if (['chest', 'anchor', 'shipwreck_1', 'coral_1', 'coral_2', 'seaweed', 'kelp', 'skull', 'crystal', 'statue', 'reef_large'].includes(type)) {
+                if (gameState.coins < price) return alert("Hết Kim Cương rồi!");
+
+                gameState.coins -= price;
+                closeModal('shop-overlay');
+
+                let newDecor = new Decoration(type);
+                // Xuất hiện ở vị trí chuột hoặc giữa màn hình
+                newDecor.x = width / 2;
+                newDecor.y = height - 100;
+
+                gameState.decorations.push(newDecor);
+                createExplosion(newDecor.x, newDecor.y, "#FFD700", 30);
+                updateUI();
+                saveGame();
             }
             updateUI(); saveGame();
         }
@@ -1898,19 +2364,38 @@
         }
 
         // CẬP NHẬT HÀM LƯU GAME ĐỂ LƯU HP
+        // 1. Cập nhật hàm saveGame
         function saveGame() {
             localStorage.setItem('abyss_save', JSON.stringify({
                 coins: gameState.coins, lastId: gameState.lastId,
                 fishes: gameState.fishes.map(f => ({
                     id: f.id, type: f.data.type, level: f.level, xp: f.xp, x: f.x, y: f.y,
-                    hunger: f.hunger, skill: f.skill, customName: f.customName,
-                    hp: f.hp // <-- Đã thêm thuộc tính lưu HP
-                }))
+                    hunger: f.hunger, skill: f.skill, customName: f.customName, hp: f.hp
+                })),
+                // 👉 THÊM DÒNG NÀY ĐỂ LƯU NỘI THẤT
+                decorations: gameState.decorations.map(d => ({ id: d.id, type: d.type, x: d.x, y: d.y, scale: d.scale }))
             }));
         }
+
+        // 2. Cập nhật hàm loadGame
         function loadGame() {
             let data = localStorage.getItem('abyss_save');
-            if (data) { let p = JSON.parse(data); gameState.coins = p.coins; gameState.lastId = p.lastId; p.fishes.forEach(o => { let t = FISH_DATA.find(x => x.type === o.type); if (t) gameState.fishes.push(new Fish(t, o)); }); }
+            if (data) {
+                let p = JSON.parse(data);
+                gameState.coins = p.coins;
+                gameState.lastId = p.lastId;
+                p.fishes.forEach(o => {
+                    let t = FISH_DATA.find(x => x.type === o.type);
+                    if (t) gameState.fishes.push(new Fish(t, o));
+                });
+
+                // 👉 THÊM KHỐI NÀY ĐỂ TẢI NỘI THẤT CŨ LÊN
+                if (p.decorations) {
+                    p.decorations.forEach(o => {
+                        gameState.decorations.push(new Decoration(o.type, o));
+                    });
+                }
+            }
             if (window.innerWidth > 768) toggleSidebar(true);
         }
         function clearSave() { if (confirm("Xóa hết dữ liệu chơi lại?")) { localStorage.removeItem('abyss_save'); location.reload(); } }
@@ -1934,6 +2419,52 @@
             if (document.body.classList.contains('cinema-active')) {
                 hideListTooltip(); // Tắt bảng thông tin cá (nếu đang kẹt hiển thị)
                 toggleSidebar(false); // Gập luôn danh sách thủy cung lại
+            }
+        }
+        function toggleControls(show) {
+            const ctrlSidebar = document.getElementById('controls-sidebar');
+            const btnSetting = document.getElementById('btn-controls-toggle');
+            const btnDSTC = document.getElementById('btn-slide-toggle');
+
+            if (show) {
+                // Nếu mở Cài đặt: đóng DSTC trước
+                toggleSidebar(false);
+                ctrlSidebar.classList.add('active');
+                btnSetting.classList.add('hidden');
+                btnDSTC.classList.add('hidden'); // Ẩn luôn nút DSTC
+            } else {
+                ctrlSidebar.classList.remove('active');
+                btnSetting.classList.remove('hidden');
+                btnDSTC.classList.remove('hidden'); // Hiện lại nút DSTC
+            }
+        }
+
+        // Cập nhật lại hàm toggleCinema để đóng luôn cả menu này khi bật Cinema
+        function toggleCinema() {
+            document.body.classList.toggle('cinema-active');
+            if (document.body.classList.contains('cinema-active')) {
+                hideListTooltip();
+                toggleSidebar(false);   // Đóng DSTC
+                toggleControls(false);  // Đóng Menu Cài đặt
+
+            }
+        }
+        function toggleTutorial(show) {
+            const box = document.getElementById('tutorial-box');
+            const content = document.getElementById('tutorial-content');
+            const btn = document.getElementById('close-tuto-btn');
+            const icon = document.getElementById('tutorial-icon');
+
+            if (show) {
+                box.classList.remove('minimized');
+                content.style.display = 'block';
+                btn.style.display = 'block';
+                icon.style.display = 'none';
+            } else {
+                box.classList.add('minimized');
+                content.style.display = 'none';
+                btn.style.display = 'none';
+                icon.style.display = 'block';
             }
         }
     </script>
