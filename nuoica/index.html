@@ -811,13 +811,378 @@
             color: white;
             transform: scale(1.3);
         }
+
+        /* 🛠️ NÚT TÙY CHỈNH Y HỆT DSTC VÀ CÀI ĐẶT */
+        .btn-custom-toggle {
+            position: absolute;
+            top: 210px;
+            /* Cách đều nút Cài Đặt (155 + 45 + 10) */
+            right: 0px;
+            width: 120px;
+            height: 45px;
+            background: linear-gradient(45deg, #FFD700, #ff7e5f);
+            /* Màu vàng cam cho nổi */
+            color: white;
+            border: none;
+            padding: 0 15px 0 10px;
+            border-radius: 25px 0 0 25px;
+            cursor: pointer;
+            font-weight: 900;
+            font-family: 'Quicksand';
+            font-size: 13px;
+            box-shadow: -5px 0 15px rgba(255, 215, 0, 0.4);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 999;
+            pointer-events: auto;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+        }
+
+        .btn-custom-toggle.hidden {
+            transform: translateX(150%);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .btn-custom-toggle:hover {
+            padding-right: 25px;
+            width: 130px;
+            right: 2px;
+        }
+
+        /* 🖼️ SIDEBAR TÙY CHỈNH */
+        .custom-sidebar {
+            position: absolute;
+            top: 200px;
+            /* Nằm ngay dưới nút Cài Đặt */
+            right: 15px;
+            width: 220px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding: 15px;
+            transform: translateX(calc(100% + 50px));
+            /* Ẩn sang phải */
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 100;
+        }
+
+        .custom-sidebar.active {
+            transform: translateX(0);
+            /* Hiện ra */
+        }
+
+        /* Các nút mini bên trong menu tùy chỉnh */
+        .btn-mini,
+        .btn-mini-rect {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            cursor: pointer;
+            border-radius: 8px;
+            font-weight: 800;
+            font-family: 'Quicksand';
+            transition: 0.3s;
+        }
+
+        .btn-mini {
+            padding: 5px 10px;
+        }
+
+        .btn-mini-rect {
+            padding: 8px;
+            font-size: 11px;
+        }
+
+        .btn-mini:hover,
+        .btn-mini-rect:hover {
+            background: #FFD700;
+            color: black;
+            transform: scale(1.05);
+        }
+
+        /* =========================================
+   🎵 WIDGET TRÌNH PHÁT NHẠC (ĐÃ RESPONSIVE)
+   ========================================= */
+        #music-widget {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 15px 8px 8px;
+            border-radius: 40px;
+            z-index: 1000;
+            pointer-events: auto;
+            min-width: 220px;
+            max-width: 280px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4);
+            /* Hiệu ứng chuyển động mượt khi resize hoặc thu nhỏ */
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        #music-disc-container {
+            position: relative;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        #music-disc {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: #111;
+            border: 2px solid var(--neon-blue);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 10px rgba(0, 243, 255, 0.5);
+            animation: spin 3s linear infinite;
+            animation-play-state: paused;
+            overflow: hidden;
+            /* Fix để ảnh đĩa nhạc không tràn viền */
+        }
+
+        #music-disc img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        #music-info {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            gap: 4px;
+            overflow: hidden;
+        }
+
+        #music-widget-name {
+            font-family: 'Quicksand';
+            font-size: 13px;
+            font-weight: 900;
+            color: white;
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100%;
+        }
+
+        .music-progress-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 10px;
+            font-weight: 800;
+            color: rgba(255, 255, 255, 0.7);
+            font-family: 'Quicksand', sans-serif;
+        }
+
+        .music-progress-bar {
+            flex-grow: 1;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 2px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #music-progress-fill {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #00f3ff, #ff00ea);
+            box-shadow: 0 0 5px #00f3ff;
+            transition: width 0.1s linear;
+        }
+
+        #music-note {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            color: var(--neon-blue);
+            font-size: 14px;
+            text-shadow: 0 0 10px var(--neon-blue);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #music-disc.playing+#music-note {
+            animation: floatNote 2s ease-in infinite;
+        }
+
+        /* 📱 RESPONSIVE CHO TABLET & MOBILE */
+        @media screen and (max-width: 1024px) {
+            #music-widget {
+                /* Trên Tablet: Thu nhỏ lại một chút, giữ nguyên vị trí */
+                transform: scale(0.9);
+                transform-origin: top right;
+            }
+        }
+
+        @media screen and (max-width: 600px) {
+            #music-widget {
+                /* Trên Điện thoại: Dời xuống góc dưới bên phải */
+                /* Tránh bị đè lộn xộn với 3 nút Menu (DSTC, Cài đặt) ở góc trên */
+                top: auto;
+                bottom: 20px;
+                right: 15px;
+                transform: scale(0.9);
+                transform-origin: bottom right;
+                background: rgba(15, 23, 42, 0.9);
+                /* Làm nền mờ đậm hơn để tách biệt với nền hồ cá */
+                border: 1px solid rgba(0, 243, 255, 0.3);
+            }
+        }
+
+
+
+
+
+
+
+
+        /* 🛠️ NÚT TÙY CHỈNH Y HỆT DSTC VÀ CÀI ĐẶT */
+        .btn-custom-toggle {
+            position: absolute;
+            top: 210px;
+            /* Cách đều nút Cài Đặt (155 + 45 + 10) */
+            right: 0px;
+            width: 120px;
+            height: 45px;
+            background: linear-gradient(45deg, #FFD700, #ff7e5f);
+            /* Màu vàng cam cho nổi */
+            color: white;
+            border: none;
+            padding: 0 15px 0 10px;
+            border-radius: 25px 0 0 25px;
+            cursor: pointer;
+            font-weight: 900;
+            font-family: 'Quicksand';
+            font-size: 13px;
+            box-shadow: -5px 0 15px rgba(255, 215, 0, 0.4);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 999;
+            pointer-events: auto;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+        }
+
+        .btn-custom-toggle.hidden {
+            transform: translateX(150%);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .btn-custom-toggle:hover {
+            padding-right: 25px;
+            width: 130px;
+            right: 2px;
+        }
+
+        /* 🖼️ SIDEBAR TÙY CHỈNH */
+        .custom-sidebar {
+            position: absolute;
+            top: 200px;
+            /* Nằm ngay dưới nút Cài Đặt */
+            right: 15px;
+            width: 220px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding: 15px;
+            transform: translateX(calc(100% + 50px));
+            /* Ẩn sang phải */
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 100;
+        }
+
+        .custom-sidebar.active {
+            transform: translateX(0);
+            /* Hiện ra */
+        }
+
+        /* Các nút mini bên trong menu tùy chỉnh */
+        .btn-mini,
+        .btn-mini-rect {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            cursor: pointer;
+            border-radius: 8px;
+            font-weight: 800;
+            font-family: 'Quicksand';
+            transition: 0.3s;
+        }
+
+        .btn-mini {
+            padding: 5px 10px;
+        }
+
+        .btn-mini-rect {
+            padding: 8px;
+            font-size: 11px;
+        }
+
+        .btn-mini:hover,
+        .btn-mini-rect:hover {
+            background: #FFD700;
+            color: black;
+            transform: scale(1.05);
+        }
+
+        /* 🖼️ BACKGROUND IMAGE STYLE */
+        #bg-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        #bg-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            /* Đảm bảo ảnh không bị méo */
+            transition: filter 2s ease;
+        }
+
+        /* Lớp phủ tạo màu xanh nước biển sâu và huyền ảo */
+        .ocean-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg, rgba(0, 30, 60, 0.3) 0%, rgba(0, 10, 20, 0.6) 100%);
+            pointer-events: none;
+        }
+
+        /* Hiệu ứng ban đêm cho ảnh (nếu bạn dùng logic isNight) */
+        body.night-mode #bg-image {
+            filter: brightness(0.4) saturate(0.7) hue-rotate(10deg);
+        }
     </style>
 </head>
 
 <body>
-    <video id="bg-video" autoplay muted loop playsinline>
-        <source src="./videos/underrwater_bg.mp4" type="video/mp4">
-    </video>
+    <div id="bg-container">
+        <img id="bg-image"
+            src="./images/bg/under_water-sea-life.jpg"
+            alt="Ocean Background">
+        <div class="ocean-overlay">
+
+        </div>
+    </div>
 
     <div id="trash-zone" id="trash-zone">
         <span>🗑️</span>
@@ -883,8 +1248,83 @@
             <button class="btn-main" onclick="spawnShark()"
                 style="background: linear-gradient(45deg, #ff4757, #8b0000); border:none;">🦈 Thả Cá Mập</button>
             <button class="btn-main" onclick="clearSave()"
-                style="color: #ff4757; background: rgba(255,255,255,0.1) !important;">♻️ Reset</button>
+                style="color: #ff4757; background: rgba(255,255,255,0.1) !important;">♻️ Reset
+            </button>
+
         </div>
+        <button class="btn-custom-toggle" id="btn-custom-toggle" onclick="toggleCustomSidebar(true)">🎨 TÙY
+            CHỈNH</button>
+
+        <div class="custom-sidebar glass-panel" id="custom-sidebar">
+            <div class="close-sidebar-btn"
+                style="background: rgba(255, 215, 0, 0.1); color: #FFD700; border-color: rgba(255, 215, 0, 0.3);"
+                onclick="toggleCustomSidebar(false)">Đóng Lại ➔</div>
+
+            <div>
+                <p style="font-size: 12px; font-weight: 800; color: #FFD700; margin-bottom: 8px; text-align: center;">🎵
+                    TRÌNH PHÁT NHẠC</p>
+                <div
+                    style="display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.4); padding: 10px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">
+                    <button class="btn-mini" onclick="changeMusic(-1)">◀</button>
+                    <span id="music-name" style="font-size: 11px; font-weight: 800; color: white;">Lo-fi Ocean</span>
+                    <button class="btn-mini" onclick="changeMusic(1)">▶</button>
+                </div>
+            </div>
+
+            <div>
+                <p
+                    style="font-size: 12px; font-weight: 800; color: #FFD700; margin-bottom: 8px; text-align: center; margin-top: 10px;">
+                    🖼️ HÌNH NỀN
+                </p>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                    <button class="btn-mini-rect" onclick="changeBG('./images/bg/ruin.jpg')">
+                        Atlantis
+                    </button>
+                    <button class="btn-mini-rect" onclick="changeBG('./images/bg/under_water-sea-life.jpg')">
+                        Rạn san hô
+                    </button>
+                    <button class="btn-mini-rect" onclick="changeBG('./images/bg/seawithsun.jpg')">
+                        Biển và mặt trời
+                    </button>
+                    <button class="btn-mini-rect" onclick="changeBG('./images/bg/sea-with-shipwreck.jpg')">
+                        Biển và tàu đắm
+                    </button>
+                    <button class="btn-mini-rect" onclick="changeBG('./images/bg/deepsea_1.jpg')">
+                        Vực thẳm 1
+                    </button>
+                    <button class="btn-mini-rect" onclick="changeBG('./images/bg/deepsea_2.jpg')">
+                        Vực thẳm 2
+                    </button>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="music-widget" class="glass-panel">
+        <div id="music-disc-container" onclick="togglePlayMusic()">
+            <div id="music-disc">
+                <img src="./images/disc.png" alt="Disc" style="width: 100%; height: 100%; border-radius: 50%;">
+            </div>
+            <div id="music-note">🎵</div>
+        </div>
+
+        <div id="music-info">
+            <div id="music-widget-name">Lo-fi Ocean</div>
+            <div class="music-progress-container">
+                <span id="music-current-time">0:00</span>
+                <div class="music-progress-bar">
+                    <div id="music-progress-fill"></div>
+                </div>
+                <span id="music-total-time">0:00</span>
+            </div>
+        </div>
+    </div>
+    <audio id="bg-audio" loop>
+        <source id="audio-source" src="https://files.catbox.moe/onltyo.mp3" type="audio/mpeg">
+    </audio>
     </div>
 
     <div class="overlay" id="gacha-overlay" onclick="closeModal('gacha-overlay')">
@@ -959,6 +1399,15 @@
                     <div style="font-size: 12px; font-weight:800;">Tàu chìm 1</div>
                     <button class="btn-main btn-shop" style="width:100%; padding:5px; font-size:12px;"
                         onclick="buyItem('shipwreck_1', 700)">500 💎</button>
+                </div>
+                <div class="shop-item">
+                    <img src="./images/decor/ruongbau_1.png"
+                        style="width: 50px; height: 50px; object-fit: contain; margin-bottom: 5px; filter: drop-shadow(0 0 10px #FFD700);"
+                        alt="Rương">
+
+                    <div style="font-size: 12px; font-weight:800;">Rương báu 1</div>
+                    <button class="btn-main btn-shop" style="width:100%; padding:5px; font-size:12px;"
+                        onclick="buyItem('chest_1', 700)">500 💎</button>
                 </div>
 
 
@@ -1037,6 +1486,10 @@
             { type: "Thần Rùa Huyền Vũ", rarity: "Huyền thoại", shape: "turtle", flockStyle: "independent", colors: ["#000000", "#2F4F4F"], speed: 0.6, scale: 3.0 }];
 
         // --- 2. BIẾN TOÀN CỤC & TỌA ĐỘ CHUỘT ---
+        // Tọa độ của ống kính camera
+        let camera = { x: 0, y: 0 };
+        let isPanning = false; // Trạng thái đang kéo màn hình
+        let startPan = { x: 0, y: 0 }; // Vị trí chuột khi bắt đầu kéo
 
         const SAFE_DISTANCE = 150; // Khoảng cách cá bắt đầu thấy sợ và bỏ chạy
         const canvas = document.getElementById('gameCanvas');
@@ -1122,7 +1575,7 @@
 
                 // THƯ VIỆN CÓ CẢ SRC (ẢNH) VÀ EMOJI (DỰ PHÒNG)
                 const CONFIG = {
-                    'chest': { src: "./images/decor/chest.png", emoji: "📦", size: 60, glow: "#FFD700" },
+                    'chest_1': { src: "./images/decor/ruongbau_1.png", emoji: "📦", size: 150, glow: "#FFD700" },
                     'anchor': { src: "./images/decor/anchor.png", emoji: "⚓", size: 80, glow: "#00f3ff" },
                     'shipwreck_1': { src: "./images/decor/shipwreck_1.png", emoji: "🏛️", size: 500, glow: "#a29bfe" },
                     'coral_1': { src: "./images/decor/ransanho_1.png", emoji: "🪸", size: 400, glow: "#ff4757" },
@@ -1177,7 +1630,7 @@
                     ctx.font = `${this.size}px Arial`;
                     ctx.textAlign = "center";
                     ctx.textBaseline = "middle";
-                    ctx.fillText(this.emoji, 0, floatY);
+                    ctx.fillText(this.emojfi, 0, floatY);
                 }
 
                 ctx.restore();
@@ -1859,12 +2312,21 @@
 
             ctx.clearRect(0, 0, width, height);
 
+            // Áp dụng hiệu ứng Thời tiết / Ngày Đêm cho nền
             const videoEl = document.getElementById('bg-video');
-            if (videoEl) {
-                if (isNight) videoEl.style.filter = "brightness(0.3) saturate(0.6)";
-                else if (isSunset) videoEl.style.filter = "brightness(0.7) sepia(0.4) hue-rotate(-20deg)";
-                else videoEl.style.filter = "brightness(1) saturate(1)";
+            const imgEl = document.getElementById('bg-image'); // Lấy thêm thẻ ảnh
+
+            // Xác định bộ lọc (filter) hiện tại
+            let currentFilter = "brightness(1) saturate(1)";
+            if (isNight) {
+                currentFilter = "brightness(0.3) saturate(0.6)";
+            } else if (isSunset) {
+                currentFilter = "brightness(0.7) sepia(0.4) hue-rotate(-20deg)";
             }
+
+            // Áp dụng filter cho cả hai, cái nào đang hiện thì cái đó sẽ đổi màu
+            if (videoEl) videoEl.style.filter = currentFilter;
+            if (imgEl) imgEl.style.filter = currentFilter;
 
             const time = Date.now() * 0.0005;
 
@@ -2058,7 +2520,7 @@
                 if (e.button === 2) {
                     // ... (Code thả bom chuột phải giữ nguyên)
                 } else if (e.button === 0) {
-                    // Check xem có click trúng cá không
+
                     let clickedFish = null;
                     for (let i = gameState.fishes.length - 1; i >= 0; i--) {
                         let fish = gameState.fishes[i];
@@ -2268,7 +2730,7 @@
                 t.data = newForm; t.baseScale = newForm.scale; createExplosion(t.x, t.y, "var(--neon-pink)", 100);
             }
             // Thêm đoạn này vào bên trong hàm buyItem(type, price)
-            else if (['chest', 'anchor', 'shipwreck_1', 'coral_1', 'coral_2', 'seaweed', 'kelp', 'skull', 'crystal', 'statue', 'reef_large'].includes(type)) {
+            else if (['chest_1', 'anchor', 'shipwreck_1', 'coral_1', 'coral_2', 'seaweed', 'kelp', 'skull', 'crystal', 'statue', 'reef_large'].includes(type)) {
                 if (gameState.coins < price) return alert("Hết Kim Cương rồi!");
 
                 gameState.coins -= price;
@@ -2467,6 +2929,185 @@
                 icon.style.display = 'block';
             }
         }
+        // Thay thế hàm mở Danh sách
+        function toggleSidebar(show) {
+            const sidebar = document.getElementById('sidebar');
+            const btnDSTC = document.getElementById('btn-slide-toggle');
+            const btnSetting = document.getElementById('btn-controls-toggle');
+            const btnCustom = document.getElementById('btn-custom-toggle'); // Bổ sung
+
+            if (show) {
+                toggleControls(false);
+                toggleCustomSidebar(false); // Đóng tùy chỉnh
+                sidebar.classList.add('active');
+                btnDSTC.classList.add('hidden');
+                btnSetting.classList.add('hidden');
+                btnCustom.classList.add('hidden');
+            } else {
+                sidebar.classList.remove('active');
+                btnDSTC.classList.remove('hidden');
+                btnSetting.classList.remove('hidden');
+                btnCustom.classList.remove('hidden');
+            }
+        }
+
+        // Thay thế hàm mở Cài đặt
+        function toggleControls(show) {
+            const ctrlSidebar = document.getElementById('controls-sidebar');
+            const btnSetting = document.getElementById('btn-controls-toggle');
+            const btnDSTC = document.getElementById('btn-slide-toggle');
+            const btnCustom = document.getElementById('btn-custom-toggle'); // Bổ sung
+
+            if (show) {
+                toggleSidebar(false);
+                toggleCustomSidebar(false); // Đóng tùy chỉnh
+                ctrlSidebar.classList.add('active');
+                btnSetting.classList.add('hidden');
+                btnDSTC.classList.add('hidden');
+                btnCustom.classList.add('hidden');
+            } else {
+                ctrlSidebar.classList.remove('active');
+                btnSetting.classList.remove('hidden');
+                btnDSTC.classList.remove('hidden');
+                btnCustom.classList.remove('hidden');
+            }
+        }
+
+        // THÊM HÀM MỚI MỞ TÙY CHỈNH
+        function toggleCustomSidebar(show) {
+            const customSidebar = document.getElementById('custom-sidebar');
+            const btnCustom = document.getElementById('btn-custom-toggle');
+            const btnSetting = document.getElementById('btn-controls-toggle');
+            const btnDSTC = document.getElementById('btn-slide-toggle');
+
+            if (show) {
+                toggleSidebar(false);
+                toggleControls(false);
+                customSidebar.classList.add('active');
+                btnCustom.classList.add('hidden');
+                btnSetting.classList.add('hidden');
+                btnDSTC.classList.add('hidden');
+            } else {
+                customSidebar.classList.remove('active');
+                btnCustom.classList.remove('hidden');
+                btnSetting.classList.remove('hidden');
+                btnDSTC.classList.remove('hidden');
+            }
+        }
+
+        // --- LOGIC PHÁT NHẠC & ĐỔI NỀN ---
+        const PLAYLIST = [
+            { name: "Lo-fi Ocean", url: "https://files.catbox.moe/onltyo.mp3" },
+            { name: "Miami", url: "https://files.catbox.moe/gvn7ji.mp3" },
+            { name: "Lost in The Ocean", url: "https://files.catbox.moe/4u7pvn.mp3" },
+
+        ];
+        let currentMusicIdx = 0;
+
+        function togglePlayMusic() {
+            const bgAudio = document.getElementById('bg-audio');
+            const musicDisc = document.getElementById('music-disc');
+            if (bgAudio.paused) {
+                bgAudio.play();
+                musicDisc.style.animationPlayState = 'running';
+                musicDisc.classList.add('playing');
+            } else {
+                bgAudio.pause();
+                musicDisc.style.animationPlayState = 'paused';
+                musicDisc.classList.remove('playing');
+            }
+        }
+
+        function changeMusic(dir) {
+            currentMusicIdx = (currentMusicIdx + dir + PLAYLIST.length) % PLAYLIST.length;
+            const track = PLAYLIST[currentMusicIdx];
+            document.getElementById('music-name').innerText = track.name;
+            document.getElementById('audio-source').src = track.url;
+
+            const bgAudio = document.getElementById('bg-audio');
+            bgAudio.load();
+            if (document.getElementById('music-disc').classList.contains('playing')) {
+                bgAudio.play();
+            }
+        }
+
+        function changeBG(mediaPath) {
+            const imgEl = document.getElementById('bg-image');
+
+            // Hiệu ứng chuyển cảnh mượt
+            imgEl.style.opacity = '0';
+
+            setTimeout(() => {
+                imgEl.src = mediaPath;
+                imgEl.onload = () => {
+                    imgEl.style.opacity = '1';
+                };
+            }, 500);
+        }
+        const bgAudio = document.getElementById('bg-audio');
+
+        // Hàm format thời gian từ giây sang mm:ss
+        function formatTime(seconds) {
+            if (isNaN(seconds)) return "0:00";
+            const m = Math.floor(seconds / 60);
+            const s = Math.floor(seconds % 60).toString().padStart(2, '0');
+            return `${m}:${s}`;
+        }
+
+        // Khi audio đã tải xong dữ liệu, lấy tổng thời gian
+        bgAudio.addEventListener('loadedmetadata', () => {
+            document.getElementById('music-total-time').innerText = formatTime(bgAudio.duration);
+        });
+
+        // Cập nhật thanh tiến trình liên tục khi nhạc đang phát
+        bgAudio.addEventListener('timeupdate', () => {
+            document.getElementById('music-current-time').innerText = formatTime(bgAudio.currentTime);
+            if (bgAudio.duration) {
+                const progress = (bgAudio.currentTime / bgAudio.duration) * 100;
+                document.getElementById('music-progress-fill').style.width = `${progress}%`;
+            }
+        });
+
+        // Cập nhật hàm đổi nhạc để tên hiển thị đồng bộ ở cả Sidebar và Widget
+        function changeMusic(dir) {
+            currentMusicIdx = (currentMusicIdx + dir + PLAYLIST.length) % PLAYLIST.length;
+            const track = PLAYLIST[currentMusicIdx];
+
+            // Đổi tên trong Sidebar (nếu đang mở)
+            const sidebarName = document.getElementById('music-name');
+            if (sidebarName) sidebarName.innerText = track.name;
+
+            // Đổi tên ngoài Widget
+            document.getElementById('music-widget-name').innerText = track.name;
+
+            // Load link nhạc mới
+            document.getElementById('audio-source').src = track.url;
+
+            // Reset thanh tiến trình hiển thị
+            document.getElementById('music-progress-fill').style.width = `0%`;
+            document.getElementById('music-current-time').innerText = "0:00";
+            document.getElementById('music-total-time').innerText = "0:00";
+
+            bgAudio.load();
+
+            if (document.getElementById('music-disc').classList.contains('playing')) {
+                bgAudio.play();
+            }
+        }
+
+        // Ẩn luôn Widget Nhạc khi bật chế độ Cinema
+        const originalToggleCinemaForMusic = toggleCinema;
+        toggleCinema = function () {
+            originalToggleCinemaForMusic(); // Gọi lại hàm cũ
+            const musicWidget = document.getElementById('music-widget');
+            if (document.body.classList.contains('cinema-active')) {
+                musicWidget.style.opacity = '0';
+                musicWidget.style.pointerEvents = 'none';
+            } else {
+                musicWidget.style.opacity = '1';
+                musicWidget.style.pointerEvents = 'auto';
+            }
+        };
     </script>
 </body>
 
