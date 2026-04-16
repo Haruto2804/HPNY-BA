@@ -1451,6 +1451,39 @@
             transform: none;
             color: rgba(255, 255, 255, 0.5);
         }
+
+        /* ==========================================
+           📖 TỪ ĐIỂN THỦY CUNG
+           ========================================== */
+        .dict-item {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 15px 10px;
+            cursor: pointer;
+            transition: 0.3s;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .dict-item:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-3px);
+            border-color: var(--neon-blue);
+        }
+
+        /* Hiệu ứng khi chưa mở khóa (Bôi đen) */
+        .dict-item.locked .dict-icon {
+            filter: brightness(0) drop-shadow(0 0 2px rgba(255, 255, 255, 0.3));
+            opacity: 0.6;
+        }
+
+        .dict-item.locked .dict-name {
+            opacity: 0.4;
+        }
     </style>
 </head>
 
@@ -1522,6 +1555,10 @@
             <button class="btn-main btn-epic" onclick="summonFish()">✨ Triệu Hồi</button>
             <button class="btn-main btn-epic" style="background: #444 !important;" onclick="toggleCinema()">🎬
                 Cinema</button>
+            <button class="btn-main"
+                style="background: linear-gradient(45deg, #f39c12, #d35400) !important; border:none !important;"
+                onclick="openDictionary()">📖 Từ Điển</button>
+
             <button class="btn-main btn-bday" onclick="openModal('bday-overlay')">🎁 Cá Sinh Nhật</button>
             <button class="btn-main" onclick="spawnShark()"
                 style="background: linear-gradient(45deg, #ff4757, #8b0000); border:none;">🦈 Thả Cá Mập</button>
@@ -1708,7 +1745,30 @@
                 onclick="closeModal('shop-overlay')">Đóng</button>
         </div>
     </div>
+    <div class="overlay" id="dict-overlay" onclick="if(event.target === this) closeModal('dict-overlay')">
+        <div class="modal shop-modal"
+            style="max-width: 750px; width: 95%; max-height: 85vh; display: flex; flex-direction: column; padding: 20px;">
+            <h2 style="font-family: 'Quicksand'; font-size: 26px; color: var(--gold); margin-bottom: 15px;">📖 TỪ ĐIỂN
+                THỦY CUNG</h2>
 
+            <div id="dict-content" style="display: flex; gap: 15px; flex-grow: 1; overflow: hidden;">
+
+                <div id="dict-grid"
+                    style="flex: 1.2; display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 10px; overflow-y: auto; padding-right: 5px; align-content: start;">
+                </div>
+
+                <div id="dict-details"
+                    style="flex: 1; background: rgba(0,0,0,0.5); border-radius: 15px; padding: 20px; border: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; align-items: center; text-align: center; overflow-y: auto;">
+                    <div style="opacity: 0.5; margin-top: 50px; font-weight: bold;">👈 Chọn một loài cá bên trái để xem
+                        chi tiết</div>
+                </div>
+            </div>
+
+            <button class="btn-main"
+                style="margin-top: 15px; background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.3);"
+                onclick="closeModal('dict-overlay')">Đóng Từ Điển</button>
+        </div>
+    </div>
     <div class="overlay" id="bday-overlay">
         <div class="modal bday-modal">
             <img class="bday-gif"
@@ -1791,11 +1851,10 @@
 
         const SAFE_DISTANCE = 150; // Khoảng cách cá bắt đầu thấy sợ và bỏ chạy
         const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
+        let ctx = canvas.getContext('2d');
         let width, height;
         let trackedFishId = null; // ID của con cá đang bị theo dõi
-        let gameState = { coins: 1000000, fishes: [], decorations: [], lastId: 0, quests: [], lastQuestDate: "" };
-
+        let gameState = { coins: 1000000, fishes: [], decorations: [], lastId: 0, quests: [], lastQuestDate: "", unlockedFishes: [] };
         // CẤU HÌNH NHIỆM VỤ
         const DAILY_QUESTS_TEMPLATE = [
             { id: "feed", title: "🍔 Bữa Ăn Thịnh Soạn", desc: "Thả 30 viên thức ăn cho cá", target: 30, reward: 150 },
@@ -3200,6 +3259,10 @@
             const r = Math.random() * 100; let pool = r < 5 ? FISH_DATA.filter(f => f.rarity === "Huyền thoại") : r < 30 ? FISH_DATA.filter(f => f.rarity === "Hiếm") : FISH_DATA.filter(f => f.rarity === "Thường");
             const tmpl = pool[Math.floor(Math.random() * pool.length)];
             const fish = new Fish(tmpl); fish.x = width / 2; fish.y = height / 2; gameState.fishes.push(fish);
+            if (!gameState.unlockedFishes) gameState.unlockedFishes = [];
+            if (!gameState.unlockedFishes.includes(tmpl.type)) {
+                gameState.unlockedFishes.push(tmpl.type);
+            }
             createExplosion(width / 2, height / 2, tmpl.colors[0], 100);
             document.getElementById('gacha-name').innerText = tmpl.type; document.getElementById('gacha-rarity').innerText = tmpl.rarity;
             document.getElementById('gacha-rarity').style.color = tmpl.rarity === "Huyền thoại" ? "var(--neon-pink)" : tmpl.rarity === "Hiếm" ? "var(--neon-blue)" : "white";
@@ -3215,7 +3278,7 @@
                 document.getElementById('sidebar').classList.remove('active');
                 document.getElementById('controls-sidebar').classList.remove('active');
                 document.getElementById('custom-sidebar').classList.remove('active');
-                
+
                 renderQuestUI(); // Load lại dữ liệu thanh tiến trình
                 questSidebar.classList.add('active');
                 btns.forEach(b => b && b.classList.add('hidden'));
@@ -3384,7 +3447,7 @@
                 })),
                 decorations: gameState.decorations.map(d => ({ id: d.id, type: d.type, x: d.x, y: d.y, scale: d.scale })),
                 quests: gameState.quests,
-                lastQuestDate: gameState.lastQuestDate
+                lastQuestDate: gameState.lastQuestDate, unlockedFishes: gameState.unlockedFishes
             }));
         }
 
@@ -3394,6 +3457,7 @@
                 let p = JSON.parse(data);
                 gameState.coins = p.coins;
                 gameState.lastId = p.lastId;
+                gameState.unlockedFishes = p.unlockedFishes || [];
 
                 if (p.quests && p.lastQuestDate) {
                     gameState.quests = p.quests;
@@ -3446,8 +3510,8 @@
                 // Ép đóng 3 bảng còn lại
                 document.getElementById('sidebar').classList.remove('active');
                 document.getElementById('custom-sidebar').classList.remove('active');
-                if(document.getElementById('quest-sidebar')) document.getElementById('quest-sidebar').classList.remove('active');
-                
+                if (document.getElementById('quest-sidebar')) document.getElementById('quest-sidebar').classList.remove('active');
+
                 ctrlSidebar.classList.add('active');
                 btns.forEach(b => b && b.classList.add('hidden'));
             } else {
@@ -3484,11 +3548,11 @@
                 icon.style.display = 'block';
             }
         }
-    
 
-    
 
-    // 3. MỞ TÙY CHỈNH
+
+
+        // 3. MỞ TÙY CHỈNH
         function toggleCustomSidebar(show) {
             const customSidebar = document.getElementById('custom-sidebar');
             const btns = [document.getElementById('btn-slide-toggle'), document.getElementById('btn-controls-toggle'), document.getElementById('btn-custom-toggle'), document.getElementById('btn-quest-toggle')];
@@ -3497,8 +3561,8 @@
                 // Ép đóng 3 bảng còn lại
                 document.getElementById('sidebar').classList.remove('active');
                 document.getElementById('controls-sidebar').classList.remove('active');
-                if(document.getElementById('quest-sidebar')) document.getElementById('quest-sidebar').classList.remove('active');
-                
+                if (document.getElementById('quest-sidebar')) document.getElementById('quest-sidebar').classList.remove('active');
+
                 customSidebar.classList.add('active');
                 btns.forEach(b => b && b.classList.add('hidden'));
             } else {
@@ -3620,6 +3684,119 @@
                 musicWidget.style.pointerEvents = 'auto';
             }
         };
+        // ==========================================
+        // 📖 LOGIC TỪ ĐIỂN THỦY CUNG (BẢN CẬP NHẬT ẢNH THẬT)
+        // ==========================================
+
+        // Hàm "Chụp ảnh thẻ" cho cá
+        function getFishSnapshot(fishData, isLocked) {
+            let tempCanvas = document.createElement('canvas');
+            tempCanvas.width = 160;
+            tempCanvas.height = 160;
+            let tempCtx = tempCanvas.getContext('2d');
+
+            // Đánh tráo ctx để mượn hàm vẽ của Game
+            let originalCtx = ctx;
+            ctx = tempCtx;
+
+            ctx.save();
+            ctx.translate(80, 80); // Dời camera ra giữa khung ảnh
+
+            if (isLocked) {
+                // Bôi đen hoàn toàn nếu chưa mở khóa (Tạo bóng đen Silhouette)
+                ctx.filter = "brightness(0) opacity(0.6)";
+            }
+
+            // Đồng bộ kích thước (Cá bự hay nhỏ đều thu vừa khung ảnh)
+            let fitScale = 1.3 / (fishData.scale || 1);
+            if (fishData.shape === 'shark') fitScale *= 0.6; // Cá mập dài nên thu nhỏ xíu nữa
+            if (fishData.shape === 'ray') fitScale *= 0.7; // Cá đuối sải cánh rộng
+            ctx.scale(fitScale, fitScale);
+
+            // Tạo "Người mẫu" cá nháp để vẽ
+            let dummyFish = new Fish(fishData);
+            dummyFish.x = 0;
+            dummyFish.y = 0;
+            dummyFish.currentAngle = -0.2; // Bơi hơi hếch mặt lên cho ngầu
+            dummyFish.swimCycle = 10; // Pose tạo dáng uốn cong
+            dummyFish.customName = " "; // Ẩn cái chữ Lv.1 trên đầu đi
+
+            // Buff máu để khỏi hiện thanh HP trong ảnh
+            dummyFish.hp = 100;
+            dummyFish.fleeTimer = 0;
+
+            dummyFish.draw(); // Tách! Chụp ảnh
+
+            ctx.restore();
+            ctx = originalCtx; // Trả lại bút vẽ ctx cho Game Loop
+
+            // Chuyển canvas thành URL ảnh PNG
+            return tempCanvas.toDataURL("image/png");
+        }
+
+        function openDictionary() {
+            toggleControls(false);
+            renderDictionaryGrid();
+            document.getElementById('dict-details').innerHTML = '<div style="opacity: 0.5; margin-top: 50px; font-weight: bold;">👈 Chọn một loài sinh vật bên trái để xem chi tiết</div>';
+            openModal('dict-overlay');
+        }
+
+        function renderDictionaryGrid() {
+            let html = '';
+            let unlocked = gameState.unlockedFishes || [];
+
+            FISH_DATA.forEach((fish, index) => {
+                let isUnlocked = unlocked.includes(fish.type);
+                let lockClass = isUnlocked ? "" : "locked";
+                let imgSrc = getFishSnapshot(fish, !isUnlocked);
+
+                html += `
+                <div class="dict-item ${lockClass}" onclick="showDictionaryDetails(${index})">
+                    <img src="${imgSrc}" style="width: 50px; height: 50px; object-fit: contain; filter: drop-shadow(0 0 5px rgba(255,255,255,0.2));">
+                    <div class="dict-name" style="font-size: 11px; font-weight: 800; margin-top: 8px;">${isUnlocked ? fish.type : 'Chưa rõ'}</div>
+                </div>`;
+            });
+            document.getElementById('dict-grid').innerHTML = html;
+        }
+
+        function showDictionaryDetails(index) {
+            let fish = FISH_DATA[index];
+            let unlocked = (gameState.unlockedFishes || []).includes(fish.type);
+            let detailsDiv = document.getElementById('dict-details');
+
+            let displayImg = getFishSnapshot(fish, !unlocked);
+
+            if (!unlocked) {
+                detailsDiv.innerHTML = `
+                    <img src="${displayImg}" style="width: 120px; height: 120px; object-fit: contain; filter: drop-shadow(0 0 5px rgba(255,255,255,0.5)); opacity: 0.8;">
+                    <h3 style="color: #7f8c8d; margin: 15px 0; font-size: 24px; font-family: 'Quicksand';">Loài Cá Ẩn Danh</h3>
+                    <div style="font-size: 13px; color: #ff4757; font-weight: bold; border: 2px dashed #ff4757; background: rgba(255, 71, 87, 0.1); padding: 15px; border-radius: 12px; line-height: 1.5;">
+                        🔒 Sinh vật này chưa được khám phá.<br>Hãy tích lũy Kim Cương và thử vận may tại mục Triệu Hồi nhé!
+                    </div>
+                `;
+            } else {
+                let rarityColor = fish.rarity === "Huyền thoại" ? "var(--neon-pink)" : fish.rarity === "Hiếm" ? "var(--neon-blue)" : "white";
+                let description = fish.desc || `Sinh vật tuyệt đẹp này thuộc họ <b>${fish.shape}</b>. Sống ở vùng nước sâu của Abyss & Light, chúng mang trong mình màu sắc rực rỡ và khả năng sinh tồn vô cùng mãnh liệt.`;
+
+                detailsDiv.innerHTML = `
+                    <img src="${displayImg}" style="width: 150px; height: 150px; object-fit: contain; filter: drop-shadow(0 0 20px ${fish.colors[0]}); animation: floatBday 3s ease-in-out infinite;">
+                    <h3 style="color: ${rarityColor}; margin: 10px 0 5px 0; font-size: 24px; font-family: 'Quicksand'; text-shadow: 0 0 10px ${rarityColor};">${fish.type}</h3>
+                    
+                    <div style="background: rgba(255,255,255,0.1); padding: 5px 15px; border-radius: 20px; font-size: 12px; font-weight: 800; border: 1px solid ${rarityColor}; margin-bottom: 20px;">
+                        Độ hiếm: ${fish.rarity}
+                    </div>
+
+                    <div style="font-size: 13.5px; line-height: 1.7; text-align: left; color: #ecf0f1; background: rgba(0,0,0,0.4); padding: 15px; border-radius: 12px; width: 100%; border: 1px solid rgba(255,255,255,0.05);">
+                        📝 <b>Hồ sơ sinh thái:</b><br><span style="color: #bdc3c7;">${description}</span>
+                        <hr style="border: none; border-top: 1px solid rgba(255,255,255,0.1); margin: 12px 0;">
+                        ⚡ <b>Tốc độ di chuyển:</b> ${fish.speed || 'Bình thường'} m/s<br>
+                        🎨 <b>Màu sắc đặc trưng:</b> 
+                        <span style="color:${fish.colors[0]}; text-shadow: 0 0 5px ${fish.colors[0]}; font-size: 16px;">█</span> 
+                        <span style="color:${fish.colors[1]}; text-shadow: 0 0 5px ${fish.colors[1]}; font-size: 16px;">█</span>
+                    </div>
+                `;
+            }
+        }
     </script>
 </body>
 
