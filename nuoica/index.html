@@ -1790,94 +1790,241 @@
 
     <script>
         // --- 1. DỮ LIỆU CÁ CHUẨN ---
-        // const FISH_DATA = [
-            
-        //     // CÁ (fish)
-        //     { type: "Cá Đèn Lồng Deepsea", rarity: "Hiếm", shape: "fish", flockStyle: "independent", colors: ["#2F4F4F", "#00FF00"], speed: 1.4, scale: 1.0, glowType: "head", glowColor: "#00FF00" },
-        //     { type: "Cá Hề Lạc Lối", rarity: "Thường", shape: "fish", flockStyle: "horizontal", colors: ["#FF4500", "#FFFFFF"], speed: 2, scale: 0.8 },
-        //     { type: "Cá Vàng Mộng Mơ", rarity: "Thường", shape: "fish", flockStyle: "circular", colors: ["#FFD700", "#FFA500"], speed: 1.5, scale: 0.7 },
-        //     { type: "Cá Neon Xanh", rarity: "Thường", shape: "fish", flockStyle: "horizontal", colors: ["#00FFFF", "#000080"], speed: 3, scale: 0.6 },
-        //     { type: "Cá Bảy Màu", rarity: "Thường", shape: "fish", flockStyle: "horizontal", colors: ["#FF4500", "#9400D3"], speed: 2.5, scale: 0.6 },
-        //     { type: "Cá Trích Bạc", rarity: "Thường", shape: "fish", flockStyle: "horizontal", colors: ["#C0C0C0", "#E0FFFF"], speed: 3.5, scale: 0.5 },
-        //     { type: "Cá Bướm Vàng", rarity: "Thường", shape: "fish", flockStyle: "circular", colors: ["#FFFF00", "#000000"], speed: 2.2, scale: 0.7 },
-        //     { type: "Cá Betta Huyết", rarity: "Hiếm", shape: "fish", flockStyle: "independent", colors: ["#FF0000", "#8B0000"], speed: 2.5, scale: 0.9 },
-        //     { type: "Cá Kiếm U Minh", rarity: "Hiếm", shape: "fish", flockStyle: "horizontal", colors: ["#191970", "#C0C0C0"], speed: 4.5, scale: 1.4 },
-        //     { type: "Cá Rồng Tuyết", rarity: "Hiếm", shape: "fish", flockStyle: "independent", colors: ["#FFFFFF", "#7FFFD4"], speed: 2.4, scale: 1.8 },
-        //     { type: "Cá Koi Thiên Sứ", rarity: "Hiếm", shape: "fish", flockStyle: "circular", colors: ["#FF8C00", "#FFFFFF"], speed: 1.8, scale: 1.2 },
-        //     { type: "Leviathan Xanh", rarity: "Huyền thoại", shape: "fish", flockStyle: "horizontal", colors: ["#00FA9A", "#006400"], speed: 3.5, scale: 2 },
-        //     { type: "Long Vương Hắc Ám", rarity: "Huyền thoại", shape: "fish", flockStyle: "independent", colors: ["#111111", "#FF00EA"], speed: 4, scale: 2.5 },
-        //     { type: "Cá Voi Ánh Sáng", rarity: "Huyền thoại", shape: "fish", flockStyle: "horizontal", colors: ["#FFFFFF", "#00F3FF"], speed: 1.5, scale: 3 },
-        //     { type: "Megalodon Bạo Chúa", rarity: "Huyền thoại", shape: "fish", flockStyle: "independent", colors: ["#696969", "#000000"], speed: 3.0, scale: 3.5 },
-        //     { type: "Cá Sinh Nhật 🎂", rarity: "Huyền thoại", shape: "fish", flockStyle: "independent", colors: ["#FF1493", "#FFD700"], speed: 2.2, scale: 2.5 },
-
-        //     // CÁ ĐUỐI (ray)
-        //     { type: "Đuối Chấm Bi", rarity: "Thường", shape: "ray", flockStyle: "horizontal", colors: ["#D2B48C", "#8B4513"], speed: 1.5, scale: 1.1 },
-        //     { type: "Đuối Cát", rarity: "Thường", shape: "ray", flockStyle: "horizontal", colors: ["#F5DEB3", "#D2691E"], speed: 1.4, scale: 1.0 },
-        //     { type: "Cá Đuối Bóng Đêm", rarity: "Hiếm", shape: "ray", flockStyle: "independent", colors: ["#4B0082", "#191970"], speed: 1.8, scale: 1.5 },
-        //     { type: "Đuối Gai Độc", rarity: "Hiếm", shape: "ray", flockStyle: "horizontal", colors: ["#556B2F", "#000000"], speed: 2.0, scale: 1.3 },
-        //     { type: "Đuối Cẩm Thạch", rarity: "Hiếm", shape: "ray", flockStyle: "circular", colors: ["#008080", "#F0E68C"], speed: 1.7, scale: 1.6 },
-        //     { type: "Đuối Manta Quỷ", rarity: "Huyền thoại", shape: "ray", flockStyle: "independent", colors: ["#1C1C1C", "#FF4500"], speed: 2.5, scale: 3.2 },
-        //     { type: "Thần Đuối Nebula", rarity: "Huyền thoại", shape: "ray", flockStyle: "horizontal", colors: ["#8A2BE2", "#00FFFF"], speed: 2.0, scale: 3.0 },
-
-        //     // CÁ NGỰA (seahorse)
-        //     { type: "Ngựa Biển Lùn", rarity: "Thường", shape: "seahorse", flockStyle: "circular", colors: ["#F0E68C", "#DAA520"], speed: 0.8, scale: 0.5 },
-        //     { type: "Ngựa Thảo Nguyên", rarity: "Thường", shape: "seahorse", flockStyle: "circular", colors: ["#90EE90", "#006400"], speed: 0.9, scale: 0.6 },
-        //     { type: "Cá Ngựa Pha Lê", rarity: "Hiếm", shape: "seahorse", flockStyle: "circular", colors: ["#FF69B4", "#FFC0CB"], speed: 1.2, scale: 0.8 },
-        //     { type: "Hải Mã Gai Tím", rarity: "Hiếm", shape: "seahorse", flockStyle: "independent", colors: ["#9370DB", "#4B0082"], speed: 1.1, scale: 0.9 },
-        //     { type: "Hải Mã Hoàng Gia", rarity: "Huyền thoại", shape: "seahorse", flockStyle: "circular", colors: ["#FFD700", "#DAA520"], speed: 1.5, scale: 1.5 },
-        //     { type: "Hải Mã Hỏa Ngục", rarity: "Huyền thoại", shape: "seahorse", flockStyle: "independent", colors: ["#8B0000", "#FF4500"], speed: 1.8, scale: 1.6 },
-
-        //     // SỨA (jellyfish)
-        //     { type: "Sứa Mặt Trăng", rarity: "Thường", shape: "jellyfish", flockStyle: "independent", colors: ["#E0FFFF", "#AFEEEE"], speed: 0.6, scale: 0.8 },
-        //     { type: "Sứa Ô Đỏ", rarity: "Thường", shape: "jellyfish", flockStyle: "independent", colors: ["#FFB6C1", "#DC143C"], speed: 0.7, scale: 0.9 },
-        //     { type: "Sứa Dạ Quang", rarity: "Hiếm", shape: "jellyfish", flockStyle: "independent", colors: ["#00FF7F", "#008B8B"], speed: 1.0, scale: 1.2 },
-        //     { type: "Sứa Hộp Băng Giá", rarity: "Hiếm", shape: "jellyfish", flockStyle: "independent", colors: ["#ADD8E6", "#4169E1"], speed: 1.2, scale: 1.1 },
-        //     { type: "Sứa Vũ Trụ Bất Tử", rarity: "Huyền thoại", shape: "jellyfish", flockStyle: "independent", colors: ["#FFFAFA", "#FF00FF"], speed: 0.8, scale: 2.0 },
-        //     { type: "Sứa Chuông Linh Hồn", rarity: "Huyền thoại", shape: "jellyfish", flockStyle: "independent", colors: ["#F8F8FF", "#000080"], speed: 0.5, scale: 2.5 },
-
-        //     // RÙA (turtle)
-        //     { type: "Rùa Cỏ Ven Bờ", rarity: "Thường", shape: "turtle", flockStyle: "circular", colors: ["#8FBC8F", "#556B2F"], speed: 0.8, scale: 1.0 },
-        //     { type: "Rùa Lưng Gù", rarity: "Thường", shape: "turtle", flockStyle: "horizontal", colors: ["#BDB76B", "#8B4513"], speed: 0.9, scale: 1.1 },
-        //     { type: "Rùa Mai Xanh", rarity: "Hiếm", shape: "turtle", flockStyle: "circular", colors: ["#32CD32", "#228B22"], speed: 1.2, scale: 1.4 },
-        //     { type: "Rùa Đảo Hoang", rarity: "Hiếm", shape: "turtle", flockStyle: "independent", colors: ["#CD853F", "#A0522D"], speed: 1.0, scale: 1.6 },
-        //     { type: "Rùa Biển Cổ Đại", rarity: "Huyền thoại", shape: "turtle", flockStyle: "circular", colors: ["#2E8B57", "#8B4513"], speed: 0.8, scale: 2.2 },
-        //     { type: "Rùa Dung Nham", rarity: "Huyền thoại", shape: "turtle", flockStyle: "independent", colors: ["#FF0000", "#800000"], speed: 1.0, scale: 2.5 },
-        //     { type: "Thần Rùa Huyền Vũ", rarity: "Huyền thoại", shape: "turtle", flockStyle: "independent", colors: ["#000000", "#2F4F4F"], speed: 0.6, scale: 3.0 }
-        // ];
         const FISH_DATA = [
-            // ĐỘNG VẬT MỚI THÊM
-            // 🦀 CUA (bottom_crawler - Bò sát đáy)
-            { type: "Cua Đá Biển Sâu", rarity: "Thường", shape: "crab", behavior: "bottom_crawler", colors: ["#FF4500", "#8B0000"], speed: 0.5, scale: 0.8 },
-            { type: "Cua Hoàng Đế Huyết", rarity: "Hiếm", shape: "crab", behavior: "bottom_crawler", colors: ["#DC143C", "#FFA07A"], speed: 0.6, scale: 1.2, glowType: "body" },
-            
-            // 🦑 MỰC (pulse_swimmer - Bơi nhịp đập)
-            { type: "Mực Ống Pha Lê", rarity: "Thường", shape: "squid", behavior: "pulse_swimmer", colors: ["#E0FFFF", "#00CED1"], speed: 2.0, scale: 0.9 },
-            { type: "Ma Mực Huỳnh Quang", rarity: "Huyền thoại", shape: "squid", behavior: "pulse_swimmer", colors: ["#00FF00", "#32CD32"], speed: 2.5, scale: 1.5, glowType: "body" },
+            // --- HỌ LƯƠN BIỂN & CÁ CHÌNH (Eel Family) ---
+            {
+                type: "Lươn Ruộng Quen Thuộc",
+                rarity: "Thường",
+                shape: "eel",
+                colors: ["#4a3721", "#8b7355"],
+                speed: 1.2,
+                scale: 0.9,
+                desc: "Loài lươn nâu quen thuộc thường ẩn mình dưới lớp bùn. Tuy vẻ ngoài giản dị nhưng nó là biểu tượng của sự bền bỉ và khả năng lẩn trốn tài tình."
+            },
+            {
+                type: "Lươn Điện Abyss",
+                rarity: "Hiếm",
+                shape: "eel",
+                colors: ["#1e3799", "#4a69bd"],
+                speed: 2.0,
+                scale: 1.2,
+                glowType: "body",
+                glowColor: "#00f3ff",
+                desc: "Cơ thể nó tích tụ hàng ngàn volt điện từ áp suất đáy biển. Mỗi khi di chuyển, những tia lửa xanh neon chạy dọc sống lưng khiến mọi kẻ thù phải khiếp sợ."
+            },
+            {
+                type: "Hỏa Lươn Dung Nham",
+                rarity: "Hiếm",
+                shape: "eel",
+                colors: ["#8b0000", "#ff4500"],
+                speed: 1.5,
+                scale: 1.3,
+                glowType: "body",
+                glowColor: "#ff0000",
+                desc: "Sống trong các dòng hải lưu gần núi lửa ngầm. Thân hình đỏ rực như chứa magma nung chảy, tỏa nhiệt lượng làm ấm cả một vùng nước lạnh giá."
+            },
+            {
+                type: "Lươn Ngọc Bích Cổ Đại",
+                rarity: "Huyền thoại",
+                shape: "eel",
+                colors: ["#006266", "#1289a7"],
+                speed: 1.0,
+                scale: 1.8,
+                glowType: "body",
+                glowColor: "#32ff7e",
+                desc: "Tương truyền đây là hóa thân của rồng nước thời tiền sử. Lớp da bóng bẩy như ngọc quý và có khả năng chữa lành vết thương cho các sinh vật bơi quanh nó."
+            },
+            {
+                type: "Lươn Galaxy Vô Tận",
+                rarity: "Huyền thoại",
+                shape: "eel",
+                colors: ["#2c3e50", "#8e44ad"],
+                speed: 1.8,
+                scale: 1.5,
+                glowType: "body",
+                glowColor: "#fd79a8",
+                desc: "Thân hình mang màu tím đen của không gian sâu thẳm, rắc đầy bụi sao lấp lánh. Nó bơi đi như một dải ngân hà đang trôi dạt giữa lòng đại dương."
+            },
+            // --- CÁ (fish) ---
+            {
+                type: "Cá Đèn Lồng Deepsea", rarity: "Hiếm", shape: "fish", flockStyle: "independent", colors: ["#2F4F4F", "#00FF00"], speed: 1.4, scale: 1.0, glowType: "head", glowColor: "#00FF00",
+                desc: "Sinh vật của bóng tối vực rãnh Mariana. Chiếc đèn lồng trên đầu nó phát ra ánh sáng huỳnh quang tuyệt đẹp để dụ dỗ những con mồi ngây thơ."
+            },
+            {
+                type: "Cá Hề Lạc Lối", rarity: "Thường", shape: "fish", flockStyle: "horizontal", colors: ["#FF4500", "#FFFFFF"], speed: 2, scale: 0.8,
+                desc: "Luôn bơi loanh quanh như đang tìm kiếm cậu con trai tên Nemo. Màu cam rực rỡ giúp nó ẩn mình hoàn hảo trong những rạn hải quỳ."
+            },
+            {
+                type: "Cá Vàng Mộng Mơ", rarity: "Thường", shape: "fish", flockStyle: "circular", colors: ["#FFD700", "#FFA500"], speed: 1.5, scale: 0.7,
+                desc: "Có trí nhớ chỉ kéo dài 3 giây, nhưng lại mang một tâm hồn mộng mơ lãng mạn. Luôn bơi vòng quanh bể như đang khiêu vũ."
+            },
+            {
+                type: "Cá Neon Xanh", rarity: "Thường", shape: "fish", flockStyle: "horizontal", colors: ["#00FFFF", "#000080"], speed: 3, scale: 0.6,
+                desc: "Mang dải sáng xanh neon lấp lánh dọc thân. Khi bơi theo bầy, chúng tạo nên những vệt sáng tuyệt đẹp như dải ngân hà dưới nước."
+            },
+            {
+                type: "Cá Bảy Màu", rarity: "Thường", shape: "fish", flockStyle: "horizontal", colors: ["#FF4500", "#9400D3"], speed: 2.5, scale: 0.6,
+                desc: "Nhỏ bé nhưng sở hữu chiếc đuôi lộng lẫy như một chiếc váy dạ hội. Là loài cá quốc dân mang lại sức sống cho mọi bể thủy sinh."
+            },
+            {
+                type: "Cá Trích Bạc", rarity: "Thường", shape: "fish", flockStyle: "horizontal", colors: ["#C0C0C0", "#E0FFFF"], speed: 3.5, scale: 0.5,
+                desc: "Bơi lội thoăn thoắt với vảy lấp lánh ánh bạc. Chúng thường tập hợp thành từng đàn khổng lồ, di chuyển đồng điệu để né tránh kẻ thù."
+            },
+            {
+                type: "Cá Bướm Vàng", rarity: "Thường", shape: "fish", flockStyle: "circular", colors: ["#FFFF00", "#000000"], speed: 2.2, scale: 0.7,
+                desc: "Nổi bật với thân hình mỏng manh và vệt đen vắt ngang mắt. Dáng bơi uyển chuyển tựa như những chú bướm đang lượn lờ trong vườn hoa san hô."
+            },
+            {
+                type: "Cá Betta Huyết", rarity: "Hiếm", shape: "fish", flockStyle: "independent", colors: ["#FF0000", "#8B0000"], speed: 2.5, scale: 0.9,
+                desc: "Mang bản tính chiến binh kiêu hãnh. Chiếc đuôi đỏ rực tưa tủa bồng bềnh tựa như những ngọn lửa rực cháy dưới nước."
+            },
+            {
+                type: "Cá Kiếm U Minh", rarity: "Hiếm", shape: "fish", flockStyle: "horizontal", colors: ["#191970", "#C0C0C0"], speed: 4.5, scale: 1.4,
+                desc: "Phát ra thứ ánh sáng xanh thẳm đầy huyền bí. Chiếc vây mũi nhọn hoắt như thanh gươm có thể xé toạc màn đêm đại dương."
+            },
+            {
+                type: "Cá Rồng Tuyết", rarity: "Hiếm", shape: "fish", flockStyle: "independent", colors: ["#FFFFFF", "#7FFFD4"], speed: 2.4, scale: 1.8,
+                desc: "Toát lên vẻ đẹp vương giả với lớp vảy trắng muốt tinh khôi. Tương truyền, ai nuôi được loài cá này sẽ gặp muôn vàn may mắn."
+            },
+            {
+                type: "Cá Koi Thiên Sứ", rarity: "Hiếm", shape: "fish", flockStyle: "circular", colors: ["#FF8C00", "#FFFFFF"], speed: 1.8, scale: 1.2,
+                desc: "Khoác lên mình bộ cánh kết hợp giữa cam và trắng tựa như những thiên thần. Chúng mang lại sự bình yên và thịnh vượng cho bất cứ vùng nước nào."
+            },
+            {
+                type: "Leviathan Xanh", rarity: "Huyền thoại", shape: "fish", flockStyle: "horizontal", colors: ["#00FA9A", "#006400"], speed: 3.5, scale: 2,
+                desc: "Thủy quái cổ đại ngủ vùi dưới đáy vực sâu. Lớp vảy xanh ngọc bích của nó cứng cáp hơn cả kim cương, tản ra sức mạnh áp đảo thiên nhiên."
+            },
+            {
+                type: "Long Vương Hắc Ám", rarity: "Huyền thoại", shape: "fish", flockStyle: "independent", colors: ["#111111", "#FF00EA"], speed: 4, scale: 2.5,
+                desc: "Kẻ cai trị bóng đêm dưới rãnh vực đại dương. Mỗi lần nó quẫy đuôi là tạo ra những vòng xoáy hắc ám rực sáng sắc hồng ma mị nuốt chửng vạn vật."
+            },
+            {
+                type: "Cá Voi Ánh Sáng", rarity: "Huyền thoại", shape: "fish", flockStyle: "horizontal", colors: ["#FFFFFF", "#00F3FF"], speed: 1.5, scale: 3,
+                desc: "Thực thể thần thánh mang theo dải sáng bình minh rực rỡ. Người ta nói rằng nó đang bơi tới đâu, bóng tối vùng biển sẽ tan biến tới đó."
+            },
+            {
+                type: "Megalodon Bạo Chúa", rarity: "Huyền thoại", shape: "fish", flockStyle: "independent", colors: ["#696969", "#000000"], speed: 3.0, scale: 3.5,
+                desc: "Bóng ma của thời tiền sử vừa thức tỉnh. Sát thủ vĩ đại nhất của đại dương với hàm răng khổng lồ có thể nghiền nát mọi thứ chắn đường đi."
+            },
+            {
+                type: "Cá Sinh Nhật 🎂", rarity: "Huyền thoại", shape: "fish", flockStyle: "independent", colors: ["#FF1493", "#FFD700"], speed: 2.2, scale: 2.5,
+                desc: "Loài cá thần kỳ chỉ xuất hiện vào những dịp cực kỳ đặc biệt. Thân hình nó tỏa ra hương vị bánh kem ngọt ngào và rắc đầy kim tuyến pha lê lấp lánh!"
+            },
 
-            // 🐍 LƯƠN (slither - Uốn lượn tầng sâu)
-            { type: "Lươn Biển Đốm", rarity: "Thường", shape: "eel", behavior: "slither", colors: ["#556B2F", "#2E8B57"], speed: 1.5, scale: 1.2 },
-            { type: "Lươn Điện Abyss", rarity: "Huyền thoại", shape: "eel", behavior: "slither", colors: ["#FFFF00", "#FF8C00"], speed: 2.2, scale: 2.0, glowType: "body" },
+            // --- CÁ ĐUỐI (ray) ---
+            {
+                type: "Đuối Chấm Bi", rarity: "Thường", shape: "ray", flockStyle: "horizontal", colors: ["#D2B48C", "#8B4513"], speed: 1.5, scale: 1.1,
+                desc: "Hiền lành và nhút nhát. Lớp áo khoác chấm bi nâu giúp nó ngụy trang hoàn hảo thành những lớp hòn sỏi dưới đáy cát."
+            },
+            {
+                type: "Đuối Cát", rarity: "Thường", shape: "ray", flockStyle: "horizontal", colors: ["#F5DEB3", "#D2691E"], speed: 1.4, scale: 1.0,
+                desc: "Bậc thầy ẩn mình. Chỉ cần một cái lách mình vùi thân, nó sẽ hòa tan hoàn toàn vào lớp nền cát vàng ươm của đại dương."
+            },
+            {
+                type: "Cá Đuối Bóng Đêm", rarity: "Hiếm", shape: "ray", flockStyle: "independent", colors: ["#4B0082", "#191970"], speed: 1.8, scale: 1.5,
+                desc: "Lướt đi như một bóng ma không để lại tiếng động. Màu tím đen bí ẩn của nó là sự ngụy trang hoàn hảo nhất trong vùng biển khuất bóng mặt trời."
+            },
+            {
+                type: "Cá Đuối Gai Độc", rarity: "Hiếm", shape: "ray", flockStyle: "horizontal", colors: ["#556B2F", "#000000"], speed: 2.0, scale: 1.3,
+                desc: "Sở hữu chiếc đuôi chứa chiếc gai tẩm nọc độc nguy hiểm. Dù mang vẻ ngoài trầm tĩnh nhưng chớ dại mà chọc giận sinh vật lầm lì này."
+            },
+            {
+                type: "Cá Đuối Cẩm Thạch", rarity: "Hiếm", shape: "ray", flockStyle: "circular", colors: ["#008080", "#F0E68C"], speed: 1.7, scale: 1.6,
+                desc: "Lưng nó mang những hoa văn tuyệt mỹ tựa như một phiến đá cẩm thạch quý hiếm ngàn năm tuổi được mẹ thiên nhiên điêu khắc."
+            },
+            {
+                type: "Cá Đuối Manta Quỷ", rarity: "Huyền thoại", shape: "ray", flockStyle: "independent", colors: ["#1C1C1C", "#FF4500"], speed: 2.5, scale: 3.2,
+                desc: "Đôi cánh sải rộng khổng lồ rực đỏ như dung nham. Được mệnh danh là 'ác quỷ biển khơi' nhưng lại có điệu bơi vỗ cánh lả lướt vô cùng."
+            },
+            {
+                type: "Thần Đuối Nebula", rarity: "Huyền thoại", shape: "ray", flockStyle: "horizontal", colors: ["#8A2BE2", "#00FFFF"], speed: 2.0, scale: 3.0,
+                desc: "Thực thể vũ trụ mang theo sức mạnh của các chòm sao. Lớp da của nó lấp lánh như một tinh vân huyền ảo thu nhỏ ngay giữa lòng biển khơi."
+            },
 
-            // 🐋 CÁ VOI (majestic - Chậm, uy nghi)
-            { type: "Cá Voi Xanh Lạc Lối", rarity: "Hiếm", shape: "whale", behavior: "majestic", colors: ["#4682B4", "#191970"], speed: 0.8, scale: 4.0 },
-            { type: "Bạch Tinh Kình (Moby Dick)", rarity: "Huyền thoại", shape: "whale", behavior: "majestic", colors: ["#FFFFFF", "#F0F8FF"], speed: 1.0, scale: 5.0, glowType: "body" },// ĐỘNG VẬT MỚI THÊM
-            // 🦀 CUA (bottom_crawler - Bò sát đáy)
-            { type: "Cua Đá Biển Sâu", rarity: "Thường", shape: "crab", behavior: "bottom_crawler", colors: ["#FF4500", "#8B0000"], speed: 0.5, scale: 0.8 },
-            { type: "Cua Hoàng Đế Huyết", rarity: "Hiếm", shape: "crab", behavior: "bottom_crawler", colors: ["#DC143C", "#FFA07A"], speed: 0.6, scale: 1.2, glowType: "body" },
-            
-            // 🦑 MỰC (pulse_swimmer - Bơi nhịp đập)
-            { type: "Mực Ống Pha Lê", rarity: "Thường", shape: "squid", behavior: "pulse_swimmer", colors: ["#E0FFFF", "#00CED1"], speed: 2.0, scale: 0.9 },
-            { type: "Ma Mực Huỳnh Quang", rarity: "Huyền thoại", shape: "squid", behavior: "pulse_swimmer", colors: ["#00FF00", "#32CD32"], speed: 2.5, scale: 1.5, glowType: "body" },
+            // --- CÁ NGỰA (seahorse) ---
+            {
+                type: "Ngựa Biển Lùn", rarity: "Thường", shape: "seahorse", flockStyle: "circular", colors: ["#F0E68C", "#DAA520"], speed: 0.8, scale: 0.5,
+                desc: "Nhỏ bé và cực kỳ đáng yêu. Chúng thường dùng cái đuôi quăn tít của mình để bám víu vào những cành rong biển trôi dạt."
+            },
+            {
+                type: "Ngựa Thảo Nguyên", rarity: "Thường", shape: "seahorse", flockStyle: "circular", colors: ["#90EE90", "#006400"], speed: 0.9, scale: 0.6,
+                desc: "Trông hệt như một chiếc lá non đang trôi lơ lửng. Màu lục tươi mát giúp nó hòa mình vào những 'cánh đồng' tảo rậm rạp."
+            },
+            {
+                type: "Cá Ngựa Pha Lê", rarity: "Hiếm", shape: "seahorse", flockStyle: "circular", colors: ["#FF69B4", "#FFC0CB"], speed: 1.2, scale: 0.8,
+                desc: "Thân hình trong suốt như pha lê ửng lên sắc hồng phấn kiêu sa. Chúng mỏng manh tựa một món đồ trang sức vô giá của Long cung."
+            },
+            {
+                type: "Hải Mã Gai Tím", rarity: "Hiếm", shape: "seahorse", flockStyle: "independent", colors: ["#9370DB", "#4B0082"], speed: 1.1, scale: 0.9,
+                desc: "Khoác lên mình bộ giáp đầy gai nhọn hoắt ánh lên sắc tím độc tôn. Đây là loài cá ngựa mang dòng máu chiến binh kiên cường kiêu hãnh."
+            },
+            {
+                type: "Hải Mã Hoàng Gia", rarity: "Huyền thoại", shape: "seahorse", flockStyle: "circular", colors: ["#FFD700", "#DAA520"], speed: 1.5, scale: 1.5,
+                desc: "Mang dáng vóc bệ vệ với chiếc vương miện lấp lánh trên đầu. Thân hình dát vàng của chúng chứng minh sự tồn tại của hoàng tộc rạn san hô."
+            },
+            {
+                type: "Hải Mã Hỏa Ngục", rarity: "Huyền thoại", shape: "seahorse", flockStyle: "independent", colors: ["#8B0000", "#FF4500"], speed: 1.8, scale: 1.6,
+                desc: "Toát ra nhiệt lượng rực lửa dưới làn nước buốt giá. Sinh vật này dường như không sinh ra từ trứng mà được rèn ra từ magma nơi tâm Trái đất."
+            },
 
-            // 🐍 LƯƠN (slither - Uốn lượn tầng sâu)
-            { type: "Lươn Biển Đốm", rarity: "Thường", shape: "eel", behavior: "slither", colors: ["#556B2F", "#2E8B57"], speed: 1.5, scale: 1.2 },
-            { type: "Lươn Điện Abyss", rarity: "Huyền thoại", shape: "eel", behavior: "slither", colors: ["#FFFF00", "#FF8C00"], speed: 2.2, scale: 2.0, glowType: "body" },
+            // --- SỨA (jellyfish) ---
+            {
+                type: "Sứa Mặt Trăng", rarity: "Thường", shape: "jellyfish", flockStyle: "independent", colors: ["#E0FFFF", "#AFEEEE"], speed: 0.6, scale: 0.8,
+                desc: "Mang hình dáng chiếc ô trong vắt mờ ảo. Những nhịp bơi của nó nhẹ nhàng như nhịp thở của ánh trăng lướt qua mặt nước tĩnh lặng."
+            },
+            {
+                type: "Sứa Ô Đỏ", rarity: "Thường", shape: "jellyfish", flockStyle: "independent", colors: ["#FFB6C1", "#DC143C"], speed: 0.7, scale: 0.9,
+                desc: "Mang sắc đỏ rực rỡ lôi cuốn mọi ánh nhìn, nhưng những chiếc xúc tu rũ rượi của nó lại ẩn chứa những nụ hôn mang đầy nọc độc cay xè."
+            },
+            {
+                type: "Sứa Dạ Quang", rarity: "Hiếm", shape: "jellyfish", flockStyle: "independent", colors: ["#00FF7F", "#008B8B"], speed: 1.0, scale: 1.2,
+                desc: "Phát ra ánh sáng xanh lục lập lòe liên hồi. Chúng là những chiếc đèn lồng tự nhiên sinh ra để soi sáng con đường tăm tối của vực biển."
+            },
+            {
+                type: "Sứa Hộp Băng Giá", rarity: "Hiếm", shape: "jellyfish", flockStyle: "independent", colors: ["#ADD8E6", "#4169E1"], speed: 1.2, scale: 1.1,
+                desc: "Tuyệt mỹ nhưng cực kỳ nguy hiểm. Chạm vào những xúc tu mang màu xanh tuyết này có thể làm đóng băng và tê liệt hoàn toàn cơ thể."
+            },
+            {
+                type: "Sứa Vũ Trụ Bất Tử", rarity: "Huyền thoại", shape: "jellyfish", flockStyle: "independent", colors: ["#FFFAFA", "#FF00FF"], speed: 0.8, scale: 2.0,
+                desc: "Nắm giữ bí mật của sự bất tử. Khi già đi hoặc bị thương, nó lại tự reset cơ thể quay về chu kỳ sinh trưởng ban đầu, tạo thành vòng lặp vô tận."
+            },
+            {
+                type: "Sứa Chuông Linh Hồn", rarity: "Huyền thoại", shape: "jellyfish", flockStyle: "independent", colors: ["#F8F8FF", "#000080"], speed: 0.5, scale: 2.5,
+                desc: "Chiếc chuông khổng lồ trong suốt đến mức nhìn thấu tâm can. Tương truyền, nó dạt trôi vô định để thu thập những mảnh linh hồn đại dương thất lạc."
+            },
 
-            // 🐋 CÁ VOI (majestic - Chậm, uy nghi)
-            { type: "Cá Voi Xanh Lạc Lối", rarity: "Hiếm", shape: "whale", behavior: "majestic", colors: ["#4682B4", "#191970"], speed: 0.8, scale: 4.0 },
-            { type: "Bạch Tinh Kình (Moby Dick)", rarity: "Huyền thoại", shape: "whale", behavior: "majestic", colors: ["#FFFFFF", "#F0F8FF"], speed: 1.0, scale: 5.0, glowType: "body" }
-        ]
-            
+            // --- RÙA (turtle) ---
+            {
+                type: "Rùa Cỏ Ven Bờ", rarity: "Thường", shape: "turtle", flockStyle: "circular", colors: ["#8FBC8F", "#556B2F"], speed: 0.8, scale: 1.0,
+                desc: "Hiền lành, chậm chạp và thong thả. Sở thích lớn nhất của chú rùa này là lặn ngụp đi gặm nhấm những thảm cỏ biển bám trên các mỏm đá nông."
+            },
+            {
+                type: "Rùa Lưng Gù", rarity: "Thường", shape: "turtle", flockStyle: "horizontal", colors: ["#BDB76B", "#8B4513"], speed: 0.9, scale: 1.1,
+                desc: "Sở hữu chiếc mai sần sùi nhô cao mang dấu ấn bào mòn của năm tháng. Tốc độ bơi tuy chậm nhưng độ sức bền bỉ thì không loài cá nào sánh kịp."
+            },
+            {
+                type: "Rùa Mai Xanh", rarity: "Hiếm", shape: "turtle", flockStyle: "circular", colors: ["#32CD32", "#228B22"], speed: 1.2, scale: 1.4,
+                desc: "Nổi bật với chiếc mai phẳng hình giọt nước màu lục bảo tuyệt đẹp. Chúng là những nhà du hành vĩ đại đã vượt qua vô số đại dương sóng gió."
+            },
+            {
+                type: "Rùa Đảo Hoang", rarity: "Hiếm", shape: "turtle", flockStyle: "independent", colors: ["#CD853F", "#A0522D"], speed: 1.0, scale: 1.6,
+                desc: "Mỗi khi nổi lờ đờ trên mặt nước, mai của nó mang theo rêu phong đất đá trông hệt như một hòn đảo hoang thu nhỏ trôi dạt vô định."
+            },
+            {
+                type: "Rùa Biển Cổ Đại", rarity: "Huyền thoại", shape: "turtle", flockStyle: "circular", colors: ["#2E8B57", "#8B4513"], speed: 0.8, scale: 2.2,
+                desc: "Sinh vật thông thái đã chứng kiến sự thăng trầm của lịch sử từ thời tiền sử. Lớp mai của nó vững chãi như một pháo đài không thể bị phá vỡ."
+            },
+            {
+                type: "Rùa Dung Nham", rarity: "Huyền thoại", shape: "turtle", flockStyle: "independent", colors: ["#FF0000", "#800000"], speed: 1.0, scale: 2.5,
+                desc: "Chiếc mai của nó rực đỏ hệt như ngưng tụ sức nóng ngàn độ của lõi Trái Đất. Nó thường ngâm mình yên giấc ở các miệng núi lửa dưới biển sâu."
+            },
+            {
+                type: "Thần Rùa Huyền Vũ", rarity: "Huyền thoại", shape: "turtle", flockStyle: "independent", colors: ["#000000", "#2F4F4F"], speed: 0.6, scale: 3.0,
+                desc: "Thần thú thiêng liêng trấn giữ phương Bắc trong truyền thuyết cổ. Cổ dầy mai đen mang sức mạnh phòng thủ tuyệt đối không một lưỡi gươm nào xuyên phá nổi."
+            }
+        ];
+
+
 
         // --- 2. BIẾN TOÀN CỤC & TỌA ĐỘ CHUỘT ---
         // Tọa độ của ống kính camera
@@ -2335,8 +2482,8 @@
                     let targetDepth = height - 20 * this.baseScale;
                     this.y += (targetDepth - this.y) * 0.1; // Ghì xuống đáy
                     // Cua bò ngang
-                    this.currentAngle = this.targetAngle; 
-                } 
+                    this.currentAngle = this.targetAngle;
+                }
                 else if (behavior === "pulse_swimmer") {
                     // Mực bơi giật cục (phun nước rồi lướt đi)
                     let pulse = Math.max(0.1, Math.sin(this.swimCycle * 1.5) * 2.5);
@@ -2348,7 +2495,7 @@
                 }
                 else if (behavior === "majestic") {
                     // Cá voi bơi rất chậm, quay đầu cực kỳ lề mề
-                    turnSpeed = 0.01; 
+                    turnSpeed = 0.01;
                 }
 
                 // Cập nhật vị trí cuối cùng
@@ -2766,107 +2913,152 @@
                         }
                     }
                 }
-                else if (shape === "crab") {
-                    // 🦀 CUA: Bò ngang, có 2 càng nhấp nhô
-                    let legMove = Math.sin(this.swimCycle * 3) * 5;
-                    ctx.fillStyle = color1;
-                    
-                    // Vẽ 6 chân bò lổm ngổm (mỗi bên 3 chân)
-                    ctx.strokeStyle = color2; ctx.lineWidth = 2;
-                    for(let i = -1; i <= 1; i++) {
-                        ctx.beginPath(); ctx.moveTo(0, 0); ctx.quadraticCurveTo(-15, i*10, -20 + legMove*i, i*15 + legMove); ctx.stroke();
-                        ctx.beginPath(); ctx.moveTo(0, 0); ctx.quadraticCurveTo(15, i*10, 20 - legMove*i, i*15 - legMove); ctx.stroke();
-                    }
-                    
-                    // Mai cua (Hình oval dẹt)
-                    ctx.fillStyle = grad;
-                    ctx.beginPath(); ctx.ellipse(0, 0, 15, 10, 0, 0, Math.PI * 2); ctx.fill();
-                    
-                    // Hai càng to (Đủ 2 càng trái phải nha!)
-                    let clawPinch = Math.sin(this.swimCycle * 2) * 0.2;
-                    
-                    ctx.save(); ctx.translate(12, -8); ctx.rotate(clawPinch);
-                    ctx.beginPath(); ctx.arc(0, 0, 6, 0, Math.PI); ctx.fill(); ctx.restore(); // Càng phải
-                    
-                    ctx.save(); ctx.translate(12, 8); ctx.rotate(-clawPinch);
-                    ctx.beginPath(); ctx.arc(0, 0, 6, Math.PI, Math.PI*2); ctx.fill(); ctx.restore(); // Càng trái
-                    
-                    // Mắt cua lồi
-                    ctx.fillStyle = "black";
-                    ctx.beginPath(); ctx.arc(14, -4, 1.5, 0, Math.PI*2); ctx.arc(14, 4, 1.5, 0, Math.PI*2); ctx.fill();
-
-                } else if (shape === "squid") {
+                else if (shape === "squid") {
                     // 🦑 MỰC: Đầu nhọn, râu ngoe nguậy phía sau
                     let pulse = Math.sin(this.swimCycle * 1.5);
-                    
+
                     // Vẽ râu (Tentacles) thụt ra thụt vào
                     ctx.strokeStyle = color2; ctx.lineWidth = 1.5;
-                    for(let i = -6; i <= 6; i+=3) {
+                    for (let i = -6; i <= 6; i += 3) {
                         ctx.beginPath(); ctx.moveTo(-10, i);
-                        ctx.quadraticCurveTo(-20 - pulse*5, i + Math.sin(this.swimCycle*3+i)*3, -35 - pulse*10, i);
+                        ctx.quadraticCurveTo(-20 - pulse * 5, i + Math.sin(this.swimCycle * 3 + i) * 3, -35 - pulse * 10, i);
                         ctx.stroke();
                     }
-                    
+
                     // Đầu mực (Torpedo shape)
                     ctx.fillStyle = grad;
                     ctx.beginPath();
-                    ctx.moveTo(-10, -8 - pulse*2);
+                    ctx.moveTo(-10, -8 - pulse * 2);
                     ctx.quadraticCurveTo(15, -5, 20, 0);
-                    ctx.quadraticCurveTo(15, 5, -10, 8 + pulse*2);
+                    ctx.quadraticCurveTo(15, 5, -10, 8 + pulse * 2);
                     ctx.lineTo(-10, -8); ctx.fill();
-                    
+
                     // Mắt to tròn
-                    ctx.fillStyle = "white"; ctx.beginPath(); ctx.arc(8, -3, 2.5, 0, Math.PI*2); ctx.fill();
-                    ctx.fillStyle = "black"; ctx.beginPath(); ctx.arc(8.5, -3, 1, 0, Math.PI*2); ctx.fill();
+                    ctx.fillStyle = "white"; ctx.beginPath(); ctx.arc(8, -3, 2.5, 0, Math.PI * 2); ctx.fill();
+                    ctx.fillStyle = "black"; ctx.beginPath(); ctx.arc(8.5, -3, 1, 0, Math.PI * 2); ctx.fill();
 
                 } else if (shape === "eel") {
-                    // 🐍 LƯƠN: Thân dài uốn lượn hình Sin (Sine wave) cực mượt
-                    ctx.strokeStyle = grad; 
-                    ctx.lineWidth = 8; 
-                    ctx.lineCap = "round";
-                    
-                    ctx.beginPath();
-                    for(let i = 0; i < 40; i++) {
-                        let wave = Math.sin(this.swimCycle - i * 0.2) * 5; // Độ uốn
-                        let px = -i; let py = wave;
-                        if(i === 0) ctx.moveTo(px, py);
-                        else ctx.lineTo(px, py);
-                    }
-                    ctx.stroke();
-                    
-                    // Mắt lươn sắc lạnh
-                    ctx.fillStyle = "yellow"; ctx.beginPath(); ctx.arc(0, -2, 1.5, 0, Math.PI*2); ctx.fill();
-                    ctx.fillStyle = "black"; ctx.beginPath(); ctx.arc(0.5, -2, 0.8, 0, Math.PI*2); ctx.fill();
-                } else if (shape === "whale") {
-                    // 🐋 CÁ VOI: Khổng lồ, đuôi quạt chậm
-                    let tailWag = Math.sin(this.swimCycle * 0.5) * 0.2; // Nhịp quạt rất chậm
-                    
-                    // Vây ngực bơi chậm
-                    ctx.fillStyle = color2;
-                    ctx.beginPath(); ctx.ellipse(10, 15, 12, 4, Math.PI/6 + tailWag, 0, Math.PI*2); ctx.fill();
-                    
-                    // Thân khổng lồ
-                    ctx.fillStyle = grad;
-                    ctx.beginPath();
-                    ctx.moveTo(40, 0); // Mõm tù
-                    ctx.bezierCurveTo(30, -25, -20, -20, -40, -5); // Lưng
-                    ctx.bezierCurveTo(-50, 0, -50, 5, -40, 10); // Cuống đuôi
-                    ctx.bezierCurveTo(-10, 30, 30, 20, 40, 0); // Bụng vằn
-                    ctx.fill();
-                    
-                    // Bụng vằn trắng của cá voi
-                    ctx.strokeStyle = "rgba(255,255,255,0.3)"; ctx.lineWidth = 1;
-                    for(let i = 5; i < 30; i+=4) {
-                        ctx.beginPath(); ctx.moveTo(i, 5); ctx.quadraticCurveTo(i-5, 15, i-15, 12); ctx.stroke();
-                    }
+                    // 🐍 LƯƠN (Realistic Olive Eel) - Chuyển động S-curve mượt mà, bóng bẩy
 
-                    // Đuôi to bản
-                    ctx.save(); ctx.translate(-40, 5); ctx.rotate(tailWag);
-                    ctx.beginPath(); ctx.moveTo(0, 0); ctx.quadraticCurveTo(-15, -20, -25, -25); ctx.quadraticCurveTo(-15, 0, -25, 25); ctx.quadraticCurveTo(-15, 20, 0, 0);
-                    ctx.fillStyle = color2; ctx.fill(); ctx.restore();
-                    
-                    // Mắt nhỏ
-                    ctx.fillStyle = "black"; ctx.beginPath(); ctx.arc(28, 5, 1.5, 0, Math.PI*2); ctx.fill();
+                    // 1. TÍNH TOÁN NHỊP BƠI (Độ uốn lượn giảm dần từ đầu đến đuôi)
+                    let t = this.swimCycle * 1.5;
+                    let w1 = Math.sin(t) * 4;
+                    let w2 = Math.sin(t - 1) * 8;
+                    let w3 = Math.sin(t - 2) * 12;
+                    let w4 = Math.sin(t - 3) * 14;
+                    let w5 = Math.sin(t - 4) * 8;
+
+                    ctx.shadowBlur = 0;
+                    ctx.lineJoin = "round";
+                    ctx.lineCap = "round";
+
+                    // --- 2. DẢI VÂY (Continuous Dorsal & Anal Fins) ---
+                    ctx.fillStyle = "rgba(120, 130, 60, 0.7)"; // Màu xanh rêu trong suốt
+
+                    // Vây lưng (Dorsal Fin)
+                    ctx.beginPath();
+                    ctx.moveTo(10, -4);
+                    ctx.quadraticCurveTo(0, w1 - 10, -15, w2 - 10);
+                    ctx.quadraticCurveTo(-30, w3 - 8, -45, w4 - 4);
+                    ctx.lineTo(-55, w5); // Điểm cuối đuôi
+                    ctx.quadraticCurveTo(-45, w4, -30, w3); // Vòng lại theo xương sống
+                    ctx.quadraticCurveTo(-15, w2, 0, w1);
+                    ctx.fill();
+
+                    // Vây bụng (Anal Fin)
+                    ctx.beginPath();
+                    ctx.moveTo(-10, w2 + 5);
+                    ctx.quadraticCurveTo(-25, w3 + 8, -45, w4 + 4);
+                    ctx.lineTo(-55, w5);
+                    ctx.quadraticCurveTo(-45, w4, -30, w3);
+                    ctx.fill();
+
+                    // --- 3. THÂN CHÍNH (Main Body) ---
+                    // Gradient từ lưng đen sẫm -> bụng vàng rêu/olive
+                    let eelGrad = ctx.createLinearGradient(0, -6, 0, 6);
+                    eelGrad.addColorStop(0, "#111b24");   // Lưng sẫm
+                    eelGrad.addColorStop(0.5, "#525c2b"); // Xanh rêu giữa thân
+                    eelGrad.addColorStop(0.9, "#8f9048"); // Bụng vàng rêu sáng
+                    eelGrad.addColorStop(1, "#c1c08b");   // Đáy bụng sáng
+
+                    ctx.fillStyle = eelGrad;
+                    ctx.beginPath();
+
+                    // Đường cong lưng
+                    ctx.moveTo(18, -3); // Trán
+                    ctx.quadraticCurveTo(5, w1 - 6, -15, w2 - 5);
+                    ctx.quadraticCurveTo(-30, w3 - 3, -45, w4 - 1);
+                    ctx.lineTo(-55, w5); // Mũi đuôi nhọn
+
+                    // Đường cong bụng
+                    ctx.quadraticCurveTo(-45, w4 + 1, -30, w3 + 3);
+                    ctx.quadraticCurveTo(-15, w2 + 5, 0, w1 + 5);
+
+                    // Khuôn mặt và cằm (Miệng hơi hé mở)
+                    ctx.lineTo(10, 4); // Cằm
+                    ctx.lineTo(15, 2); // Khóe miệng
+                    ctx.lineTo(13, 0); // Lõm vòm miệng
+                    ctx.lineTo(18, -1); // Mũi/Môi trên
+                    ctx.closePath();
+                    ctx.fill();
+
+                    // Viền thân (Outline mỏng tạo độ sắc nét)
+                    ctx.strokeStyle = "#080c12";
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+
+                    // --- 4. ĐƯỜNG BÊN (Lateral Line) ---
+                    // Dải đứt khúc màu sáng chạy dọc giữa thân
+                    ctx.strokeStyle = "rgba(255, 255, 255, 0.4)";
+                    ctx.lineWidth = 0.8;
+                    ctx.setLineDash([2, 3]); // Vẽ nét đứt
+                    ctx.beginPath();
+                    ctx.moveTo(10, -1);
+                    ctx.quadraticCurveTo(0, w1 - 0.5, -15, w2 - 0.5);
+                    ctx.quadraticCurveTo(-30, w3 - 0.5, -45, w4 - 0.5);
+                    ctx.stroke();
+                    ctx.setLineDash([]); // Xóa thiết lập nét đứt cho các frame sau
+
+                    // --- 5. VÂY NGỰC (Pectoral Fin) ---
+                    // Nằm ngay sau mang, vẩy nhẹ nhàng
+                    ctx.save();
+                    ctx.translate(5, w1 + 2);
+                    ctx.rotate(Math.sin(t - 0.5) * 0.2); // Quạt vây nhẹ
+                    ctx.fillStyle = "#3a4425";
+                    ctx.beginPath();
+                    ctx.moveTo(0, 0);
+                    ctx.quadraticCurveTo(-5, 6, -10, 8);
+                    ctx.quadraticCurveTo(-4, 8, 2, 4);
+                    ctx.fill();
+                    ctx.strokeStyle = "rgba(255,255,255,0.3)";
+                    ctx.lineWidth = 0.5;
+                    ctx.stroke();
+                    ctx.restore();
+
+                    // --- 6. HIỆU ỨNG DA TRƠN BÓNG (Glossy Highlights) ---
+                    // Vệt sáng lấp lánh trên lưng
+                    ctx.strokeStyle = "rgba(255, 255, 255, 0.5)";
+                    ctx.lineWidth = 1.5;
+                    ctx.beginPath();
+                    ctx.moveTo(12, -2.5);
+                    ctx.quadraticCurveTo(5, w1 - 4.5, -10, w2 - 3.5);
+                    ctx.stroke();
+
+                    // Điểm lấp lánh li ti dọc phần da bóng
+                    ctx.fillStyle = "white";
+                    ctx.beginPath(); ctx.arc(8, -2, 0.6, 0, Math.PI * 2); ctx.fill();
+                    ctx.beginPath(); ctx.arc(4, w1 - 4, 0.5, 0, Math.PI * 2); ctx.fill();
+                    ctx.beginPath(); ctx.arc(-2, w2 - 3, 0.8, 0, Math.PI * 2); ctx.fill();
+
+                    // --- 7. MẮT VÀ ĐỒNG TỬ ---
+                    ctx.fillStyle = "#FFD700"; // Tròng vàng
+                    ctx.beginPath(); ctx.arc(12, -1.5, 1.5, 0, Math.PI * 2); ctx.fill();
+
+                    ctx.fillStyle = "#000000"; // Đồng tử đen
+                    ctx.beginPath(); ctx.arc(12.5, -1.5, 0.8, 0, Math.PI * 2); ctx.fill();
+
+                    ctx.fillStyle = "white"; // Điểm bắt sáng (Catchlight)
+                    ctx.beginPath(); ctx.arc(12.8, -1.8, 0.3, 0, Math.PI * 2); ctx.fill();
                 }
                 else {
                     // 🐟 CÁ THƯỜNG (Dáng Streamlined - Chuyển động uốn éo mượt mà)
