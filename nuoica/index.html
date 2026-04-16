@@ -1171,14 +1171,292 @@
         body.night-mode #bg-image {
             filter: brightness(0.4) saturate(0.7) hue-rotate(10deg);
         }
+
+        /* ==========================================
+           🎁 BDAY MODAL SIÊU LUNG LINH CỦA BẢO ANH
+           ========================================== */
+        .bday-modal {
+            background: linear-gradient(135deg, rgba(255, 235, 240, 0.95) 0%, rgba(254, 207, 239, 0.95) 100%);
+            border: 4px solid rgba(255, 255, 255, 0.9);
+            border-radius: 35px;
+            box-shadow: 0 20px 50px rgba(255, 8, 68, 0.3), inset 0 0 20px rgba(255, 255, 255, 0.8);
+            padding: 35px 25px;
+            max-width: 420px;
+            animation: floatBday 3s ease-in-out infinite;
+            /* Hiệu ứng lơ lửng */
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Hiệu ứng lơ lửng cho hộp quà */
+        @keyframes floatBday {
+
+            0%,
+            100% {
+                transform: scale(1) translateY(0);
+            }
+
+            50% {
+                transform: scale(1.02) translateY(-10px);
+            }
+        }
+
+        /* Chỉnh lại khung ảnh GIF */
+        .bday-gif {
+            width: 130px;
+            height: 130px;
+            object-fit: cover;
+            border-radius: 25px;
+            margin-bottom: 15px;
+            box-shadow: 0 10px 25px rgba(255, 8, 68, 0.2);
+            border: 3px solid white;
+            background: white;
+            /* Phòng trường hợp GIF trong suốt */
+        }
+
+        /* Chữ tiêu đề rực rỡ */
+        .bday-title {
+            font-family: 'Quicksand', sans-serif;
+            font-size: 26px;
+            font-weight: 900;
+            background: linear-gradient(45deg, #ff0844, #ffb199);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 2px 2px 4px rgba(255, 8, 68, 0.1);
+            margin-bottom: 12px;
+        }
+
+        /* Lời nhắn thân thương */
+        .bday-message {
+            font-size: 14.5px;
+            font-weight: 700;
+            color: #c2185b;
+            /* Hồng đậm sang trọng */
+            line-height: 1.6;
+            margin-bottom: 25px;
+            text-shadow: 0 1px 1px rgba(255, 255, 255, 0.8);
+            padding: 0 10px;
+        }
+
+        .bday-message b {
+            color: #ff0844;
+            font-weight: 900;
+        }
+
+        /* Nút nhận quà tỏa hào quang */
+        .bday-btn {
+            background: linear-gradient(45deg, #ff0844, #ffb199) !important;
+            border: 3px solid white !important;
+            color: white !important;
+            padding: 14px 30px !important;
+            font-size: 15px !important;
+            font-weight: 900 !important;
+            border-radius: 50px !important;
+            box-shadow: 0 10px 20px rgba(255, 8, 68, 0.3) !important;
+            animation: pulseBdayBtn 1.5s infinite;
+            /* Hiệu ứng tỏa sáng */
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .bday-btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 15px 25px rgba(255, 8, 68, 0.5) !important;
+        }
+
+        /* Vòng hào quang lan tỏa quanh nút bấm */
+        @keyframes pulseBdayBtn {
+            0% {
+                box-shadow: 0 0 0 0 rgba(255, 8, 68, 0.6);
+            }
+
+            70% {
+                box-shadow: 0 0 0 15px rgba(255, 8, 68, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(255, 8, 68, 0);
+            }
+        }
+
+        /* 📋 NÚT & BẢNG NHIỆM VỤ HÀNG NGÀY */
+        .btn-quest-toggle {
+            position: absolute;
+            top: 265px;
+            /* Nằm ngay dưới nút TÙY CHỈNH */
+            right: 0px;
+            width: 120px;
+            height: 45px;
+            background: linear-gradient(45deg, #32CD32, #00FA9A);
+            color: white;
+            border: none;
+            padding: 0 15px 0 10px;
+            border-radius: 25px 0 0 25px;
+            cursor: pointer;
+            font-weight: 900;
+            font-family: 'Quicksand';
+            font-size: 13px;
+            box-shadow: -5px 0 15px rgba(50, 205, 50, 0.4);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 999;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            pointer-events: auto;
+        }
+
+        .btn-quest-toggle:hover {
+            padding-right: 25px;
+            width: 130px;
+            right: 2px;
+        }
+
+        .btn-quest-toggle.hidden {
+            transform: translateX(150%);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        body.cinema-active .btn-quest-toggle {
+            opacity: 0 !important;
+            pointer-events: none !important;
+        }
+
+        /* 📋 NÚT NHIỆM VỤ (Cách đều 210 + 45 + 10 = 265px) */
+        .btn-quest-toggle {
+            position: absolute;
+            top: 265px;
+            right: 0px;
+            width: 120px;
+            height: 45px;
+            background: linear-gradient(45deg, #32CD32, #00FA9A);
+            color: white;
+            border: none;
+            padding: 0 15px 0 10px;
+            border-radius: 25px 0 0 25px;
+            cursor: pointer;
+            font-weight: 900;
+            font-family: 'Quicksand';
+            font-size: 13px;
+            box-shadow: -5px 0 15px rgba(50, 205, 50, 0.4);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 999;
+            pointer-events: auto;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+        }
+
+        .btn-quest-toggle:hover {
+            padding-right: 25px;
+            width: 130px;
+            right: 2px;
+        }
+
+        .btn-quest-toggle.hidden {
+            transform: translateX(150%);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* 📋 SIDEBAR NHIỆM VỤ TRƯỢT TỪ PHẢI SANG */
+        .quest-sidebar {
+            position: absolute;
+            top: 255px;
+            /* Nằm dưới nút Tùy Chỉnh một chút */
+            right: 15px;
+            width: 300px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 15px;
+            transform: translateX(calc(100% + 50px));
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 100;
+        }
+
+        .quest-sidebar.active {
+            transform: translateX(0);
+        }
+
+        /* Căn chỉnh lại các cục nhiệm vụ bên trong cho gọn */
+        .quest-item {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            text-align: left;
+        }
+
+        .quest-info {
+            flex-grow: 1;
+            margin-right: 10px;
+        }
+
+        .quest-title {
+            font-weight: 900;
+            color: #00FA9A;
+            font-size: 14px;
+            margin-bottom: 3px;
+        }
+
+        .quest-desc {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .quest-bar-bg {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .quest-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #32CD32, #00FA9A);
+            width: 0%;
+            transition: 0.3s;
+        }
+
+        .btn-claim {
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            border: none;
+            padding: 8px 10px;
+            font-family: 'Quicksand';
+            font-weight: 900;
+            color: #000;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 11px;
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
+            transition: 0.3s;
+            white-space: nowrap;
+        }
+
+        .btn-claim:hover {
+            transform: translateY(-2px) scale(1.05);
+        }
+
+        .btn-claim:disabled {
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: none;
+            cursor: not-allowed;
+            transform: none;
+            color: rgba(255, 255, 255, 0.5);
+        }
     </style>
 </head>
 
 <body>
     <div id="bg-container">
-        <img id="bg-image"
-            src="./images/bg/under_water-sea-life.jpg"
-            alt="Ocean Background">
+        <img id="bg-image" src="./images/bg/under_water-sea-life.jpg" alt="Ocean Background">
         <div class="ocean-overlay">
 
         </div>
@@ -1244,7 +1522,7 @@
             <button class="btn-main btn-epic" onclick="summonFish()">✨ Triệu Hồi</button>
             <button class="btn-main btn-epic" style="background: #444 !important;" onclick="toggleCinema()">🎬
                 Cinema</button>
-            <button class="btn-main btn-bday" onclick="openModal('bday-overlay')">🎁 Quà Tặng</button>
+            <button class="btn-main btn-bday" onclick="openModal('bday-overlay')">🎁 Cá Sinh Nhật</button>
             <button class="btn-main" onclick="spawnShark()"
                 style="background: linear-gradient(45deg, #ff4757, #8b0000); border:none;">🦈 Thả Cá Mập</button>
             <button class="btn-main" onclick="clearSave()"
@@ -1301,6 +1579,19 @@
             </div>
 
         </div>
+        <button class="btn-quest-toggle" id="btn-quest-toggle" onclick="toggleQuestSidebar(true)">📋 NHIỆM VỤ</button>
+
+        <div class="quest-sidebar glass-panel" id="quest-sidebar">
+            <div class="close-sidebar-btn"
+                style="background: rgba(50, 205, 50, 0.1); color: #32CD32; border-color: rgba(50, 205, 50, 0.3);"
+                onclick="toggleQuestSidebar(false)">Đóng Lại ➔</div>
+            <h3
+                style="font-family: 'Quicksand'; font-size: 14px; margin-bottom: 5px; color: #00FA9A; text-align: center;">
+                NHIỆM VỤ HÀNG NGÀY</h3>
+            <div id="quest-list"
+                style="overflow-y: auto; max-height: 50vh; padding-right: 5px; display: flex; flex-direction: column; gap: 8px;">
+            </div>
+        </div>
     </div>
 
     <div id="music-widget" class="glass-panel">
@@ -1312,7 +1603,7 @@
         </div>
 
         <div id="music-info">
-            <div id="music-widget-name">Lo-fi Ocean</div>
+            <div id="music-widget-name">Lost in The Ocean</div>
             <div class="music-progress-container">
                 <span id="music-current-time">0:00</span>
                 <div class="music-progress-bar">
@@ -1323,7 +1614,7 @@
         </div>
     </div>
     <audio id="bg-audio" loop>
-        <source id="audio-source" src="https://files.catbox.moe/onltyo.mp3" type="audio/mpeg">
+        <source id="audio-source" src="https://files.catbox.moe/4u7pvn.mp3" type="audio/mpeg">
     </audio>
     </div>
 
@@ -1420,13 +1711,20 @@
 
     <div class="overlay" id="bday-overlay">
         <div class="modal bday-modal">
-            <div style="font-size: 60px;">🎂✨</div>
-            <h2 style="font-family: 'Quicksand'; font-size: 28px; font-weight: 900; color: #ff0844;">Quà Cho Bảo Anh!
-            </h2>
-            <p style="font-size: 14px; font-weight: 700; margin: 15px 0;">Đại dương gửi tặng Bảo Anh một món quà siêu
-                đặc biệt nè! 🎁</p>
-            <button class="btn-main" style="background: linear-gradient(45deg, #ff0844, #ffb199); border: none;"
-                onclick="claimBdayGift()">Nhận Cá Sinh Nhật 🎉</button>
+            <img class="bday-gif"
+                src="https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExZ3BmZ3o2cnZqb3JhOWhzbGxsZmpqaTNoeWgwdHU4dXRwZXY0NThleiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/lPuW5AlR9AeWzSsIqi/giphy.gif"
+                alt="Birthday Gift">
+
+            <h2 class="bday-title">Chúc mừng Sinh Nhật Bảo Anh (18/4/2026)! 🎂</h2>
+
+            <div class="bday-message">
+                Nhân ngày rực rỡ nhất hôm nay, Thần Biển từ nơi sâu thẳm của đại dương xin gửi đến Bảo Anh muôn vàn vạn
+                lời chúc tốt đẹp nhất! <br><br>
+                ✨ <b>Món quà độc bản:</b> Một sinh mệnh huyền thoại rực rỡ vừa thức tỉnh để dành riêng cho em. Hãy dang
+                tay đón nhận nhé! 🌊
+            </div>
+
+            <button class="btn-main bday-btn" onclick="claimBdayGift()">✨ NHẬN CÁ SINH NHẬT ✨</button>
         </div>
     </div>
 
@@ -1496,7 +1794,83 @@
         const ctx = canvas.getContext('2d');
         let width, height;
         let trackedFishId = null; // ID của con cá đang bị theo dõi
-        let gameState = { coins: 1000000, fishes: [], decorations: [], lastId: 0 }; let foods = []; let particles = []; let corals = []; let seaweeds = []; let planktons = [];
+        let gameState = { coins: 1000000, fishes: [], decorations: [], lastId: 0, quests: [], lastQuestDate: "" };
+
+        // CẤU HÌNH NHIỆM VỤ
+        const DAILY_QUESTS_TEMPLATE = [
+            { id: "feed", title: "🍔 Bữa Ăn Thịnh Soạn", desc: "Thả 30 viên thức ăn cho cá", target: 30, reward: 150 },
+            { id: "gacha", title: "✨ Triệu Hồi Sư", desc: "Triệu hồi cá mới 2 lần", target: 2, reward: 300 },
+            { id: "spend", title: "💸 Đại Gia Biển Sâu", desc: "Tiêu 1000 Kim Cương", target: 1000, reward: 200 }
+        ];
+
+        // HÀM RESET NHIỆM VỤ KHI QUA NGÀY MỚI
+        function checkDailyQuests() {
+            let today = new Date().toDateString(); // Lấy chuỗi ngày hiện tại (VD: Mon Apr 16 2026)
+            if (gameState.lastQuestDate !== today || !gameState.quests || gameState.quests.length === 0) {
+                gameState.lastQuestDate = today;
+                gameState.quests = DAILY_QUESTS_TEMPLATE.map(q => ({
+                    ...q, progress: 0, isClaimed: false
+                }));
+                saveGame();
+            }
+        }
+
+        // 1. CẬP NHẬT: Khi nhiệm vụ lên cấp, chỉ vẽ lại nếu Sidebar đang mở
+        function updateQuestProgress(id, amount) {
+            if (!gameState.quests) return;
+            let q = gameState.quests.find(x => x.id === id);
+            if (q && !q.isClaimed && q.progress < q.target) {
+                q.progress += amount;
+                if (q.progress > q.target) q.progress = q.target;
+                saveGame();
+                if (document.getElementById('quest-sidebar').classList.contains('active')) {
+                    renderQuestUI();
+                }
+            }
+        }
+
+        // HÀM RENDER & NHẬN THƯỞNG
+
+
+        function renderQuestUI() {
+            let listHTML = '';
+            gameState.quests.forEach(q => {
+                let pct = (q.progress / q.target) * 100;
+                let btnState = q.isClaimed ? `<button class="btn-claim" disabled>ĐÃ NHẬN</button>` :
+                    q.progress >= q.target ? `<button class="btn-claim" onclick="claimQuest('${q.id}')">NHẬN ${q.reward} 💎</button>` :
+                        `<button class="btn-claim" disabled>${Math.floor(q.progress)}/${q.target}</button>`;
+
+                listHTML += `
+                <div class="quest-item">
+                    <div class="quest-info">
+                        <div class="quest-title">${q.title}</div>
+                        <div class="quest-desc">${q.desc}</div>
+                        <div class="quest-bar-bg">
+                            <div class="quest-bar-fill" style="width: ${pct}%"></div>
+                        </div>
+                    </div>
+                    ${btnState}
+                </div>`;
+            });
+            document.getElementById('quest-list').innerHTML = listHTML;
+        }
+
+        function claimQuest(id) {
+            let q = gameState.quests.find(x => x.id === id);
+            if (q && q.progress >= q.target && !q.isClaimed) {
+                q.isClaimed = true;
+                gameState.coins += q.reward;
+                createExplosion(width / 2, height / 2, "#00FA9A", 50); // Pháo hoa xanh lá
+                saveGame();
+                updateUI();
+                renderQuestUI(); // Load lại UI
+            }
+        }
+        let foods = [];
+        let particles = [];
+        let corals = [];
+        let seaweeds = [];
+        let planktons = [];
         let currentHour = 12; let isNight = false;
         let draggedDecor = null;
         // TỪ ĐIỂN GIẢI THÍCH KỸ NĂNG
@@ -1667,7 +2041,12 @@
                 this.targetHp = this.hp; // <-- THÊM DÒNG NÀY (Máu mục tiêu)
             }
             update() {
-                if (this.isDragged) return; // Nếu đang bị kéo thì đứng im không tự bơi nữa
+                if (this.isDragged) {
+                    this.swimCycle += 0.2; // Tăng tốc chu kỳ đập vây/đuôi lên cực nhanh
+                    // Bắt cá lắc lư qua lại mô phỏng việc giãy giụa (biên độ 0.6 radian)
+                    this.currentAngle = (this.targetAngle || 0) + Math.sin(this.swimCycle) * 0.6;
+                    return; // Trả về để cá không tự bơi đi chỗ khác
+                } // Nếu đang bị kéo thì đứng im không tự bơi nữa
                 // ✨ [MỚI] HIỆU ỨNG TỤT MÁU MƯỢT MÀ
                 // Hp sẽ trượt dần về targetHp với tốc độ 5% mỗi khung hình
                 if (this.hp !== this.targetHp) {
@@ -2120,7 +2499,154 @@
                     // ==========================================
 
                 }
+                else if (this.data.type === "Cá Sinh Nhật 🎂") {
+                    // 🎂 [SIÊU PHẨM CHÂN THỰC & MƯỢT MÀ] CÁ ÔNG TIÊN HỒNG ĐEO NÓN 🥳 🎂
+                    // Dựa trên ảnh tham khảo: hình dạng dẹt, vây dài, màu hồng tươi.
 
+                    let t = Date.now() * 0.002; // Biến thời gian chung
+                    let swimA = Math.sin(this.swimCycle * 1.5); // Nhịp bơi chính
+                    let bodyWobble = swimA * 1.2; // Thân lắc lư nhẹ
+
+                    // 1. TẮT SHADOW ĐỂ TỐI ƯU HIỆU SUẤT
+                    ctx.shadowBlur = 0;
+
+                    // ----------------------------------------------------------------------
+                    // 2. VẼ THÂN CÁ ÔNG TIÊN (Angelfish Body Path - Chân thực)
+                    // Cấu trúc thân hình tam giác dẹt, mõm nhọn đặc trưng.
+
+                    ctx.fillStyle = "white"; // Lớp nền
+                    let angelfishBody = new Path2D();
+                    angelfishBody.moveTo(38, -5); // Mõm
+                    // Đường lưng (Cong cao lên vây lưng)
+                    angelfishBody.bezierCurveTo(25, -20, 0, -28 - bodyWobble, -10, -25 - bodyWobble);
+                    // Đường sau thân (Gốc vây)
+                    angelfishBody.quadraticCurveTo(-20, -10 - bodyWobble, -25, -6 - bodyWobble);
+                    // Đường bụng (Cong thấp xuống vây hậu môn)
+                    angelfishBody.bezierCurveTo(-15, 20 - bodyWobble, 10, 32, 25, 28);
+                    // Nối về mõm
+                    angelfishBody.quadraticCurveTo(35, 15, 38, -5);
+
+                    // Gradient pearlescent phập phồng màu hồng/trắng giống ảnh
+                    let bodyGrad = ctx.createLinearGradient(38, 0, -25, 0);
+                    bodyGrad.addColorStop(0, "#ffffff"); // Đầu trắng
+                    bodyGrad.addColorStop(0.3, "#ffb6c1"); // Thân hồng nhạt pearlescent
+                    bodyGrad.addColorStop(0.7, "#FF69B4");   // Thân hồng tươi
+                    bodyGrad.addColorStop(1, "#FF1493");   // Gốc vây hồng đậm
+
+                    ctx.fillStyle = bodyGrad;
+                    ctx.fill(angelfishBody);
+
+
+                    // ----------------------------------------------------------------------
+                    // 3. [TÓE ĐẸP] VÂY CÁ ÔNG TIÊN (Realistic Long Fins)
+                    // Vây lưng và vây hậu môn rất dài, thướt tha.
+
+                    ctx.save();
+                    ctx.translate(-22, -bodyWobble); // Attachment point tapered tap body tapping tapped tap tapped tap tapered tap end tap
+                    ctx.rotate(swimA * 0.2); // Wag angle
+
+                    let finColorBase = "rgba(255, 255, 255, 0.55)"; // White transparent veil White veil White veil
+                    let finColorVeil = "rgba(255, 105, 180, 0.55)"; // Pink transparent veil Pink veil Pink veil
+
+                    // Vây Lưng (Long Dorsal Fin - Giống ảnh)
+                    ctx.fillStyle = finColorVeil;
+                    ctx.beginPath();
+                    ctx.moveTo(10, -25);
+                    ctx.bezierCurveTo(10, -50, 0, -65, -15, -75); // Long thướt tha
+                    ctx.bezierCurveTo(-5, -55, 10, -45, 10, -25);
+                    ctx.fill();
+
+                    // Vây Hậu Môn (Long Anal Fin - Giống ảnh)
+                    ctx.fillStyle = finColorVeil;
+                    ctx.beginPath();
+                    ctx.moveTo(10, 25);
+                    ctx.bezierCurveTo(10, 50, 0, 65, -15, 75); // Long thướt tha
+                    ctx.bezierCurveTo(-5, 55, 10, 45, 10, 25);
+                    ctx.fill();
+
+                    // Vây Đuôi (Tail Fin - Forked Veiltail, xòe rộng nhưng gọn)
+                    ctx.fillStyle = finColorBase;
+                    ctx.beginPath();
+                    ctx.moveTo(0, 0);
+                    ctx.bezierCurveTo(-20, -35, -50, -45 + swimA * 10, -80, swimA * 15 + 15); // Tóe lên 1 bên
+                    ctx.bezierCurveTo(-50, -5, -20, -15, 0, 0);
+                    ctx.fill();
+                    ctx.beginPath();
+                    ctx.moveTo(0, 0);
+                    ctx.bezierCurveTo(-20, 35, -50, 45 - swimA * 10, -80, swimA * 15 - 15); // Tóe xuống 1 bên
+                    ctx.bezierCurveTo(-50, 5, -20, 15, 0, 0);
+                    ctx.fill();
+
+                    // Vẽ tia vây mỏng manh (realistic detailed internal lines detailed details)
+                    ctx.strokeStyle = "rgba(255,255,255,0.22)"; ctx.lineWidth = 1;
+                    // Upper detailed lines detailed structural detailed detail detailed detail detail lines detailed structural detail detailed detail lines detail structural logic logic logic
+                    for (let i = 0; i < 5; i++) { ctx.beginPath(); ctx.moveTo(0, 0); ctx.quadraticCurveTo(-50, -10 - i * 11, -80, swimA * 15 + 15 - i * 3); ctx.stroke(); }
+                    // Lower detailed lines detailed structural detailed detail detailed detail detail lines detailed structural detail detailed detail lines detail structural logic logic logic
+                    for (let i = 0; i < 5; i++) { ctx.beginPath(); ctx.moveTo(0, 0); ctx.quadraticCurveTo(-50, 10 + i * 11, -80, swimA * 15 - 15 + i * 3); ctx.stroke(); }
+
+                    ctx.restore();
+
+
+                    // ----------------------------------------------------------------------
+                    // 4. [MỚI] NÓN SINH NHẬT DỄ THƯƠNG (Birthday Cone Hat 🥳)
+                    // Gắn trên trán dễ thương.
+
+                    ctx.save();
+                    let hatWobble = Math.sin(t * 3) * 0.1; // Nón cũng rung rinh
+                    ctx.translate(18, -17 + bodyWobble * 0.5); // Gắn trên trán dẹt đặc trưng
+                    ctx.rotate(hatWobble);
+
+                    ctx.shadowBlur = 12;
+                    ctx.shadowColor = `hsla(${(t * 60) % 360}, 100%, 75%, 0.9)`;
+
+                    // Vẽ thân nón (Cone)
+                    let hatGrad = ctx.createLinearGradient(-8, 0, 8, 0);
+                    hatGrad.addColorStop(0, "#00ced1"); // Teal
+                    hatGrad.addColorStop(1, "#32CD32"); // Lime Green
+
+                    ctx.fillStyle = hatGrad;
+                    ctx.beginPath();
+                    ctx.moveTo(-8, 0); // Đáy nón
+                    ctx.quadraticCurveTo(0, 4, 8, 0); // Đáy nón cong nhẹ
+                    ctx.lineTo(0, -22); // Đỉnh nón
+                    ctx.closePath();
+                    ctx.fill();
+
+                    // Đính chấm kim tuyến DOTS dots dots dots dots logic logic logic
+                    ctx.fillStyle = "white";
+                    ctx.beginPath(); ctx.arc(0, -10, 1.2, 0, Math.PI * 2); ctx.fill();
+                    ctx.beginPath(); ctx.arc(-4, -5, 1, 0, Math.PI * 2); ctx.fill();
+                    ctx.beginPath(); ctx.arc(4, -5, 1, 0, Math.PI * 2); ctx.fill();
+
+                    // Cục bông tassel tassel tassel tassel tassel logic logic logic
+                    ctx.fillStyle = `hsla(${(t * 90) % 360}, 100%, 85%, 1)`;
+                    ctx.beginPath(); ctx.arc(0, -22, 3 + Math.sin(t * 5) * 1, 0, Math.PI * 2); ctx.fill();
+                    ctx.restore();
+
+
+                    // ----------------------------------------------------------------------
+                    // 5. MẮT CÁ CUTIE SAPPHIRE LONG LANH (Chân thực)
+                    // Mắt to đặc trưng của Angelfish
+
+                    ctx.shadowBlur = 0; // Tắt shadow cho mắt sắc nét
+                    ctx.beginPath(); ctx.arc(20, -4 + bodyWobble * 0.2, 4.8, 0, Math.PI * 2); ctx.fillStyle = "white"; ctx.fill(); // Tròng trắng
+
+                    // Sapphire xanh biển rực rỡ Sapphire Sapp factor Sapphire factor Sapphire logic factor factor factor Sapphire Sapphire Sapphire Sapp factors factor factor logic factor factor factor factor logic logic logic factors logic factors factor factors logic factor factors logic factor factor factors logic logic
+                    ctx.beginPath(); ctx.arc(21, -4 + bodyWobble * 0.2, 2.8, 0, Math.PI * 2); ctx.fillStyle = "#00f3ff"; ctx.fill();
+
+                    // Catchlight larger factor larger larger larger factor logic logic logic
+                    ctx.fillStyle = "white"; ctx.beginPath(); ctx.arc(21.7, -4.7 + bodyWobble * 0.2, 1, 0, Math.PI * 2); ctx.fill();
+
+
+                    // ----------------------------------------------------------------------
+                    // 6. RẢI KIM TUYẾN PINK & GOLD (Giảm tần suất tối ưu)
+                    if (Math.random() < 0.1) {
+                        if (typeof particles !== 'undefined') {
+                            let pColor = Math.random() < 0.5 ? "rgba(255, 105, 180, 0.8)" : "#FFD700";
+                            particles.push(new Particle(this.x - Math.random() * 30, this.y + (Math.random() * 20 - 10), pColor, true));
+                        }
+                    }
+                }
                 else {
                     // 🐟 CÁ THƯỜNG (Dáng Streamlined - Chuyển động uốn éo mượt mà)
                     let tailWag = Math.sin(this.swimCycle * 1.5);
@@ -2542,7 +3068,9 @@
                             draggedDecor = clickedDecor; draggedDecor.isDragged = true;
                         } else {
                             // Nếu bấm ra khoảng trống -> Thả mồi
-                            foods.push(new Food(e.clientX, e.clientY)); createExplosion(e.clientX, e.clientY, "rgba(255,255,255,0.5)", 5);
+                            foods.push(new Food(e.clientX, e.clientY));
+                            updateQuestProgress('feed', 1);
+                            createExplosion(e.clientX, e.clientY, "rgba(255,255,255,0.5)", 5);
                         }
                     }
                 }
@@ -2552,8 +3080,8 @@
         // 2. Sửa mousemove (Để kéo nội thất đi)
         window.addEventListener('mousemove', (e) => {
             const rect = canvas.getBoundingClientRect();
-            const mouseX = e.clientX - rect.left;
-            const mouseY = e.clientY - rect.top;
+            let mouseX = e.clientX - rect.left;
+            let mouseY = e.clientY - rect.top;
 
             if (draggedDecor) {
                 draggedDecor.x = mouseX;
@@ -2613,18 +3141,6 @@
                 saveGame(); // Lưu lại vị trí mới
             }
         });
-        window.addEventListener('mousemove', (e) => {
-            mouseX = e.clientX; mouseY = e.clientY;
-
-            if (draggedFish) {
-                draggedFish.x = mouseX; draggedFish.y = mouseY;
-            } else if (draggedDecor) {
-                // 👉 Kéo nội thất
-                draggedDecor.x = mouseX; draggedDecor.y = mouseY;
-            } else {
-                if (Math.random() < 0.2) particles.push(new Particle(e.clientX, e.clientY, "rgba(0, 243, 255, 0.6)", true));
-            }
-        });
         // THÊM MỚI TOÀN BỘ SỰ KIỆN NÀY ĐỂ THẢ CÁ RA
         window.addEventListener('mouseup', () => {
             if (draggedFish) {
@@ -2643,6 +3159,8 @@
         window.addEventListener('keydown', (e) => {
             if (e.code === 'Space' && gameState.coins >= 50) {
                 gameState.coins -= 50; updateUI();
+                updateQuestProgress('feed', 15);
+                updateQuestProgress('spend', 50);
                 for (let i = 0; i < 15; i++) setTimeout(() => { let rx = Math.random() * (width - 200) + 100; foods.push(new Food(rx, -10)); createExplosion(rx, 10, "#FFD700", 5); }, i * 150);
             }
         });
@@ -2652,30 +3170,33 @@
             }
         });
 
-        // --- 7. UI & LƯU GAME ---
+        // 1. MỞ DANH SÁCH THỦY CUNG (DSTC)
         function toggleSidebar(show) {
             const sidebar = document.getElementById('sidebar');
-            const btnDSTC = document.getElementById('btn-slide-toggle');
-            const btnSetting = document.getElementById('btn-controls-toggle');
+            const btns = [document.getElementById('btn-slide-toggle'), document.getElementById('btn-controls-toggle'), document.getElementById('btn-custom-toggle'), document.getElementById('btn-quest-toggle')];
 
             if (show) {
-                // Nếu mở DSTC: đóng Cài đặt trước
-                toggleControls(false);
+                // Ép đóng 3 bảng còn lại
+                document.getElementById('controls-sidebar').classList.remove('active');
+                document.getElementById('custom-sidebar').classList.remove('active');
+                if (document.getElementById('quest-sidebar')) document.getElementById('quest-sidebar').classList.remove('active');
+
                 sidebar.classList.add('active');
-                btnDSTC.classList.add('hidden');
-                btnSetting.classList.add('hidden'); // Ẩn luôn nút Cài đặt cho đẹp
+                btns.forEach(b => b && b.classList.add('hidden'));
             } else {
                 sidebar.classList.remove('active');
-                btnDSTC.classList.remove('hidden');
-                btnSetting.classList.remove('hidden'); // Hiện lại nút Cài đặt
+                btns.forEach(b => b && b.classList.remove('hidden'));
             }
-        } function openModal(id) { document.getElementById(id).classList.add('active'); }
+        }
+        function openModal(id) { document.getElementById(id).classList.add('active'); }
         function closeModal(id) { document.getElementById(id).classList.remove('active'); }
 
         function summonFish() {
             if (gameState.coins < 200) return alert("Hết Kim Cương rồi fen ơi!");
             if (gameState.fishes.length >= 30) return alert("Hồ cá đã đầy (Max 30)!");
             gameState.coins -= 200;
+            updateQuestProgress('gacha', 1);
+            updateQuestProgress('spend', 200);
             const r = Math.random() * 100; let pool = r < 5 ? FISH_DATA.filter(f => f.rarity === "Huyền thoại") : r < 30 ? FISH_DATA.filter(f => f.rarity === "Hiếm") : FISH_DATA.filter(f => f.rarity === "Thường");
             const tmpl = pool[Math.floor(Math.random() * pool.length)];
             const fish = new Fish(tmpl); fish.x = width / 2; fish.y = height / 2; gameState.fishes.push(fish);
@@ -2683,6 +3204,25 @@
             document.getElementById('gacha-name').innerText = tmpl.type; document.getElementById('gacha-rarity').innerText = tmpl.rarity;
             document.getElementById('gacha-rarity').style.color = tmpl.rarity === "Huyền thoại" ? "var(--neon-pink)" : tmpl.rarity === "Hiếm" ? "var(--neon-blue)" : "white";
             openModal('gacha-overlay'); saveGame(); updateUI();
+        }
+        // 4. MỞ NHIỆM VỤ
+        function toggleQuestSidebar(show) {
+            const questSidebar = document.getElementById('quest-sidebar');
+            const btns = [document.getElementById('btn-slide-toggle'), document.getElementById('btn-controls-toggle'), document.getElementById('btn-custom-toggle'), document.getElementById('btn-quest-toggle')];
+
+            if (show) {
+                // Ép đóng 3 bảng còn lại
+                document.getElementById('sidebar').classList.remove('active');
+                document.getElementById('controls-sidebar').classList.remove('active');
+                document.getElementById('custom-sidebar').classList.remove('active');
+                
+                renderQuestUI(); // Load lại dữ liệu thanh tiến trình
+                questSidebar.classList.add('active');
+                btns.forEach(b => b && b.classList.add('hidden'));
+            } else {
+                questSidebar.classList.remove('active');
+                btns.forEach(b => b && b.classList.remove('hidden'));
+            }
         }
 
         function sellFish(id) {
@@ -2706,7 +3246,7 @@
             if (!fish) return;
 
             // Hiện bảng nhập tên
-            let newName = prompt(`Bể bơi Abyss & Light\nĐặt tên cúng cơm cho [${fish.data.type}]:\n(Để trống nếu muốn dùng tên gốc)`, fish.customName || "");
+            let newName = prompt(`Bể bơi Abyss & Light\nĐặt tên cho [${fish.data.type}]:\n(Để trống nếu muốn dùng tên gốc)`, fish.customName || "");
 
             if (newName !== null) {
                 // Xóa khoảng trắng thừa và giới hạn 15 ký tự cho đỡ tràn giao diện
@@ -2718,14 +3258,21 @@
         function buyItem(type, price) {
             if (gameState.coins < price) return alert("Không đủ Kim Cương!");
             if (type === 'rain') {
-                gameState.coins -= price; closeModal('shop-overlay');
+                gameState.coins -= price;
+                updateQuestProgress('spend', price);
+                closeModal('shop-overlay');
                 for (let i = 0; i < 20; i++) setTimeout(() => { let rx = Math.random() * (width - 100) + 50; foods.push(new Food(rx, -10)); createExplosion(rx, 10, "#FFD700", 5); }, i * 150);
             } else if (type === 'levelUp') {
-                if (gameState.fishes.length === 0) return alert("Hồ chưa có cá!"); gameState.coins -= price; closeModal('shop-overlay');
+                if (gameState.fishes.length === 0) return alert("Hồ chưa có cá!");
+                gameState.coins -= price;
+                updateQuestProgress('spend', price);
+                closeModal('shop-overlay');
                 gameState.fishes.forEach(fish => { fish.level++; createExplosion(fish.x, fish.y, "#00f3ff", 30); });
             } else if (type === 'evolve') {
                 let pool = gameState.fishes.filter(f => f.data.rarity !== "Huyền thoại"); if (pool.length === 0) return alert("Cá đã Max Huyền Thoại!");
-                gameState.coins -= price; closeModal('shop-overlay');
+                gameState.coins -= price;
+                updateQuestProgress('spend', price);
+                closeModal('shop-overlay');
                 let t = pool[Math.floor(Math.random() * pool.length)]; let newForm = FISH_DATA.filter(f => f.rarity === "Huyền thoại")[Math.floor(Math.random() * 3)];
                 t.data = newForm; t.baseScale = newForm.scale; createExplosion(t.x, t.y, "var(--neon-pink)", 100);
             }
@@ -2734,6 +3281,7 @@
                 if (gameState.coins < price) return alert("Hết Kim Cương rồi!");
 
                 gameState.coins -= price;
+                updateQuestProgress('spend', price);
                 closeModal('shop-overlay');
 
                 let newDecor = new Decoration(type);
@@ -2834,30 +3382,36 @@
                     id: f.id, type: f.data.type, level: f.level, xp: f.xp, x: f.x, y: f.y,
                     hunger: f.hunger, skill: f.skill, customName: f.customName, hp: f.hp
                 })),
-                // 👉 THÊM DÒNG NÀY ĐỂ LƯU NỘI THẤT
-                decorations: gameState.decorations.map(d => ({ id: d.id, type: d.type, x: d.x, y: d.y, scale: d.scale }))
+                decorations: gameState.decorations.map(d => ({ id: d.id, type: d.type, x: d.x, y: d.y, scale: d.scale })),
+                quests: gameState.quests,
+                lastQuestDate: gameState.lastQuestDate
             }));
         }
 
-        // 2. Cập nhật hàm loadGame
         function loadGame() {
             let data = localStorage.getItem('abyss_save');
             if (data) {
                 let p = JSON.parse(data);
                 gameState.coins = p.coins;
                 gameState.lastId = p.lastId;
+
+                if (p.quests && p.lastQuestDate) {
+                    gameState.quests = p.quests;
+                    gameState.lastQuestDate = p.lastQuestDate;
+                }
+
                 p.fishes.forEach(o => {
                     let t = FISH_DATA.find(x => x.type === o.type);
                     if (t) gameState.fishes.push(new Fish(t, o));
                 });
 
-                // 👉 THÊM KHỐI NÀY ĐỂ TẢI NỘI THẤT CŨ LÊN
                 if (p.decorations) {
                     p.decorations.forEach(o => {
                         gameState.decorations.push(new Decoration(o.type, o));
                     });
                 }
             }
+            checkDailyQuests(); // Đừng quên gọi hàm này sau khi Load game để check qua ngày mới
             if (window.innerWidth > 768) toggleSidebar(true);
         }
         function clearSave() { if (confirm("Xóa hết dữ liệu chơi lại?")) { localStorage.removeItem('abyss_save'); location.reload(); } }
@@ -2883,21 +3437,22 @@
                 toggleSidebar(false); // Gập luôn danh sách thủy cung lại
             }
         }
+        // 2. MỞ CÀI ĐẶT
         function toggleControls(show) {
             const ctrlSidebar = document.getElementById('controls-sidebar');
-            const btnSetting = document.getElementById('btn-controls-toggle');
-            const btnDSTC = document.getElementById('btn-slide-toggle');
+            const btns = [document.getElementById('btn-slide-toggle'), document.getElementById('btn-controls-toggle'), document.getElementById('btn-custom-toggle'), document.getElementById('btn-quest-toggle')];
 
             if (show) {
-                // Nếu mở Cài đặt: đóng DSTC trước
-                toggleSidebar(false);
+                // Ép đóng 3 bảng còn lại
+                document.getElementById('sidebar').classList.remove('active');
+                document.getElementById('custom-sidebar').classList.remove('active');
+                if(document.getElementById('quest-sidebar')) document.getElementById('quest-sidebar').classList.remove('active');
+                
                 ctrlSidebar.classList.add('active');
-                btnSetting.classList.add('hidden');
-                btnDSTC.classList.add('hidden'); // Ẩn luôn nút DSTC
+                btns.forEach(b => b && b.classList.add('hidden'));
             } else {
                 ctrlSidebar.classList.remove('active');
-                btnSetting.classList.remove('hidden');
-                btnDSTC.classList.remove('hidden'); // Hiện lại nút DSTC
+                btns.forEach(b => b && b.classList.remove('hidden'));
             }
         }
 
@@ -2929,69 +3484,26 @@
                 icon.style.display = 'block';
             }
         }
-        // Thay thế hàm mở Danh sách
-        function toggleSidebar(show) {
-            const sidebar = document.getElementById('sidebar');
-            const btnDSTC = document.getElementById('btn-slide-toggle');
-            const btnSetting = document.getElementById('btn-controls-toggle');
-            const btnCustom = document.getElementById('btn-custom-toggle'); // Bổ sung
+    
 
-            if (show) {
-                toggleControls(false);
-                toggleCustomSidebar(false); // Đóng tùy chỉnh
-                sidebar.classList.add('active');
-                btnDSTC.classList.add('hidden');
-                btnSetting.classList.add('hidden');
-                btnCustom.classList.add('hidden');
-            } else {
-                sidebar.classList.remove('active');
-                btnDSTC.classList.remove('hidden');
-                btnSetting.classList.remove('hidden');
-                btnCustom.classList.remove('hidden');
-            }
-        }
+    
 
-        // Thay thế hàm mở Cài đặt
-        function toggleControls(show) {
-            const ctrlSidebar = document.getElementById('controls-sidebar');
-            const btnSetting = document.getElementById('btn-controls-toggle');
-            const btnDSTC = document.getElementById('btn-slide-toggle');
-            const btnCustom = document.getElementById('btn-custom-toggle'); // Bổ sung
-
-            if (show) {
-                toggleSidebar(false);
-                toggleCustomSidebar(false); // Đóng tùy chỉnh
-                ctrlSidebar.classList.add('active');
-                btnSetting.classList.add('hidden');
-                btnDSTC.classList.add('hidden');
-                btnCustom.classList.add('hidden');
-            } else {
-                ctrlSidebar.classList.remove('active');
-                btnSetting.classList.remove('hidden');
-                btnDSTC.classList.remove('hidden');
-                btnCustom.classList.remove('hidden');
-            }
-        }
-
-        // THÊM HÀM MỚI MỞ TÙY CHỈNH
+    // 3. MỞ TÙY CHỈNH
         function toggleCustomSidebar(show) {
             const customSidebar = document.getElementById('custom-sidebar');
-            const btnCustom = document.getElementById('btn-custom-toggle');
-            const btnSetting = document.getElementById('btn-controls-toggle');
-            const btnDSTC = document.getElementById('btn-slide-toggle');
+            const btns = [document.getElementById('btn-slide-toggle'), document.getElementById('btn-controls-toggle'), document.getElementById('btn-custom-toggle'), document.getElementById('btn-quest-toggle')];
 
             if (show) {
-                toggleSidebar(false);
-                toggleControls(false);
+                // Ép đóng 3 bảng còn lại
+                document.getElementById('sidebar').classList.remove('active');
+                document.getElementById('controls-sidebar').classList.remove('active');
+                if(document.getElementById('quest-sidebar')) document.getElementById('quest-sidebar').classList.remove('active');
+                
                 customSidebar.classList.add('active');
-                btnCustom.classList.add('hidden');
-                btnSetting.classList.add('hidden');
-                btnDSTC.classList.add('hidden');
+                btns.forEach(b => b && b.classList.add('hidden'));
             } else {
                 customSidebar.classList.remove('active');
-                btnCustom.classList.remove('hidden');
-                btnSetting.classList.remove('hidden');
-                btnDSTC.classList.remove('hidden');
+                btns.forEach(b => b && b.classList.remove('hidden'));
             }
         }
 
