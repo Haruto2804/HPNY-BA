@@ -1552,7 +1552,7 @@
                 onclick="toggleControls(false)">Đóng Lại ➔</div>
 
             <button class="btn-main btn-shop" onclick="openModal('shop-overlay')">🛒 Cửa Hàng</button>
-            <button class="btn-main btn-epic" onclick="summonFish()">✨ Triệu Hồi</button>
+            <button class="btn-main btn-epic" onclick="summonFish()">✨ RANDOM</button>
             <button class="btn-main btn-epic" style="background: #444 !important;" onclick="toggleCinema()">🎬
                 Cinema</button>
             <button class="btn-main"
@@ -1701,6 +1701,14 @@
                         onclick="buyItem('evolve', 3000)">3000 💎</button>
                 </div>
                 <div class="shop-item">
+                    <div style="font-size: 35px; margin-bottom: 5px;">📜</div>
+                    <div style="font-weight: 800; font-size: 14px;">Khế Ước Thần Biển</div>
+                    <button class="btn-main btn-epic" style="width: 100%; padding: 8px; margin-top: 10px;"
+                        onclick="openSpecifiedSummon()">2000 💎</button>
+                </div>
+
+
+                <div class="shop-item">
                     <img src="./images/decor/ransanho_1.png"
                         style="width: 50px; height: 50px; object-fit: contain; margin-bottom: 5px; filter: drop-shadow(0 0 10px #ff4757);"
                         alt="San Hô">
@@ -1743,6 +1751,19 @@
             <button class="btn-main"
                 style="margin-top: 20px; background: transparent; border-color: rgba(255,255,255,0.3);"
                 onclick="closeModal('shop-overlay')">Đóng</button>
+        </div>
+    </div>
+    <div class="overlay" id="specified-summon-overlay">
+        <div class="modal shop-modal" style="max-width: 600px;">
+            <h2 style="font-family: 'Quicksand'; font-size: 22px; color: var(--gold);">📜 CHỌN LOÀI TRIỆU HỒI</h2>
+            <p style="font-size: 12px; margin-bottom: 15px; opacity: 0.8;">Phí khế ước: 2000 Kim Cương</p>
+
+            <div id="summon-choice-list"
+                style="display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; max-height: 350px; overflow-y: auto; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 15px;">
+            </div>
+
+            <button class="btn-main" style="margin-top: 20px; background: transparent;"
+                onclick="closeModal('specified-summon-overlay')">Hủy bỏ</button>
         </div>
     </div>
     <div class="overlay" id="dict-overlay" onclick="if(event.target === this) closeModal('dict-overlay')">
@@ -1789,6 +1810,7 @@
     </div>
 
     <script>
+
         // --- 1. DỮ LIỆU CÁ CHUẨN ---
         const FISH_DATA = [
             // --- HỌ LƯƠN BIỂN & CÁ CHÌNH (Eel Family) ---
@@ -4148,6 +4170,74 @@
                     </div>
                 `;
             }
+        }
+        // 1. Mở menu chọn cá
+        function openSpecifiedSummon() {
+            if (gameState.coins < 2000) return alert("Bạn không đủ 2000 Kim Cương để ký khế ước!");
+            if (gameState.fishes.length >= 30) return alert("Hồ cá đã đầy!");
+
+            closeModal('shop-overlay'); // Đóng shop cũ
+            const listDiv = document.getElementById('summon-choice-list');
+            listDiv.innerHTML = ''; // Xóa danh sách cũ
+
+            // Hiển thị toàn bộ cá có trong FISH_DATA
+            FISH_DATA.forEach((fish) => {
+                const item = document.createElement('div');
+                item.className = 'dict-item'; // Dùng lại style từ điển cho đẹp
+                item.style.padding = "10px";
+
+                // Render ảnh snapshot của cá đó
+                const imgSrc = getFishSnapshot(fish, false);
+
+                item.innerHTML = `
+            <img src="${imgSrc}" style="width: 40px; height: 40px; margin-bottom: 5px;">
+            <div style="font-size: 11px; font-weight: 800; color: ${fish.colors[0]}">${fish.type}</div>
+            <div style="font-size: 9px; opacity: 0.6;">${fish.rarity}</div>
+            <button class="btn-claim" style="margin-top: 5px; width: 100%; font-size: 9px;" 
+                onclick="confirmSummon('${fish.type}')">CHỌN</button>
+        `;
+                listDiv.appendChild(item);
+            });
+
+            openModal('specified-summon-overlay');
+        }
+
+        // 2. Xác nhận triệu hồi con cá đã chọn
+        function confirmSummon(fishType) {
+            if (!confirm(`Bạn chắc chắn muốn bỏ ra 2000 💎 để triệu hồi [${fishType}]?`)) return;
+
+            // Tìm dữ liệu cá trong mảng gốc
+            const template = FISH_DATA.find(f => f.type === fishType);
+            if (!template) return;
+
+            // Trừ tiền và cập nhật nhiệm vụ
+            gameState.coins -= 2000;
+            updateQuestProgress('spend', 2000);
+
+            // Tạo cá mới
+            const newFish = new Fish(template);
+            newFish.x = width / 2;
+            newFish.y = height / 2;
+            gameState.fishes.push(newFish);
+
+            // Mở khóa trong Từ điển nếu chưa có
+            if (!gameState.unlockedFishes) gameState.unlockedFishes = [];
+            if (!gameState.unlockedFishes.includes(template.type)) {
+                gameState.unlockedFishes.push(template.type);
+            }
+
+            // Hiệu ứng và thông báo
+            createExplosion(width / 2, height / 2, template.colors[0], 120);
+            closeModal('specified-summon-overlay');
+
+            // Hiển thị Modal Gacha cũ để chúc mừng
+            document.getElementById('gacha-name').innerText = template.type;
+            document.getElementById('gacha-rarity').innerText = "KHẾ ƯỚC THÀNH CÔNG";
+            document.getElementById('gacha-rarity').style.color = "var(--gold)";
+            openModal('gacha-overlay');
+
+            saveGame();
+            updateUI();
         }
     </script>
 </body>
