@@ -1587,6 +1587,12 @@
                 style="cursor:pointer; text-align: center; opacity: 0.4;" title="Phù du (4💎)">🦠<div
                     style="font-size:9px; font-weight:900;">4💎</div>
             </div>
+            <div id="poison-btn" onclick="togglePoison()"
+                style="cursor:pointer; text-align: center; opacity: 0.4; margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 10px;"
+                title="Tẩm Thuốc Độc (1 lần thả)">
+                ☠️<div style="font-size:9px; font-weight:900; color: #9b59b6;"><span id="poison-count-ui">0</span> Lọ
+                </div>
+            </div>
         </div>
         <div class="sidebar glass-panel" id="sidebar">
             <div class="close-sidebar-btn" onclick="toggleSidebar(false)">Đóng Lại ➔</div>
@@ -1772,6 +1778,12 @@
                     <div style="font-weight: 800; font-size: 14px; text-align: center;">Khế Ước Thần Biển</div>
                     <button class="btn-main btn-epic" style="width: 100%; padding: 8px; margin-top: 10px;"
                         onclick="openSpecifiedSummon()">2000 💎</button>
+                </div>
+                <div class="shop-item">
+                    <div style="font-size: 35px; margin-bottom: 5px;">🧪</div>
+                    <div style="font-weight: 800; font-size: 14px;">Thuốc Độc</div>
+                    <button class="btn-main btn-shop" style="width: 100%; padding: 8px; margin-top: 10px;"
+                        onclick="buyItem('poison', 500)">500 💎</button>
                 </div>
 
                 <div class="category-title cat-decor">🏛️ Trang Trí</div>
@@ -2260,7 +2272,32 @@
         let width, height;
         let trackedFishId = null; // ID của con cá đang bị theo dõi
         // Tìm dòng này:
-        let gameState = { coins: 1000000, fishes: [], decorations: [], lastId: 0, quests: [], lastQuestDate: "", unlockedFishes: [], hasCrab: false, jellyfishCount: 0 }; const DAILY_QUESTS_TEMPLATE = [
+        let gameState = { coins: 1000000, fishes: [], decorations: [], lastId: 0, quests: [], lastQuestDate: "", unlockedFishes: [], hasCrab: false, jellyfishCount: 0, poisons: 0 };
+        // Thêm biến cờ hiệu này ngay bên dưới gameState:
+        let isNextFoodPoisoned = false;
+
+        // Thêm hàm bật/tắt trạng thái tẩm độc:
+        function togglePoison() {
+            let poisonBtn = document.getElementById('poison-btn');
+            if (isNextFoodPoisoned) {
+                // Hủy tẩm độc
+                isNextFoodPoisoned = false;
+                poisonBtn.style.opacity = '0.4';
+                poisonBtn.style.transform = 'scale(1)';
+                poisonBtn.style.textShadow = 'none';
+            } else {
+                if ((gameState.poisons || 0) > 0) {
+                    // Kích hoạt tẩm độc
+                    isNextFoodPoisoned = true;
+                    poisonBtn.style.opacity = '1';
+                    poisonBtn.style.transform = 'scale(1.2)';
+                    poisonBtn.style.textShadow = '0 0 15px #9b59b6'; // Sáng viền tím
+                } else {
+                    alert("Bạn đã hết Thuốc Độc! Vui lòng mua thêm trong Siêu Thị.");
+                }
+            }
+        }
+        const DAILY_QUESTS_TEMPLATE = [
             { id: "feed", title: "🍔 Bữa Ăn Thịnh Soạn", desc: "Thả 30 viên thức ăn cho cá", target: 30, reward: 150 },
             { id: "gacha", title: "✨ Triệu Hồi Sư", desc: "Triệu hồi cá mới 2 lần", target: 2, reward: 300 },
             { id: "spend", title: "💸 Đại Gia Biển Sâu", desc: "Tiêu 1000 Kim Cương", target: 1000, reward: 200 }
@@ -2357,7 +2394,6 @@
         let seaweeds = [];
         let planktons = [];
         let diamonds = []; // 👉 THÊM DÒNG NÀY
-        // 👉 THÊM CLASS DIAMOND VÀO ĐÂY (TRƯỚC CLASS FOOD LÀ ĐƯỢC)
         class Diamond {
             constructor(x, y, value, size, rarity) {
                 this.x = x;
@@ -2507,13 +2543,14 @@
         }
 
         // --- 3. CÁC LỚP THỰC THỂ ---
-        class Food {
-            constructor(x, y, type = 'pellet') {
+    class Food {
+            constructor(x, y, type = 'pellet', isPoisoned = false) {
                 this.x = x;
                 this.y = y;
                 this.type = type;
+                this.isPoisoned = isPoisoned; // Ghi nhớ mồi này có độc
                 this.radius = 8;
-                this.vy = type === 'plankton' ? 0.2 : (Math.random() * 0.3 + 0.5); // Phù du rơi chậm hơn
+                this.vy = type === 'plankton' ? 0.2 : (Math.random() * 0.3 + 0.5);
                 this.swing = Math.random() * 100;
                 this.pulse = Math.random() * Math.PI;
 
@@ -2526,13 +2563,19 @@
                     'plankton': { emoji: "🦠", glow: "#00f3ff" }
                 };
                 this.style = styles[type] || styles['pellet'];
+
+                // NẾU TẨM ĐỘC, ĐỔI HÀO QUANG VIÊN MỒI SANG MÀU TÍM ĐEN
+                if (this.isPoisoned) {
+                    this.style.glow = "#9b59b6";
+                }
             }
+
             update() {
                 this.y += this.vy;
-                this.x += Math.sin(this.y * 0.05 + this.swing) * (this.type === 'plankton' ? 1.5 : 0.5); // Phù du dạt nhiều hơn
+                this.x += Math.sin(this.y * 0.05 + this.swing) * (this.type === 'plankton' ? 1.5 : 0.5);
                 this.pulse += 0.15;
             }
-            // --- TỐI ƯU HÓA HÀM DRAW() CỦA FOOD ---
+
             draw() {
                 ctx.save();
                 ctx.translate(this.x, this.y);
@@ -2540,29 +2583,27 @@
                 // TẮT SHADOW ĐỂ CHỐNG LAG
                 ctx.shadowBlur = 0;
 
-                // 1. TẠO HÀO QUANG GIẢ BẰNG RADIAL GRADIENT (Rất nhẹ cho CPU)
-                let currentGlow = 10 + Math.sin(this.pulse) * 8; // Tính bán kính hào quang
+                // TẠO HÀO QUANG GIẢ BẰNG RADIAL GRADIENT
+                let currentGlow = 10 + Math.sin(this.pulse) * 8;
                 let glowGrad = ctx.createRadialGradient(0, 0, 2, 0, 0, currentGlow);
 
-                // Chuyển đổi mã màu HEX sang RGB để thêm độ trong suốt (Alpha)
                 let baseColor = this.style.glow;
-                let rgb = "255, 255, 255"; // Màu dự phòng
+                let rgb = "255, 255, 255"; 
                 if (baseColor === "#FFD700") rgb = "255, 215, 0";
                 else if (baseColor === "#ff4757") rgb = "255, 71, 87";
                 else if (baseColor === "#ff7e67") rgb = "255, 126, 103";
                 else if (baseColor === "#2ed573") rgb = "46, 213, 115";
                 else if (baseColor === "#00f3ff") rgb = "0, 243, 255";
+                else if (baseColor === "#9b59b6") rgb = "155, 89, 182"; // Dành cho mồi tẩm độc
 
-                glowGrad.addColorStop(0, `rgba(${rgb}, 0.8)`); // Lõi sáng đậm
-                glowGrad.addColorStop(1, `rgba(${rgb}, 0)`);   // Mờ dần ra viền
+                glowGrad.addColorStop(0, `rgba(${rgb}, 0.8)`);
+                glowGrad.addColorStop(1, `rgba(${rgb}, 0)`);
 
-                // Vẽ hào quang
                 ctx.fillStyle = glowGrad;
                 ctx.beginPath();
                 ctx.arc(0, 0, currentGlow, 0, Math.PI * 2);
                 ctx.fill();
 
-                // 2. VẼ ICON THỨC ĂN (EMOJI)
                 ctx.font = "18px Arial";
                 ctx.textAlign = "center";
                 ctx.textBaseline = "middle";
@@ -2893,19 +2934,19 @@
                 ctx.restore();
             }
         }
-    // ===== CLASS SỨA QUẢN GIA TỰ ĐỘNG CHO ĂN (BẢN MƯỢT & TẢN ĐỀU) =====
+        // ===== CLASS SỨA QUẢN GIA TỰ ĐỘNG CHO ĂN (BẢN MƯỢT & TẢN ĐỀU) =====
         class JellyfishHelper {
             constructor() {
                 // Xuất hiện rải rác toàn hồ ngay từ đầu
-                this.x = Math.random() * width; 
+                this.x = Math.random() * width;
                 this.y = Math.random() * (height / 2);
                 this.vx = 0;
                 this.vy = 0;
-                
+
                 // Nhịp bơi và nhịp cho ăn lệch nhau để không hành động cùng 1 lúc
                 this.swimCycle = Math.random() * 100;
                 this.feedTimer = Math.random() * 100;
-                
+
                 this.targetX = this.x;
                 this.targetY = this.y;
 
@@ -2916,11 +2957,11 @@
 
             update() {
                 // Tăng tốc độ nhịp đập lên một chút (0.035) để sứa bơi nhanh và mượt hơn
-                this.swimCycle += 0.035; 
+                this.swimCycle += 0.035;
                 this.feedTimer++;
 
                 let targetFish = null;
-                let lowestHunger = 85; 
+                let lowestHunger = 85;
 
                 // 1. Dò tìm con cá đang đói nhất hồ
                 if (gameState.fishes.length > 0) {
@@ -2936,7 +2977,7 @@
                 if (targetFish) {
                     // Mỗi con sứa sẽ lơ lửng ở một góc khác nhau quanh đầu con cá
                     this.targetX = targetFish.x + this.hoverOffsetX;
-                    this.targetY = Math.max(50, targetFish.y + this.hoverOffsetY); 
+                    this.targetY = Math.max(50, targetFish.y + this.hoverOffsetY);
                 } else {
                     // Nếu rảnh rỗi, đi dạo ngẫu nhiên TOÀN BỘ nửa trên của hồ
                     if (Math.random() < 0.015) {
@@ -2963,7 +3004,7 @@
                         if (other !== this) {
                             let d = Math.hypot(other.x - this.x, other.y - this.y);
                             // Nếu 2 sứa vô tình xáp lại quá gần (< 70px), chúng sẽ tự đẩy nhau ra nhẹ nhàng
-                            if (d < 70 && d > 0) { 
+                            if (d < 70 && d > 0) {
                                 this.vx -= (other.x - this.x) * 0.005;
                                 this.vy -= (other.y - this.y) * 0.005;
                             }
@@ -2984,10 +3025,10 @@
                 this.y = Math.max(30, Math.min(height - 30, this.y));
 
                 // 3. Logic thả mồi
-                if (targetFish && this.feedTimer > 150) { 
+                if (targetFish && this.feedTimer > 150) {
                     // Do sứa bay tản ra xung quanh, nên khoảng cách nhả mồi nới rộng thành 90px
-                    if (Math.abs(this.x - targetFish.x) < 90) { 
-                        this.feedTimer = 0; 
+                    if (Math.abs(this.x - targetFish.x) < 90) {
+                        this.feedTimer = 0;
                         this.dropFood(targetFish);
                     }
                 }
@@ -3010,12 +3051,12 @@
                     updateUI();
 
                     foods.push(new Food(this.x, this.y + 20, foodType));
-                    
+
                     if (typeof createExplosion === 'function') createExplosion(this.x, this.y + 20, "#00f3ff", 5);
                     let tag = document.createElement('div');
                     tag.className = 'floating-price';
                     tag.innerText = `-${price} 💎`;
-                    tag.style.color = '#ff4757'; 
+                    tag.style.color = '#ff4757';
                     tag.style.fontSize = '14px';
                     tag.style.left = this.x + 'px';
                     tag.style.top = (this.y - 20) + 'px';
@@ -3062,22 +3103,22 @@
 
                 ctx.beginPath();
                 ctx.moveTo(-18, 5);
-                ctx.bezierCurveTo(-18 + visualPulse*0.5, -18 - visualPulse*0.5, 18 - visualPulse*0.5, -18 - visualPulse*0.5, 18, 5); 
-                ctx.quadraticCurveTo(0, 8 + visualPulse, -18, 5); 
+                ctx.bezierCurveTo(-18 + visualPulse * 0.5, -18 - visualPulse * 0.5, 18 - visualPulse * 0.5, -18 - visualPulse * 0.5, 18, 5);
+                ctx.quadraticCurveTo(0, 8 + visualPulse, -18, 5);
                 ctx.fill();
 
                 ctx.fillStyle = "#111";
                 ctx.beginPath(); ctx.arc(-6, -2, 2.5, 0, Math.PI * 2); ctx.fill();
                 ctx.beginPath(); ctx.arc(6, -2, 2.5, 0, Math.PI * 2); ctx.fill();
-                
+
                 ctx.fillStyle = "white";
                 ctx.beginPath(); ctx.arc(-6.5, -2.5, 1, 0, Math.PI * 2); ctx.fill();
                 ctx.beginPath(); ctx.arc(5.5, -2.5, 1, 0, Math.PI * 2); ctx.fill();
 
-                ctx.shadowBlur = 0; 
+                ctx.shadowBlur = 0;
                 ctx.fillStyle = "#111";
-                ctx.fillRect(-6, -18 - visualPulse*0.3, 12, 4); 
-                ctx.fillRect(-4, -22 - visualPulse*0.3, 8, 4);  
+                ctx.fillRect(-6, -18 - visualPulse * 0.3, 12, 4);
+                ctx.fillRect(-4, -22 - visualPulse * 0.3, 8, 4);
 
                 ctx.restore();
             }
@@ -3305,9 +3346,22 @@
                             let fIndex = foods.indexOf(targetFood);
                             if (fIndex > -1) {
                                 foods.splice(fIndex, 1);
-                                this.hunger = Math.min(100, this.hunger + 35);
-                                this.gainXp();
-                                if (typeof createExplosion === 'function') createExplosion(this.x, this.y, "rgba(255,255,255,0.6)", 8);
+
+                                // KIỂM TRA MỒI CÓ TẨM ĐỘC KHÔNG
+                                if (targetFood.isPoisoned) {
+                                    this.targetHp = 0;
+                                    this.hp = 0;
+                                    this.isDead = true;
+                                    this.deathReason = "poison"; // Gắn mác chết do độc
+
+                                    // Chớp hiệu ứng độc tím sẫm
+                                    if (typeof createExplosion === 'function') createExplosion(this.x, this.y, "#8e44ad", 30);
+                                } else {
+                                    // Ăn mồi bình thường
+                                    this.hunger = Math.min(100, this.hunger + 35);
+                                    this.gainXp();
+                                    if (typeof createExplosion === 'function') createExplosion(this.x, this.y, "rgba(255,255,255,0.6)", 8);
+                                }
                             }
                         }
                     } else {
@@ -4678,41 +4732,21 @@
             }
             for (let i = gameState.fishes.length - 1; i >= 0; i--) {
                 let fish = gameState.fishes[i];
-
                 if (fish.isDead) {
                     createExplosion(fish.x, fish.y, "#ff4757", 50);
                     let tag = document.createElement('div');
                     tag.className = 'floating-price';
 
-                    // [MỚI] PHÂN LOẠI NGUYÊN NHÂN CHẾT
-                    if (fish.hunger <= 0) {
+                    // ĐÃ SỬA: Ưu tiên kiểm tra xem cá có chết vì ĐỘC không
+                    if (fish.deathReason === "poison") {
+                        tag.innerText = '💀 CHẾT VÌ TRÚNG ĐỘC!';
+                        tag.style.color = '#9b59b6'; // Chữ màu tím độc
+                    } else if (fish.hunger <= 0) {
                         tag.innerText = '💀 CHẾT ĐÓI RỒI...';
                         tag.style.color = '#ffa502'; // Màu cam đói khát
                     } else {
                         tag.innerText = '💀 BỊ THỊT RỒI!';
-                        tag.style.color = '#ff4757'; // Màu đỏ máu
-                    }
-
-                    tag.style.left = (fish.x - 40) + 'px';
-                    tag.style.top = (fish.y - 40) + 'px';
-                    document.body.appendChild(tag);
-                    setTimeout(() => tag.remove(), 2500);
-
-                    gameState.fishes.splice(i, 1);
-                    if (trackedFishId === fish.id) trackedFishId = null;
-                    updateUI(); saveGame();
-                } if (fish.isDead) {
-                    createExplosion(fish.x, fish.y, "#ff4757", 50);
-                    let tag = document.createElement('div');
-                    tag.className = 'floating-price';
-
-                    // [MỚI] PHÂN LOẠI NGUYÊN NHÂN CHẾT
-                    if (fish.hunger <= 0) {
-                        tag.innerText = '💀 HẾT ĐÓI RỒI...';
-                        tag.style.color = '#ffa502'; // Màu cam đói khát
-                    } else {
-                        tag.innerText = '💀 BỊ THỊT RỒI!';
-                        tag.style.color = '#ff4757'; // Màu đỏ máu
+                        tag.style.color = '#ff4757'; // Màu đỏ máu cá mập cắn
                     }
 
                     tag.style.left = (fish.x - 40) + 'px';
@@ -4776,29 +4810,25 @@
         // --- 6. TƯƠNG TÁC & SỰ KIỆN ---
 
         window.addEventListener('mousedown', (e) => {
-            // Nếu đang bật chế độ Cinema thì click để thoát
-            if (document.body.classList.contains('cinema-active')) {
-                toggleCinema();
-                return;
+            if (document.body.classList.contains('cinema-active')) { 
+                toggleCinema(); 
+                return; 
             }
 
-            // Ngăn chặn click khi bấm vào các nút UI hoặc Modal
             if (e.target.tagName === 'BUTTON' || e.target.closest('.glass-panel') || e.target.closest('.modal')) {
                 return;
             }
 
-            // Tọa độ chuột chuẩn trên Canvas
             const rect = canvas.getBoundingClientRect();
             const mX = e.clientX - rect.left;
             const mY = e.clientY - rect.top;
 
-            if (e.button === 0) { // Chuột trái
-
-                // --- BƯỚC 1: KIỂM TRA CLICK NHẶT KIM CƯƠNG (ƯU TIÊN CAO NHẤT) ---
+            if (e.button === 0) { 
+                
+                // 1. NHẶT KIM CƯƠNG
                 let clickedDiamondIndex = -1;
                 for (let i = diamonds.length - 1; i >= 0; i--) {
                     let d = diamonds[i];
-                    // Kiểm tra va chạm với viên kim cương
                     if (Math.hypot(mX - d.x, mY - d.y) < d.size) {
                         clickedDiamondIndex = i;
                         break;
@@ -4808,75 +4838,84 @@
                 if (clickedDiamondIndex !== -1) {
                     let d = diamonds[clickedDiamondIndex];
                     gameState.coins += d.value;
-
-                    // Hiệu ứng nổ lấp lánh theo màu kim cương
-                    createExplosion(d.x, d.y, d.color, 15);
-
-                    // Hiện số tiền bay lên
-                    let tag = document.createElement('div');
-                    tag.className = 'floating-price';
+                    
+                    if (typeof createExplosion === 'function') createExplosion(d.x, d.y, d.color, 15);
+                    
+                    let tag = document.createElement('div'); 
+                    tag.className = 'floating-price'; 
                     tag.innerText = `+${d.value} 💎`;
-                    tag.style.left = d.x + 'px';
-                    tag.style.top = d.y + 'px';
-                    document.body.appendChild(tag);
+                    tag.style.left = d.x + 'px'; 
+                    tag.style.top = d.y + 'px'; 
+                    document.body.appendChild(tag); 
                     setTimeout(() => tag.remove(), 2000);
-
+                    
                     diamonds.splice(clickedDiamondIndex, 1);
-                    updateUI();
-                    saveGame();
-                    return; // Nhặt xong thoát hàm luôn
+                    updateUI(); saveGame();
+                    return; 
                 }
 
-                // --- BƯỚC 2: KIỂM TRA CLICK VÀO CÁ ---
+                // 2. NẮM KÉO CÁ
                 let clickedFish = null;
                 for (let i = gameState.fishes.length - 1; i >= 0; i--) {
                     let fish = gameState.fishes[i];
                     let hitbox = 45 * fish.baseScale * (1 + fish.level * 0.05);
-                    if (Math.hypot(mX - fish.x, mY - fish.y) < hitbox) {
-                        clickedFish = fish;
-                        break;
+                    if (Math.hypot(mX - fish.x, mY - fish.y) < hitbox) { 
+                        clickedFish = fish; break; 
                     }
                 }
 
                 if (clickedFish) {
-                    draggedFish = clickedFish;
+                    draggedFish = clickedFish; 
                     draggedFish.isDragged = true;
                     return;
                 }
 
-                // --- BƯỚC 3: KIỂM TRA CLICK VÀO NỘI THẤT ---
+                // 3. NẮM KÉO VẬT PHẨM TRANG TRÍ
                 let clickedDecor = null;
                 for (let i = gameState.decorations.length - 1; i >= 0; i--) {
                     let decor = gameState.decorations[i];
-                    // Kiểm tra va chạm với vật phẩm trang trí
-                    if (Math.hypot(mX - decor.x, mY - decor.y) < decor.size / 2) {
-                        clickedDecor = decor;
-                        break;
+                    if (Math.hypot(mX - decor.x, mY - decor.y) < decor.size / 2) { 
+                        clickedDecor = decor; break; 
                     }
                 }
 
                 if (clickedDecor) {
-                    draggedDecor = clickedDecor;
+                    draggedDecor = clickedDecor; 
                     draggedDecor.isDragged = true;
                     return;
                 }
 
-                // --- BƯỚC 4: KHÔNG TRÚNG GÌ THÌ THẢ MỒI (TỐN TIỀN) ---
+                // 4. THẢ MỒI (VÀ TẨM ĐỘC)
                 let foodPrice = FOOD_PRICES[currentFoodType] || 0;
-
+                
                 if (gameState.coins >= foodPrice) {
                     gameState.coins -= foodPrice;
                     updateUI();
-                    updateQuestProgress('spend', foodPrice);
-                    updateQuestProgress('feed', 1);
+                    if(typeof updateQuestProgress === 'function') {
+                        updateQuestProgress('spend', foodPrice);
+                        updateQuestProgress('feed', 1);
+                    }
 
-                    // Tạo viên mồi mới theo loại đang chọn
-                    foods.push(new Food(mX, mY, currentFoodType));
+                    let isPoisonedNow = (typeof isNextFoodPoisoned !== 'undefined') ? isNextFoodPoisoned : false;
 
-                    // Hiệu ứng bọt nước nhỏ
-                    createExplosion(mX, mY, "rgba(255,255,255,0.4)", 5);
+                    foods.push(new Food(mX, mY, currentFoodType, isPoisonedNow));
+                    
+                    if (isPoisonedNow) {
+                        gameState.poisons--;
+                        isNextFoodPoisoned = false;
+                        
+                        let pBtn = document.getElementById('poison-btn');
+                        if(pBtn) {
+                            pBtn.style.opacity = '0.4';
+                            pBtn.style.transform = 'scale(1)';
+                            pBtn.style.textShadow = 'none';
+                        }
+                        updateUI(); saveGame();
+                        if (typeof createExplosion === 'function') createExplosion(mX, mY, "#9b59b6", 15);
+                    } else {
+                        if (typeof createExplosion === 'function') createExplosion(mX, mY, "rgba(255,255,255,0.4)", 5);
+                    }
                 } else {
-                    // Thông báo hết tiền
                     let tag = document.createElement('div');
                     tag.className = 'floating-price';
                     tag.innerText = 'HẾT KIM CƯƠNG!';
@@ -5162,6 +5201,15 @@
                 updateUI();
                 saveGame();
             }
+            else if (type === 'poison') {
+                if (gameState.coins < price) return alert("Không đủ Kim Cương!");
+                gameState.coins -= price;
+                gameState.poisons = (gameState.poisons || 0) + 1; // Tăng số lượng thuốc độc
+                updateQuestProgress('spend', price);
+                closeModal('shop-overlay');
+                updateUI();
+                saveGame();
+            }
             updateUI(); saveGame();
         }
 
@@ -5235,7 +5283,7 @@
                 btnCrab.style.color = "rgba(255,255,255,0.5)";
                 btnCrab.style.pointerEvents = "none"; // Khóa nút không cho bấm nữa
             }
-        const btnJelly = document.getElementById('btn-buy-jellyfish');
+            const btnJelly = document.getElementById('btn-buy-jellyfish');
             if (btnJelly) {
                 let jCount = gameState.jellyfishCount || 0;
                 if (jCount >= 3) {
@@ -5247,6 +5295,7 @@
                     btnJelly.innerText = `MUA THÊM (${jCount}/3) - 2500 💎`;
                 }
             }
+            document.getElementById('poison-count-ui').innerText = (gameState.poisons || 0);
         }
 
         // HÀM THẢ CÁ MẬP VÀO HỒ
@@ -5273,7 +5322,8 @@
                 quests: gameState.quests,
                 lastQuestDate: gameState.lastQuestDate, unlockedFishes: gameState.unlockedFishes,
                 hasCrab: gameState.hasCrab,
-                jellyfishCount: gameState.jellyfishCount || 0
+                jellyfishCount: gameState.jellyfishCount || 0,
+                poisons: gameState.poisons || 0
             }));
         }
 
@@ -5285,7 +5335,8 @@
                 gameState.lastId = p.lastId;
                 gameState.unlockedFishes = p.unlockedFishes || [];
                 gameState.hasCrab = p.hasCrab || false; // 👉 THÊM DÒNG NÀY ĐỂ TẢI LẠI CUA
-                jellyfishCount: gameState.jellyfishCount || 0
+                jellyfishCount: gameState.jellyfishCount || 0,
+                    gameState.poisons = p.poisons || 0;
                 if (p.quests && p.lastQuestDate) {
                     gameState.quests = p.quests;
                     gameState.lastQuestDate = p.lastQuestDate;
