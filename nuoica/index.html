@@ -1484,6 +1484,49 @@
         .dict-item.locked .dict-name {
             opacity: 0.4;
         }
+
+        /* 🏷️ THANH TIÊU ĐỀ DANH MỤC (Dùng chung cho Shop và Từ Điển) */
+        .category-title {
+            grid-column: 1 / -1;
+            /* Ép thẻ này chiếm toàn bộ chiều ngang của Grid */
+            font-family: 'Quicksand';
+            font-size: 14px;
+            font-weight: 900;
+            color: white;
+            padding: 8px 15px;
+            margin-top: 10px;
+            margin-bottom: 2px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            border-radius: 0 15px 15px 0;
+            /* Bo tròn góc phải */
+            pointer-events: none;
+            /* Không bị vướng khi click */
+        }
+
+        /* 3 Màu sắc cho 3 loại danh mục khác nhau */
+        .cat-item {
+            color: #00f3ff;
+            border-left: 5px solid #00f3ff;
+            background: linear-gradient(90deg, rgba(0, 243, 255, 0.2) 0%, transparent 100%);
+            text-shadow: 0 0 10px rgba(0, 243, 255, 0.5);
+        }
+
+        .cat-decor {
+            color: #ff4757;
+            border-left: 5px solid #ff4757;
+            background: linear-gradient(90deg, rgba(255, 71, 87, 0.2) 0%, transparent 100%);
+            text-shadow: 0 0 10px rgba(255, 71, 87, 0.5);
+        }
+
+        .cat-pet {
+            color: #FFD700;
+            border-left: 5px solid #FFD700;
+            background: linear-gradient(90deg, rgba(255, 215, 0, 0.2) 0%, transparent 100%);
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
     </style>
 </head>
 
@@ -1681,6 +1724,9 @@
         <div class="modal shop-modal">
             <h2 style="font-family: 'Quicksand'; font-size: 26px; color: var(--neon-blue);">🛒 SIÊU THỊ THỦY CUNG</h2>
             <div class="shop-grid">
+
+                <div class="category-title cat-item">🧪 Vật Phẩm Bổ Trợ</div>
+
                 <div class="shop-item">
                     <div style="font-size: 35px; margin-bottom: 5px;">🌧️</div>
                     <div style="font-weight: 800; font-size: 14px;">Mưa Mồi Ngon</div>
@@ -1693,7 +1739,6 @@
                     <button class="btn-main btn-shop" style="width: 100%; padding: 8px; margin-top: 10px;"
                         onclick="buyItem('levelUp', 1500)">1500 💎</button>
                 </div>
-
                 <div class="shop-item">
                     <div style="font-size: 35px; margin-bottom: 5px;">🔮</div>
                     <div style="font-weight: 800; font-size: 14px;">Tiến Hóa</div>
@@ -1702,50 +1747,55 @@
                 </div>
                 <div class="shop-item">
                     <div style="font-size: 35px; margin-bottom: 5px;">📜</div>
-                    <div style="font-weight: 800; font-size: 14px;">Khế Ước Thần Biển</div>
+                    <div style="font-weight: 800; font-size: 14px; text-align: center;">Khế Ước Thần Biển</div>
                     <button class="btn-main btn-epic" style="width: 100%; padding: 8px; margin-top: 10px;"
                         onclick="openSpecifiedSummon()">2000 💎</button>
                 </div>
 
+                <div class="category-title cat-decor">🏛️ Trang Trí</div>
 
                 <div class="shop-item">
                     <img src="./images/decor/ransanho_1.png"
                         style="width: 50px; height: 50px; object-fit: contain; margin-bottom: 5px; filter: drop-shadow(0 0 10px #ff4757);"
                         alt="San Hô">
-
                     <div style="font-size: 12px; font-weight:800;">Rạn san hô 1</div>
                     <button class="btn-main btn-shop" style="width:100%; padding:5px; font-size:12px;"
                         onclick="buyItem('coral_1', 300)">300 💎</button>
                 </div>
                 <div class="shop-item">
                     <img src="./images/decor/ransanho_2.png"
-                        style="width: 50px; height: 50px; object-fit: contain; margin-bottom: 5px; filter: drop-shadow(0 0 10px #ff4757);"
+                        style="width: 50px; height: 50px; object-fit: contain; margin-bottom: 5px; filter: drop-shadow(0 0 10px #54a0ff);"
                         alt="San Hô">
-
                     <div style="font-size: 12px; font-weight:800;">Rạn san hô 2</div>
                     <button class="btn-main btn-shop" style="width:100%; padding:5px; font-size:12px;"
                         onclick="buyItem('coral_2', 300)">300 💎</button>
                 </div>
-
                 <div class="shop-item">
                     <img src="./images/decor/shipwreck_1.png"
-                        style="width: 50px; height: 50px; object-fit: contain; margin-bottom: 5px; filter: drop-shadow(0 0 10px #FFD700);"
-                        alt="Rương">
-
+                        style="width: 50px; height: 50px; object-fit: contain; margin-bottom: 5px; filter: drop-shadow(0 0 10px #a29bfe);"
+                        alt="Tàu chìm">
                     <div style="font-size: 12px; font-weight:800;">Tàu chìm 1</div>
                     <button class="btn-main btn-shop" style="width:100%; padding:5px; font-size:12px;"
-                        onclick="buyItem('shipwreck_1', 700)">500 💎</button>
+                        onclick="buyItem('shipwreck_1', 500)">500 💎</button>
                 </div>
                 <div class="shop-item">
                     <img src="./images/decor/ruongbau_1.png"
                         style="width: 50px; height: 50px; object-fit: contain; margin-bottom: 5px; filter: drop-shadow(0 0 10px #FFD700);"
                         alt="Rương">
-
                     <div style="font-size: 12px; font-weight:800;">Rương báu 1</div>
                     <button class="btn-main btn-shop" style="width:100%; padding:5px; font-size:12px;"
-                        onclick="buyItem('chest_1', 700)">500 💎</button>
+                        onclick="buyItem('chest_1', 500)">500 💎</button>
                 </div>
 
+                <div class="category-title cat-pet">🦀 Hỗ Trợ</div>
+
+                <div class="shop-item">
+                    <div style="font-size: 35px; margin-bottom: 5px;">🦀</div>
+                    <div style="font-weight: 800; font-size: 14px; text-align: center;">Cua Quản Gia</div>
+                    <button id="btn-buy-crab" class="btn-main btn-epic"
+                        style="width: 100%; padding: 8px; margin-top: 10px; font-size: 11px;"
+                        onclick="buyItem('crab', 2000)">2000 💎</button>
+                </div>
 
             </div>
             <button class="btn-main"
@@ -2179,8 +2229,8 @@
         let ctx = canvas.getContext('2d');
         let width, height;
         let trackedFishId = null; // ID của con cá đang bị theo dõi
-        let gameState = { coins: 1000000, fishes: [], decorations: [], lastId: 0, quests: [], lastQuestDate: "", unlockedFishes: [] };
-        // CẤU HÌNH NHIỆM VỤ
+        // Tìm dòng này:
+        let gameState = { coins: 1000000, fishes: [], decorations: [], lastId: 0, quests: [], lastQuestDate: "", unlockedFishes: [], hasCrab: false }; // 👉 THÊM hasCrab: false        // CẤU HÌNH NHIỆM VỤ
         const DAILY_QUESTS_TEMPLATE = [
             { id: "feed", title: "🍔 Bữa Ăn Thịnh Soạn", desc: "Thả 30 viên thức ăn cho cá", target: 30, reward: 150 },
             { id: "gacha", title: "✨ Triệu Hồi Sư", desc: "Triệu hồi cá mới 2 lần", target: 2, reward: 300 },
@@ -2251,6 +2301,7 @@
             }
         }
         let foods = [];
+        let crabAssistant = null; // Biến lưu trữ Cua Quản Gia
         let particles = [];
         let corals = [];
         let seaweeds = [];
@@ -2285,15 +2336,15 @@
                 ctx.translate(this.x, this.y);
 
                 let w = this.size; // Kích thước tổng
-                
+
                 // --- 1. XÁC ĐỊNH CÁC TỌA ĐỘ ĐỈNH CỦA KIM CƯƠNG ---
                 let tY = -0.4 * w;  // Y Cạnh trên cùng
                 let mY = -0.05 * w; // Y Đường ngang giữa
                 let bY = 0.5 * w;   // Y Đỉnh nhọn bên dưới
-                
+
                 let t1X = -0.25 * w; // Góc trên trái
                 let t2X = 0.25 * w;  // Góc trên phải
-                
+
                 let m1X = -0.5 * w;  // Mép giữa ngoài cùng trái
                 let m2X = -0.15 * w; // Điểm cắt giữa trái
                 let m3X = 0.15 * w;  // Điểm cắt giữa phải
@@ -2304,9 +2355,9 @@
                 ctx.shadowColor = this.color;
 
                 // --- 2. ĐỔ MÀU NỀN GỐC (Dựa trên this.color độ hiếm của cá) ---
-                ctx.fillStyle = this.color; 
+                ctx.fillStyle = this.color;
                 ctx.beginPath();
-                ctx.moveTo(t1X, tY); ctx.lineTo(t2X, tY); ctx.lineTo(m4X, mY); 
+                ctx.moveTo(t1X, tY); ctx.lineTo(t2X, tY); ctx.lineTo(m4X, mY);
                 ctx.lineTo(0, bY); ctx.lineTo(m1X, mY); ctx.closePath();
                 ctx.fill();
 
@@ -2318,7 +2369,7 @@
                     ctx.fillStyle = overlayColor;
                     ctx.beginPath();
                     ctx.moveTo(pts[0][0], pts[0][1]);
-                    for(let i=1; i<pts.length; i++) ctx.lineTo(pts[i][0], pts[i][1]);
+                    for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i][0], pts[i][1]);
                     ctx.closePath();
                     ctx.fill();
                 };
@@ -2341,7 +2392,7 @@
 
                 // Viền chu vi ngoài cùng
                 ctx.beginPath();
-                ctx.moveTo(t1X, tY); ctx.lineTo(t2X, tY); ctx.lineTo(m4X, mY); 
+                ctx.moveTo(t1X, tY); ctx.lineTo(t2X, tY); ctx.lineTo(m4X, mY);
                 ctx.lineTo(0, bY); ctx.lineTo(m1X, mY); ctx.closePath();
                 ctx.stroke();
 
@@ -2360,7 +2411,7 @@
                 let starAlpha = (Math.sin(this.pulse * 2) + 1) / 2; // Độ sáng chớp tắt
                 if (starAlpha > 0.1) {
                     ctx.fillStyle = `rgba(255, 255, 255, ${starAlpha})`;
-                    
+
                     // Hàm vẽ ngôi sao 4 cánh nhọn
                     const drawStar = (cx, cy, r) => {
                         ctx.beginPath();
@@ -2371,10 +2422,10 @@
                         ctx.quadraticCurveTo(cx, cy, cx, cy - r);
                         ctx.fill();
                     };
-                    
+
                     // Vẽ 2 ngôi sao bay lơ lửng phía trên kim cương (giống hệt ảnh)
-                    drawStar(-0.4 * w, -0.6 * w + Math.sin(this.pulse)*5, w * 0.15);
-                    drawStar(0.3 * w, -0.7 * w + Math.cos(this.pulse)*5, w * 0.2);
+                    drawStar(-0.4 * w, -0.6 * w + Math.sin(this.pulse) * 5, w * 0.15);
+                    drawStar(0.3 * w, -0.7 * w + Math.cos(this.pulse) * 5, w * 0.2);
                 }
 
                 ctx.restore();
@@ -2519,6 +2570,226 @@
                 ctx.restore();
             }
         }
+        class CrabHelper {
+            constructor() {
+                this.x = width / 2;
+                this.y = height - 25;
+                this.vx = 0; // Vận tốc hiện tại (giúp mượt mà)
+                this.maxSpeed = 1;
+                this.target = null;
+                this.walkCycle = 0;
+                this.idleCycle = 0;
+            }
+
+            update() {
+                this.y = height - 25; // Bám sát đáy
+                this.idleCycle += 0.05; // Nhịp thở khi đứng im
+
+                // 1. Tìm viên kim cương gần nhất làm mục tiêu
+                if (!this.target || !diamonds.includes(this.target)) {
+                    this.target = null;
+                    let minDist = Infinity;
+                    diamonds.forEach(d => {
+                        let dist = Math.abs(d.x - this.x);
+                        if (dist < minDist) {
+                            minDist = dist;
+                            this.target = d;
+                        }
+                    });
+                }
+
+                // 2. Di chuyển mượt mà (Có gia tốc và trớn)
+                if (this.target) {
+                    let dx = this.target.x - this.x;
+
+                    // Tăng tốc dần về phía mục tiêu
+                    if (Math.abs(dx) > 5) {
+                        this.vx += Math.sign(dx) * 0.5;
+                    }
+
+                    // Nhặt kim cương khi rơi tới đáy
+                    if (Math.abs(dx) <= 15 && this.target.y >= this.target.floorY - 10) {
+                        let index = diamonds.indexOf(this.target);
+                        if (index > -1) {
+                            let d = diamonds[index];
+                            gameState.coins += d.value;
+
+                            // Hiệu ứng nổ lấp lánh
+                            if (typeof createExplosion === 'function') {
+                                createExplosion(this.x, this.y, d.color, 20);
+                            }
+
+                            let tag = document.createElement('div');
+                            tag.className = 'floating-price';
+                            tag.innerText = `+${d.value} 💎`;
+                            tag.style.left = (this.x - 20) + 'px';
+                            tag.style.top = (this.y - 40) + 'px';
+                            document.body.appendChild(tag);
+                            setTimeout(() => tag.remove(), 2000);
+
+                            diamonds.splice(index, 1);
+                            updateUI();
+                            saveGame();
+                        }
+                        this.target = null;
+                    }
+                }
+
+                // 3. Giới hạn tốc độ và áp dụng ma sát
+                this.vx = Math.max(-this.maxSpeed, Math.min(this.maxSpeed, this.vx)); // Giới hạn max speed
+                this.x += this.vx;
+                this.vx *= 0.85; // Ma sát (Friction) giúp cua trượt nhẹ rồi dừng lại mượt mà
+
+                // 4. Tính toán nhịp bước chân dựa trên tốc độ thực tế
+                if (Math.abs(this.vx) > 0.1) {
+                    this.walkCycle += Math.abs(this.vx) * 0.15; // Càng chạy nhanh vẫy chân càng lẹ
+                } else {
+                    // Trả chân về tư thế nghỉ từ từ khi đứng im
+                    this.walkCycle += (0 - this.walkCycle) * 0.1;
+                }
+
+                // Giới hạn không cho cua lọt ra ngoài mép hồ
+                this.x = Math.max(40, Math.min(width - 40, this.x));
+            }
+
+            draw() {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+
+                // Thân nhấp nhô mượt mà khi đi, thở phập phồng khi đứng im
+                let bounce = Math.abs(Math.sin(this.walkCycle)) * 3;
+                let breathe = Math.sin(this.idleCycle) * 1;
+                ctx.translate(0, -bounce - breathe);
+
+                // --- 1. HÀM VẼ CHÂN CUA CÓ KHỚP NỐI (Realistic Legs) ---
+                const drawLeg = (side, index, angleBase) => {
+                    let phase = this.walkCycle + index * Math.PI; // Lệch pha để các chân bước so le nhau
+                    let swing = Math.sin(phase) * 0.4; // Góc đu đưa trước sau
+                    let lift = Math.max(0, Math.cos(phase)) * 6; // Động tác nhấc chân lên khỏi cát
+
+                    ctx.save();
+                    ctx.translate(side * 12, 2 + index * 2); // Điểm gắn chân vào mai
+                    ctx.rotate(side * (angleBase + swing));
+
+                    ctx.strokeStyle = "#c23616";
+                    ctx.lineWidth = 3;
+                    ctx.lineCap = "round";
+                    ctx.lineJoin = "round";
+
+                    ctx.beginPath();
+                    ctx.moveTo(0, 0);
+                    // Đốt 1 (Khớp gốc, hơi vểnh lên)
+                    ctx.lineTo(side * 12, -8 - lift);
+                    // Đốt 2 (Cắm thẳng xuống đất)
+                    ctx.lineTo(side * 22, 10 - lift * 0.5);
+                    ctx.stroke();
+
+                    // Điểm xuyết gai nhọn xíu xiu ở đầu mũi chân
+                    ctx.fillStyle = "#8c1c00";
+                    ctx.beginPath();
+                    ctx.arc(side * 22, 10 - lift * 0.5, 1.5, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    ctx.restore();
+                };
+
+                // Vẽ 3 cặp chân đi (Sau, Giữa, Trước) tỏa ra hai bên
+                drawLeg(-1, 0, 0.2); drawLeg(1, 0, 0.2);
+                drawLeg(-1, 1, 0.0); drawLeg(1, 1, 0.0);
+                drawLeg(-1, 2, -0.2); drawLeg(1, 2, -0.2);
+
+                // --- 2. VẼ MAI CUA (CHÂN THỰC & SẮC NÉT) ---
+                // Gradient tạo độ cong, bóng bẩy 3D cho mai cua
+                let shellGrad = ctx.createRadialGradient(0, -5, 5, 0, 0, 25);
+                shellGrad.addColorStop(0, "#ff7979"); // Đỉnh mai bắt sáng
+                shellGrad.addColorStop(0.6, "#e84118"); // Thân đỏ tươi
+                shellGrad.addColorStop(1, "#8c1c00"); // Viền sẫm màu
+
+                ctx.fillStyle = shellGrad;
+                ctx.strokeStyle = "#4a0e00";
+                ctx.lineWidth = 1.5;
+
+                // Dùng Bezier Curve uốn nắn tạo hình bát giác lượn sóng của mai cua thật
+                ctx.beginPath();
+                ctx.moveTo(0, -14); // Mũi giữa
+                ctx.quadraticCurveTo(15, -16, 22, -5); // Vai phải
+                ctx.quadraticCurveTo(28, 5, 18, 12); // Hông phải
+                ctx.quadraticCurveTo(0, 16, -18, 12); // Đáy mai
+                ctx.quadraticCurveTo(-28, 5, -22, -5); // Hông trái
+                ctx.quadraticCurveTo(-15, -16, 0, -14); // Vai trái
+                ctx.fill();
+                ctx.stroke();
+
+                // Chấm vài vệt vân gợn sóng mờ trên mai
+                ctx.strokeStyle = "rgba(0,0,0,0.15)";
+                ctx.beginPath(); ctx.moveTo(-10, -5); ctx.quadraticCurveTo(0, 2, 10, -5); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(-5, 0); ctx.quadraticCurveTo(0, 5, 5, 0); ctx.stroke();
+
+                // --- 3. VẼ MẮT CUA ---
+                // Tính toán hướng nhìn: Liếc sang trái/phải theo vị trí kim cương
+                let lookX = this.target ? Math.sign(this.target.x - this.x) * 2 : 0;
+
+                // Cuống mắt
+                ctx.strokeStyle = "#c23616";
+                ctx.lineWidth = 2;
+                ctx.beginPath(); ctx.moveTo(-6, -12); ctx.lineTo(-10, -22); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(6, -12); ctx.lineTo(10, -22); ctx.stroke();
+
+                // Nhãn cầu (Hơi dẹt dài)
+                ctx.fillStyle = "#f5f6fa";
+                ctx.beginPath(); ctx.ellipse(-10, -23, 3, 4, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+                ctx.beginPath(); ctx.ellipse(10, -23, 3, 4, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+
+                // Tròng đen nhạy bén
+                ctx.fillStyle = "#111";
+                ctx.beginPath(); ctx.arc(-10 + lookX, -24, 1.5, 0, Math.PI * 2); ctx.fill();
+                ctx.beginPath(); ctx.arc(10 + lookX, -24, 1.5, 0, Math.PI * 2); ctx.fill();
+
+                // --- 4. VẼ HAI CÀNG (CHELIPEDS) ---
+                // Càng sẽ giật giật (kẹp kẹp) háo hức khi có mục tiêu
+                let clawWave = this.target ? Math.sin(Date.now() * 0.015) * 0.4 : 0;
+
+                const drawClaw = (side) => {
+                    ctx.save();
+                    ctx.translate(side * 18, -4);
+                    // Càng cũng vung vẩy nhẹ theo nhịp bước đi
+                    ctx.rotate(side * (0.3 - clawWave) + Math.sin(this.walkCycle) * 0.1 * side);
+
+                    // Khớp càng (Tay đòn)
+                    ctx.strokeStyle = "#c23616";
+                    ctx.lineWidth = 4;
+                    ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(side * 8, -6); ctx.stroke();
+
+                    // Bắp càng (Dày và to)
+                    ctx.translate(side * 10, -8);
+                    ctx.fillStyle = "#e84118";
+                    ctx.strokeStyle = "#8c1c00";
+                    ctx.lineWidth = 1.5;
+
+                    // Ngàm kẹp lớn (Cố định)
+                    ctx.beginPath();
+                    ctx.moveTo(0, 5);
+                    ctx.quadraticCurveTo(side * -10, -5, side * -5, -15); // Lượn ra ngoài
+                    ctx.quadraticCurveTo(side * 5, -5, 0, 5); // Lượn vào trong
+                    ctx.fill(); ctx.stroke();
+
+                    // Ngàm kẹp nhỏ (Cử động đóng/mở)
+                    ctx.rotate(-side * Math.abs(clawWave)); // Xoay khớp ngàm nhỏ
+                    ctx.beginPath();
+                    ctx.moveTo(side * 2, 2);
+                    ctx.quadraticCurveTo(side * 12, -5, side * 8, -12);
+                    ctx.quadraticCurveTo(side * 2, -2, side * 2, 2);
+                    ctx.fill(); ctx.stroke();
+
+                    ctx.restore();
+                };
+
+                drawClaw(-1); // Càng trái
+                drawClaw(1);  // Càng phải
+
+                ctx.restore();
+            }
+        }
         class Fish {
             constructor(data, saveObj = null) {
                 this.id = saveObj ? saveObj.id : ++gameState.lastId;
@@ -2553,6 +2824,7 @@
                 }
             }
             update() {
+                let exhaustionModifier = 1; // Hệ số mệt mỏi (bình thường là 1)
                 if (this.isDragged) {
                     this.swimCycle += 0.2; // Tăng tốc chu kỳ đập vây/đuôi lên cực nhanh
                     // Bắt cá lắc lư qua lại mô phỏng việc giãy giụa (biên độ 0.6 radian)
@@ -2579,16 +2851,30 @@
                     this.hunger -= hungerDepletion;
 
 
-                    // 🩸 XỬ LÝ MẤT MÁU KHI ĐÓI BỤNG
+                    // 🩸 XỬ LÝ MẤT MÁU KHI ĐÓI BỤNG & HIỆU ỨNG KIỆT SỨC
+
+
                     if (this.hunger <= 0) {
                         this.hunger = 0;
-                        this.targetHp -= 0.15; // ĐỔI THÀNH targetHp
-                        this.fleeTimer = 5;
-                        if (this.targetHp <= 0) { // ĐỔI THÀNH targetHp
+                        this.targetHp -= 0.15; // Mất máu dần dần
+
+                        // Hấp hối: Bơi cực kỳ chậm (giảm 70% tốc độ) và lờ đờ
+                        exhaustionModifier = 0.3;
+
+                        // Thỉnh thoảng khựng lại không bơi nổi nữa
+                        if (Math.random() < 0.1) {
+                            exhaustionModifier = 0.05;
+                            this.targetAngle += (Math.random() - 0.5) * 0.5; // Đuôi ngoắc ngoải
+                        }
+
+                        if (this.targetHp <= 0) {
                             this.isDead = true;
                             return;
                         }
-                    } else if (this.hunger > 50 && this.targetHp < 100) { // ĐỔI THÀNH targetHp
+                    } else if (this.hunger < 20) {
+                        // Sắp chết đói: Bơi chậm dần (giảm 40% tốc độ)
+                        exhaustionModifier = 0.6;
+                    } else if (this.hunger > 50 && this.targetHp < 100) {
                         this.targetHp += 0.05; // Tự hồi máu nếu đang no nê
                     }
                 }
@@ -2817,7 +3103,7 @@
 
                 // --- KÍCH HOẠT TẬP TÍNH (BEHAVIORS) ---
                 let behavior = this.data.behavior || "wander";
-                let currentSpeed = (this.data.speed || 2) * speedBoost * 0.45;
+                let currentSpeed = (this.data.speed || 2) * speedBoost * 0.45 * (exhaustionModifier || 1)
 
                 // --- LOGIC DI CHUYỂN DƯỚI ĐÁY CÓ NGHỈ NGẪU NHIÊN (1-5 GIÂY) ---
                 if (behavior === "bottom_crawler") {
@@ -4089,6 +4375,13 @@
 
         function animate() {
             drawEnvironment();
+            // 👉 KIỂM TRA ĐÃ MUA CUA CHƯA THÌ MỚI CHO HIỆN
+            if (gameState.hasCrab) {
+                if (!crabAssistant) crabAssistant = new CrabHelper();
+                crabAssistant.update();
+                crabAssistant.draw();
+            }
+
             gameState.decorations.forEach(decor => decor.draw());
             foods.forEach((f, i) => { f.update(); f.draw(); if (f.y > height + 20) foods.splice(i, 1); });
             // Vẽ kim cương
@@ -4487,6 +4780,20 @@
                 createExplosion(newDecor.x, newDecor.y, "#FFD700", 30);
                 updateUI();
                 saveGame();
+            }// Chèn đoạn này vào bên trong hàm buyItem
+            else if (type === 'crab') {
+                if (gameState.hasCrab) return alert("Bạn đã mua Cua Kim Cương rồi, không cần mua thêm đâu!");
+                if (gameState.coins < price) return alert("Không đủ Kim Cương để mua Cua!");
+
+                gameState.coins -= price;
+                gameState.hasCrab = true; // Kích hoạt Cua
+                updateQuestProgress('spend', price);
+                closeModal('shop-overlay');
+
+                // Hiệu ứng nổ bọt nước đỏ chót khi Cua xuất hiện
+                createExplosion(width / 2, height - 25, "#ff4757", 50);
+                updateUI();
+                saveGame();
             }
             updateUI(); saveGame();
         }
@@ -4554,6 +4861,13 @@
                     </div>
                 </div>`
             }).join('');
+            const btnCrab = document.getElementById('btn-buy-crab');
+            if (btnCrab && gameState.hasCrab) {
+                btnCrab.innerText = "ĐÃ MUA";
+                btnCrab.style.background = "rgba(255,255,255,0.2)";
+                btnCrab.style.color = "rgba(255,255,255,0.5)";
+                btnCrab.style.pointerEvents = "none"; // Khóa nút không cho bấm nữa
+            }
         }
 
         // HÀM THẢ CÁ MẬP VÀO HỒ
@@ -4578,7 +4892,8 @@
                 })),
                 decorations: gameState.decorations.map(d => ({ id: d.id, type: d.type, x: d.x, y: d.y, scale: d.scale })),
                 quests: gameState.quests,
-                lastQuestDate: gameState.lastQuestDate, unlockedFishes: gameState.unlockedFishes
+                lastQuestDate: gameState.lastQuestDate, unlockedFishes: gameState.unlockedFishes,
+                hasCrab: gameState.hasCrab // 👉 THÊM DÒNG NÀY ĐỂ LƯU CUA
             }));
         }
 
@@ -4589,7 +4904,7 @@
                 gameState.coins = p.coins;
                 gameState.lastId = p.lastId;
                 gameState.unlockedFishes = p.unlockedFishes || [];
-
+                gameState.hasCrab = p.hasCrab || false; // 👉 THÊM DÒNG NÀY ĐỂ TẢI LẠI CUA
                 if (p.quests && p.lastQuestDate) {
                     gameState.quests = p.quests;
                     gameState.lastQuestDate = p.lastQuestDate;
@@ -4640,7 +4955,7 @@
                     }
                 }
             });
-        }, 10000); 
+        }, 10000);
         function toggleCinema() {
             document.body.classList.toggle('cinema-active');
             if (document.body.classList.contains('cinema-active')) {
