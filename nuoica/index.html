@@ -420,15 +420,17 @@
             border: none !important;
         }
 
-    /* ==========================================
+        /* ==========================================
            💡 THIẾT KẾ LẠI BẢNG HƯỚNG DẪN (TUTORIAL)
            ========================================== */
         .tutorial {
             position: absolute;
             bottom: 20px;
-            left: 110px; /* Nằm cạnh bên phải của Thùng Rác */
+            left: 110px;
+            /* Nằm cạnh bên phải của Thùng Rác */
             width: 340px;
-            background: rgba(15, 23, 42, 0.85); /* Nền tối sang trọng */
+            background: rgba(15, 23, 42, 0.85);
+            /* Nền tối sang trọng */
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
             border: 1px solid var(--neon-blue);
@@ -458,7 +460,7 @@
 
         .tuto-item {
             margin-bottom: 6px;
-            text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
         }
 
         .tuto-item b {
@@ -502,9 +504,17 @@
         }
 
         @keyframes pulseTuto {
-            0% { box-shadow: 0 0 0 0 rgba(0, 243, 255, 0.6); }
-            70% { box-shadow: 0 0 0 12px rgba(0, 243, 255, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(0, 243, 255, 0); }
+            0% {
+                box-shadow: 0 0 0 0 rgba(0, 243, 255, 0.6);
+            }
+
+            70% {
+                box-shadow: 0 0 0 12px rgba(0, 243, 255, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(0, 243, 255, 0);
+            }
         }
 
         #tutorial-icon {
@@ -517,27 +527,41 @@
            ========================================== */
         @media screen and (max-width: 768px) {
             .tutorial {
-                bottom: 90px; /* Nâng cao lên để tránh đè Widget Nhạc / Tooltip */
+                bottom: 90px;
+                /* Nâng cao lên để tránh đè Widget Nhạc / Tooltip */
                 left: 15px;
-                width: calc(100vw - 30px); /* Tự động tràn vừa màn hình */
+                width: calc(100vw - 30px);
+                /* Tự động tràn vừa màn hình */
                 padding: 12px 15px;
                 font-size: 11.5px;
             }
+
             .tuto-title {
                 font-size: 13px;
                 margin-bottom: 8px;
             }
+
             .tuto-item {
                 margin-bottom: 4px;
             }
+
             .tutorial.minimized {
                 bottom: 20px;
-                left: 80px; /* Đứng sát cạnh thùng rác mini trên điện thoại */
+                left: 80px;
+                /* Đứng sát cạnh thùng rác mini trên điện thoại */
                 width: 40px;
                 height: 40px;
             }
-            #tutorial-icon { font-size: 18px; }
-            .close-tutorial { top: 8px; right: 15px; font-size: 20px; }
+
+            #tutorial-icon {
+                font-size: 18px;
+            }
+
+            .close-tutorial {
+                top: 8px;
+                right: 15px;
+                font-size: 20px;
+            }
         }
 
         /* ✨ TOOLTIP HIỂN THỊ THÔNG TIN CÁ */
@@ -1688,7 +1712,7 @@
            📱 TỐI ƯU HÓA GIAO DIỆN DI ĐỘNG (SMARTPHONE)
            ========================================== */
         @media screen and (max-width: 768px) {
-            
+
             /* 1. HEADER (THÔNG SỐ HIỆN TẠI) */
             .header {
                 top: 10px;
@@ -1916,30 +1940,37 @@
                 box-shadow: 0 -5px 30px rgba(0, 0, 0, 0.8) !important;
                 border-width: 2px !important;
             }
+
             /* Tinh chỉnh Item Cá trong Danh sách */
             .fish-item {
-                padding: 6px 10px !important; /* Giảm padding để item mỏng hơn */
+                padding: 6px 10px !important;
+                /* Giảm padding để item mỏng hơn */
                 margin-bottom: 6px !important;
-                border-radius: 8px !important; /* Bo góc nhỏ lại cho hợp với item nhỏ */
+                border-radius: 8px !important;
+                /* Bo góc nhỏ lại cho hợp với item nhỏ */
             }
 
             /* Thu nhỏ khu vực tên và cấp độ cá */
-            .fish-item > div:first-child {
-                max-width: 120px !important; /* Giới hạn chiều rộng nhỏ hơn chút */
+            .fish-item>div:first-child {
+                max-width: 120px !important;
+                /* Giới hạn chiều rộng nhỏ hơn chút */
             }
 
-            .fish-item > div:first-child > div:first-child {
-                font-size: 13px !important; /* Nhỏ font tên cá */
+            .fish-item>div:first-child>div:first-child {
+                font-size: 13px !important;
+                /* Nhỏ font tên cá */
             }
 
-            .fish-item > div:first-child > div:last-child {
-                font-size: 9px !important; /* Nhỏ font độ hiếm & level */
+            .fish-item>div:first-child>div:last-child {
+                font-size: 9px !important;
+                /* Nhỏ font độ hiếm & level */
                 margin-top: 2px !important;
             }
 
             /* Thu nhỏ khu vực nút bấm (Đổi tên & Bán) */
-            .fish-item > div:last-child {
-                gap: 4px !important; /* Giảm khoảng cách giữa 2 nút */
+            .fish-item>div:last-child {
+                gap: 4px !important;
+                /* Giảm khoảng cách giữa 2 nút */
             }
 
             .fish-item button[title="Đổi tên"] {
@@ -1948,10 +1979,80 @@
                 border-radius: 6px !important;
             }
 
-            .fish-item button:last-child { /* Nút BÁN */
+            .fish-item button:last-child {
+                /* Nút BÁN */
                 padding: 4px 10px !important;
                 font-size: 10px !important;
                 border-radius: 6px !important;
+            }
+        }
+
+        .btn-inspect-toggle.hidden {
+    transform: translateX(150%);
+    opacity: 0;
+    pointer-events: none;
+}
+        /* 🔍 NÚT BẬT/TẮT SOI CÁ */
+        .btn-inspect-toggle {
+            position: absolute;
+            top: 320px;
+            /* Nằm ngay dưới nút NHIỆM VỤ (265 + 45 + 10) */
+            right: 0px;
+            width: 120px;
+            height: 45px;
+            background: linear-gradient(45deg, #74b9ff, #0984e3);
+            color: white;
+            border: none;
+            padding: 0 15px 0 10px;
+            border-radius: 25px 0 0 25px;
+            cursor: pointer;
+            font-weight: 900;
+            font-family: 'Quicksand';
+            font-size: 13px;
+            box-shadow: -5px 0 15px rgba(9, 132, 227, 0.4);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 999;
+            pointer-events: auto;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+        }
+
+        .btn-inspect-toggle:hover {
+            padding-right: 25px;
+            width: 130px;
+            right: 2px;
+        }
+
+        /* Trạng thái khi đang bật soi cá */
+        .btn-inspect-toggle.active-mode {
+            background: linear-gradient(45deg, #ff00ea, #00f3ff);
+            box-shadow: -5px 0 20px rgba(0, 243, 255, 0.6);
+            color: #fff;
+            text-shadow: 0 0 5px #fff;
+        }
+
+        body.cinema-active .btn-inspect-toggle {
+            opacity: 0 !important;
+            pointer-events: none !important;
+        }
+
+        /* Responsive cho Mobile: Dồn nút lại */
+        @media screen and (max-width: 768px) {
+            .btn-inspect-toggle {
+                top: 235px !important;
+                /* Dưới nút Nhiệm Vụ trên Mobile (190 + 45) */
+                width: 90px !important;
+                height: 35px !important;
+                font-size: 10px !important;
+                padding: 0 10px 0 8px !important;
+                border-radius: 20px 0 0 20px !important;
+            }
+
+            .btn-inspect-toggle:hover {
+                width: 100px !important;
+                padding-right: 15px !important;
+                right: 0 !important;
             }
         }
     </style>
@@ -2037,11 +2138,13 @@
             <div id="tutorial-content">
                 <div class="tuto-title"><span style="font-size: 20px;">💡</span> <b>CẨM NANG ĐẠI DƯƠNG</b></div>
                 <div class="tuto-item">👆 <b>Chuột trái:</b> Thả mồi & Nhặt Kim Cương.</div>
-                <div class="tuto-item">🖐️ <b>Kéo thả:</b> Di chuyển Cá & Đồ trang trí. Kéo đồ vật vào 🗑️ để bán/xóa.</div>
+                <div class="tuto-item">🖐️ <b>Kéo thả:</b> Di chuyển Cá & Đồ trang trí. Kéo đồ vật vào 🗑️ để bán/xóa.
+                </div>
                 <div class="tuto-item">🔍 <b>Rà chuột:</b> Xem chỉ số Cá & Xem thông tin Thành tựu.</div>
                 <div class="tuto-item">⌨️ <b>Phím Space:</b> Xả nhanh 15 viên mồi cùng lúc.</div>
                 <div class="tuto-item">🦀 <b>Trợ thủ:</b> Mua Cua Kim Cương & Sứa Quản Gia tại Cửa Hàng.</div>
-                <div class="tuto-item" style="color: #ff4757; font-weight: bold; margin-top: 8px; border-top: 1px dashed rgba(255,71,87,0.4); padding-top: 5px;">
+                <div class="tuto-item"
+                    style="color: #ff4757; font-weight: bold; margin-top: 8px; border-top: 1px dashed rgba(255,71,87,0.4); padding-top: 5px;">
                     ⚠️ CẢNH BÁO: Cá sẽ chết nếu bị bỏ đói, bị Cá Mập cắn, hoặc ăn nhầm mồi Tẩm Độc (☠️)!
                 </div>
             </div>
@@ -2123,7 +2226,7 @@
         </div>
 
         <button class="btn-quest-toggle" id="btn-quest-toggle" onclick="toggleQuestSidebar(true)">📋 NHIỆM VỤ</button>
-
+        <button class="btn-inspect-toggle" id="btn-inspect-toggle" onclick="toggleInspectMode()">🔍 SOI CÁ</button>
         <div class="quest-sidebar glass-panel" id="quest-sidebar">
             <div class="close-sidebar-btn"
                 style="background: rgba(50, 205, 50, 0.1); color: #32CD32; border-color: rgba(50, 205, 50, 0.3);"
@@ -2632,6 +2735,23 @@
         // --- 2. BIẾN TOÀN CỤC & TỌA ĐỘ CHUỘT ---
         // Tọa độ của ống kính camera
         let camera = { x: 0, y: 0 };
+        let isInspectMode = false; // Mặc định tắt chế độ soi cá
+
+        // Hàm bật/tắt chế độ soi cá
+        function toggleInspectMode() {
+            isInspectMode = !isInspectMode;
+            let btn = document.getElementById('btn-inspect-toggle');
+
+            if (isInspectMode) {
+                btn.classList.add('active-mode');
+                btn.innerText = "🔍 ĐANG SOI";
+            } else {
+                btn.classList.remove('active-mode');
+                btn.innerText = "🔍 SOI CÁ";
+                // Tắt ngay tooltip nếu nó đang hiển thị trên màn hình
+                document.getElementById('fish-tooltip').style.display = 'none';
+            }
+        }
         let isPanning = false; // Trạng thái đang kéo màn hình
         let startPan = { x: 0, y: 0 }; // Vị trí chuột khi bắt đầu kéo
 
@@ -2641,7 +2761,7 @@
         let width, height;
         let trackedFishId = null; // ID của con cá đang bị theo dõi
         // Tìm dòng này:
-        let gameState = { coins: 18040, fishes: [], decorations: [], lastId: 0, quests: [], lastQuestDate: "", unlockedFishes: [], hasCrab: false, jellyfishCount: 0, poisons: 5 };
+        let gameState = { coins: 1804, fishes: [], decorations: [], lastId: 0, quests: [], lastQuestDate: "", unlockedFishes: [], hasCrab: false, jellyfishCount: 0, poisons: 5 };
         // Thêm biến cờ hiệu này ngay bên dưới gameState:
         let isNextFoodPoisoned = false;
 
@@ -2729,7 +2849,7 @@
             toggleCustomSidebar(false);
             toggleSidebar(false);
             toggleControls(false);
-            
+
             initAchievements();
             renderAchievements();
             openModal('achievements-overlay');
@@ -5195,7 +5315,10 @@
         // Cập nhật bảng thông tin Tooltip
         // Cập nhật bảng thông tin Tooltip khi bơi
         function updateTooltip() {
-
+            if (!isInspectMode) {
+                document.getElementById('fish-tooltip').style.display = 'none';
+                return;
+            }
             if (isHoveringList || document.querySelector('.overlay.active')) {
                 document.getElementById('fish-tooltip').style.display = 'none';
                 return;
@@ -5559,10 +5682,15 @@
             }
         });
 
-        // 1. MỞ DANH SÁCH THỦY CUNG (DSTC)
         function toggleSidebar(show) {
             const sidebar = document.getElementById('sidebar');
-            const btns = [document.getElementById('btn-slide-toggle'), document.getElementById('btn-controls-toggle'), document.getElementById('btn-custom-toggle'), document.getElementById('btn-quest-toggle')];
+            const btns = [
+                document.getElementById('btn-slide-toggle'),
+                document.getElementById('btn-controls-toggle'),
+                document.getElementById('btn-custom-toggle'),
+                document.getElementById('btn-quest-toggle'),
+                document.getElementById('btn-inspect-toggle') // <-- THÊM NÚT NÀY VÀO
+            ];
 
             if (show) {
                 // Ép đóng 3 bảng còn lại
@@ -5599,10 +5727,15 @@
             document.getElementById('gacha-rarity').style.color = tmpl.rarity === "Huyền thoại" ? "var(--neon-pink)" : tmpl.rarity === "Hiếm" ? "var(--neon-blue)" : "white";
             openModal('gacha-overlay'); saveGame(); updateUI();
         }
-        // 4. MỞ NHIỆM VỤ
         function toggleQuestSidebar(show) {
             const questSidebar = document.getElementById('quest-sidebar');
-            const btns = [document.getElementById('btn-slide-toggle'), document.getElementById('btn-controls-toggle'), document.getElementById('btn-custom-toggle'), document.getElementById('btn-quest-toggle')];
+            const btns = [
+                document.getElementById('btn-slide-toggle'),
+                document.getElementById('btn-controls-toggle'),
+                document.getElementById('btn-custom-toggle'),
+                document.getElementById('btn-quest-toggle'),
+                document.getElementById('btn-inspect-toggle') // <-- THÊM NÚT NÀY VÀO
+            ];
 
             if (show) {
                 // Ép đóng 3 bảng còn lại
@@ -5610,7 +5743,7 @@
                 document.getElementById('controls-sidebar').classList.remove('active');
                 document.getElementById('custom-sidebar').classList.remove('active');
 
-                renderQuestUI(); // Load lại dữ liệu thanh tiến trình
+                renderQuestUI();
                 questSidebar.classList.add('active');
                 btns.forEach(b => b && b.classList.add('hidden'));
             } else {
@@ -5949,10 +6082,15 @@
                 toggleSidebar(false); // Gập luôn danh sách thủy cung lại
             }
         }
-        // 2. MỞ CÀI ĐẶT
         function toggleControls(show) {
             const ctrlSidebar = document.getElementById('controls-sidebar');
-            const btns = [document.getElementById('btn-slide-toggle'), document.getElementById('btn-controls-toggle'), document.getElementById('btn-custom-toggle'), document.getElementById('btn-quest-toggle')];
+            const btns = [
+                document.getElementById('btn-slide-toggle'),
+                document.getElementById('btn-controls-toggle'),
+                document.getElementById('btn-custom-toggle'),
+                document.getElementById('btn-quest-toggle'),
+                document.getElementById('btn-inspect-toggle') // <-- THÊM NÚT NÀY VÀO
+            ];
 
             if (show) {
                 // Ép đóng 3 bảng còn lại
@@ -5998,10 +6136,15 @@
         }
 
 
-        // 3. MỞ TÙY CHỈNH
         function toggleCustomSidebar(show) {
             const customSidebar = document.getElementById('custom-sidebar');
-            const btns = [document.getElementById('btn-slide-toggle'), document.getElementById('btn-controls-toggle'), document.getElementById('btn-custom-toggle'), document.getElementById('btn-quest-toggle')];
+            const btns = [
+                document.getElementById('btn-slide-toggle'),
+                document.getElementById('btn-controls-toggle'),
+                document.getElementById('btn-custom-toggle'),
+                document.getElementById('btn-quest-toggle'),
+                document.getElementById('btn-inspect-toggle') // <-- THÊM NÚT NÀY VÀO
+            ];
 
             if (show) {
                 // Ép đóng 3 bảng còn lại
