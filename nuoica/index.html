@@ -1818,7 +1818,14 @@
                         style="width: 100%; padding: 8px; margin-top: 10px; font-size: 11px;"
                         onclick="buyItem('crab', 2000)">2000 💎</button>
                 </div>
-                
+                <div class="shop-item">
+                    <div style="font-size: 35px; margin-bottom: 5px;">🪼</div>
+                    <div style="font-weight: 800; font-size: 14px; text-align: center;">Sứa Quản Gia</div>
+                    <button id="btn-buy-jellyfish" class="btn-main btn-epic"
+                        style="width: 100%; padding: 8px; margin-top: 10px; font-size: 11px;"
+                        onclick="buyItem('jellyfish', 4000)">4000 💎</button>
+                </div>
+
 
             </div>
             <button class="btn-main"
@@ -2253,8 +2260,7 @@
         let width, height;
         let trackedFishId = null; // ID của con cá đang bị theo dõi
         // Tìm dòng này:
-        let gameState = { coins: 1000000, fishes: [], decorations: [], lastId: 0, quests: [], lastQuestDate: "", unlockedFishes: [], hasCrab: false }; // 👉 THÊM hasCrab: false        // CẤU HÌNH NHIỆM VỤ
-        const DAILY_QUESTS_TEMPLATE = [
+        let gameState = { coins: 1000000, fishes: [], decorations: [], lastId: 0, quests: [], lastQuestDate: "", unlockedFishes: [], hasCrab: false, jellyfishCount: 0 }; const DAILY_QUESTS_TEMPLATE = [
             { id: "feed", title: "🍔 Bữa Ăn Thịnh Soạn", desc: "Thả 30 viên thức ăn cho cá", target: 30, reward: 150 },
             { id: "gacha", title: "✨ Triệu Hồi Sư", desc: "Triệu hồi cá mới 2 lần", target: 2, reward: 300 },
             { id: "spend", title: "💸 Đại Gia Biển Sâu", desc: "Tiêu 1000 Kim Cương", target: 1000, reward: 200 }
@@ -2345,6 +2351,7 @@
             el.style.transform = 'scale(1.2)';
         }
         let crabAssistant = null; // Biến lưu trữ Cua Quản Gia
+        let jellyfishes = []; // Mảng chứa tối đa 3 bé sứa
         let particles = [];
         let corals = [];
         let seaweeds = [];
@@ -2882,6 +2889,195 @@
 
                 drawClaw(-1); // Càng trái
                 drawClaw(1);  // Càng phải
+
+                ctx.restore();
+            }
+        }
+    // ===== CLASS SỨA QUẢN GIA TỰ ĐỘNG CHO ĂN (BẢN MƯỢT & TẢN ĐỀU) =====
+        class JellyfishHelper {
+            constructor() {
+                // Xuất hiện rải rác toàn hồ ngay từ đầu
+                this.x = Math.random() * width; 
+                this.y = Math.random() * (height / 2);
+                this.vx = 0;
+                this.vy = 0;
+                
+                // Nhịp bơi và nhịp cho ăn lệch nhau để không hành động cùng 1 lúc
+                this.swimCycle = Math.random() * 100;
+                this.feedTimer = Math.random() * 100;
+                
+                this.targetX = this.x;
+                this.targetY = this.y;
+
+                // ✨ Vị trí bơi lơ lửng quanh cá sẽ khác nhau cho mỗi con sứa (Tránh đè nhau)
+                this.hoverOffsetX = (Math.random() * 100) - 50;  // Lệch trái/phải 50px
+                this.hoverOffsetY = (Math.random() * -50) - 70;  // Lệch cao/thấp 70-120px
+            }
+
+            update() {
+                // Tăng tốc độ nhịp đập lên một chút (0.035) để sứa bơi nhanh và mượt hơn
+                this.swimCycle += 0.035; 
+                this.feedTimer++;
+
+                let targetFish = null;
+                let lowestHunger = 85; 
+
+                // 1. Dò tìm con cá đang đói nhất hồ
+                if (gameState.fishes.length > 0) {
+                    gameState.fishes.forEach(f => {
+                        if (f.hunger <= lowestHunger && !f.data.isPredator && !f.isDead && !f.isSinking) {
+                            lowestHunger = f.hunger;
+                            targetFish = f;
+                        }
+                    });
+                }
+
+                // 2. Xác định mục tiêu di chuyển
+                if (targetFish) {
+                    // Mỗi con sứa sẽ lơ lửng ở một góc khác nhau quanh đầu con cá
+                    this.targetX = targetFish.x + this.hoverOffsetX;
+                    this.targetY = Math.max(50, targetFish.y + this.hoverOffsetY); 
+                } else {
+                    // Nếu rảnh rỗi, đi dạo ngẫu nhiên TOÀN BỘ nửa trên của hồ
+                    if (Math.random() < 0.015) {
+                        this.targetX = Math.random() * (width - 100) + 50;
+                        this.targetY = Math.random() * (height * 0.6) + 30; // Dạo ở 60% hồ trên
+                    }
+                }
+
+                let dx = this.targetX - this.x;
+                let dy = this.targetY - this.y;
+                let dist = Math.hypot(dx, dy);
+
+                // Tăng lực đẩy Pulse (0.15) để lướt đi thanh thoát hơn
+                let pulseForce = Math.max(0, Math.sin(this.swimCycle * Math.PI)) * 0.15;
+
+                if (dist > 5) {
+                    this.vx += (dx / dist) * pulseForce;
+                    this.vy += (dy / dist) * pulseForce;
+                }
+
+                // ✨ LOGIC TRÁNH NHAU (SEPARATION TẠO ĐỘ TẢN ĐỀU) ✨
+                if (typeof jellyfishes !== 'undefined') {
+                    jellyfishes.forEach(other => {
+                        if (other !== this) {
+                            let d = Math.hypot(other.x - this.x, other.y - this.y);
+                            // Nếu 2 sứa vô tình xáp lại quá gần (< 70px), chúng sẽ tự đẩy nhau ra nhẹ nhàng
+                            if (d < 70 && d > 0) { 
+                                this.vx -= (other.x - this.x) * 0.005;
+                                this.vy -= (other.y - this.y) * 0.005;
+                            }
+                        }
+                    });
+                }
+
+                // Ma sát mượt mà (0.90 giúp sứa lướt xa hơn sau mỗi nhịp đập)
+                this.vx *= 0.90;
+                this.vy *= 0.90;
+
+                this.x += this.vx;
+                // Cộng thêm nhịp nhấp nhô lơ lửng đặc trưng của sứa
+                this.y += this.vy + Math.sin(this.swimCycle * 2) * 0.4;
+
+                // Giữ sứa luôn trong hồ
+                this.x = Math.max(30, Math.min(width - 30, this.x));
+                this.y = Math.max(30, Math.min(height - 30, this.y));
+
+                // 3. Logic thả mồi
+                if (targetFish && this.feedTimer > 150) { 
+                    // Do sứa bay tản ra xung quanh, nên khoảng cách nhả mồi nới rộng thành 90px
+                    if (Math.abs(this.x - targetFish.x) < 90) { 
+                        this.feedTimer = 0; 
+                        this.dropFood(targetFish);
+                    }
+                }
+            }
+
+            dropFood(fish) {
+                let shape = fish.data.shape;
+                let foodType = 'pellet';
+                if (shape === 'eel') foodType = 'meat';
+                else if (['ray', 'seahorse', 'squid', 'mantis-shrimp'].includes(shape)) foodType = 'shrimp';
+                else if (shape === 'turtle') foodType = 'seaweed';
+                else if (shape === 'jellyfish') foodType = 'plankton';
+
+                let price = FOOD_PRICES[foodType] || 0;
+
+                if (gameState.coins >= price) {
+                    gameState.coins -= price;
+                    updateQuestProgress('spend', price);
+                    updateQuestProgress('feed', 1);
+                    updateUI();
+
+                    foods.push(new Food(this.x, this.y + 20, foodType));
+                    
+                    if (typeof createExplosion === 'function') createExplosion(this.x, this.y + 20, "#00f3ff", 5);
+                    let tag = document.createElement('div');
+                    tag.className = 'floating-price';
+                    tag.innerText = `-${price} 💎`;
+                    tag.style.color = '#ff4757'; 
+                    tag.style.fontSize = '14px';
+                    tag.style.left = this.x + 'px';
+                    tag.style.top = (this.y - 20) + 'px';
+                    document.body.appendChild(tag);
+                    setTimeout(() => tag.remove(), 1500);
+                } else {
+                    let tag = document.createElement('div');
+                    tag.className = 'floating-price';
+                    tag.innerText = "Hết tiền sếp ơi!";
+                    tag.style.color = '#ff4757';
+                    tag.style.fontSize = '12px';
+                    tag.style.left = (this.x - 40) + 'px';
+                    tag.style.top = (this.y - 20) + 'px';
+                    document.body.appendChild(tag);
+                    setTimeout(() => tag.remove(), 1500);
+                }
+            }
+
+            draw() {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+
+                ctx.globalAlpha = 0.9;
+                ctx.shadowBlur = 15;
+                ctx.shadowColor = "#00f3ff";
+
+                let visualPulse = Math.max(0, Math.sin(this.swimCycle * Math.PI)) * 3;
+
+                ctx.strokeStyle = "#00f3ff";
+                ctx.lineWidth = 2.5;
+                ctx.lineCap = "round";
+                for (let i = -12; i <= 12; i += 8) {
+                    let sway = Math.sin(this.swimCycle * 2 + i) * 6;
+                    ctx.beginPath();
+                    ctx.moveTo(i, 5);
+                    ctx.quadraticCurveTo(i + sway, 15, i - sway, 25 - visualPulse);
+                    ctx.stroke();
+                }
+
+                let grad = ctx.createLinearGradient(0, -15, 0, 5);
+                grad.addColorStop(0, "rgba(255, 255, 255, 0.9)");
+                grad.addColorStop(1, "rgba(0, 243, 255, 0.8)");
+                ctx.fillStyle = grad;
+
+                ctx.beginPath();
+                ctx.moveTo(-18, 5);
+                ctx.bezierCurveTo(-18 + visualPulse*0.5, -18 - visualPulse*0.5, 18 - visualPulse*0.5, -18 - visualPulse*0.5, 18, 5); 
+                ctx.quadraticCurveTo(0, 8 + visualPulse, -18, 5); 
+                ctx.fill();
+
+                ctx.fillStyle = "#111";
+                ctx.beginPath(); ctx.arc(-6, -2, 2.5, 0, Math.PI * 2); ctx.fill();
+                ctx.beginPath(); ctx.arc(6, -2, 2.5, 0, Math.PI * 2); ctx.fill();
+                
+                ctx.fillStyle = "white";
+                ctx.beginPath(); ctx.arc(-6.5, -2.5, 1, 0, Math.PI * 2); ctx.fill();
+                ctx.beginPath(); ctx.arc(5.5, -2.5, 1, 0, Math.PI * 2); ctx.fill();
+
+                ctx.shadowBlur = 0; 
+                ctx.fillStyle = "#111";
+                ctx.fillRect(-6, -18 - visualPulse*0.3, 12, 4); 
+                ctx.fillRect(-4, -22 - visualPulse*0.3, 8, 4);  
 
                 ctx.restore();
             }
@@ -4458,6 +4654,19 @@
                 crabAssistant.update();
                 crabAssistant.draw();
             }
+            // 👉 KIỂM TRA VÀ HIỂN THỊ TỐI ĐA 3 SỨA QUẢN GIA
+            let jCount = gameState.jellyfishCount || 0;
+            if (jCount > 0) {
+                // Tạo thêm sứa cho đủ số lượng đã mua
+                while (jellyfishes.length < jCount) {
+                    jellyfishes.push(new JellyfishHelper());
+                }
+                // Chạy vòng lặp cho tất cả sứa
+                jellyfishes.forEach(j => {
+                    j.update();
+                    j.draw();
+                });
+            }
 
             gameState.decorations.forEach(decor => decor.draw());
             foods.forEach((f, i) => { f.update(); f.draw(); if (f.y > height + 20) foods.splice(i, 1); });
@@ -4566,11 +4775,11 @@
 
         // --- 6. TƯƠNG TÁC & SỰ KIỆN ---
 
-    window.addEventListener('mousedown', (e) => {
+        window.addEventListener('mousedown', (e) => {
             // Nếu đang bật chế độ Cinema thì click để thoát
-            if (document.body.classList.contains('cinema-active')) { 
-                toggleCinema(); 
-                return; 
+            if (document.body.classList.contains('cinema-active')) {
+                toggleCinema();
+                return;
             }
 
             // Ngăn chặn click khi bấm vào các nút UI hoặc Modal
@@ -4584,7 +4793,7 @@
             const mY = e.clientY - rect.top;
 
             if (e.button === 0) { // Chuột trái
-                
+
                 // --- BƯỚC 1: KIỂM TRA CLICK NHẶT KIM CƯƠNG (ƯU TIÊN CAO NHẤT) ---
                 let clickedDiamondIndex = -1;
                 for (let i = diamonds.length - 1; i >= 0; i--) {
@@ -4599,19 +4808,19 @@
                 if (clickedDiamondIndex !== -1) {
                     let d = diamonds[clickedDiamondIndex];
                     gameState.coins += d.value;
-                    
+
                     // Hiệu ứng nổ lấp lánh theo màu kim cương
                     createExplosion(d.x, d.y, d.color, 15);
-                    
+
                     // Hiện số tiền bay lên
-                    let tag = document.createElement('div'); 
-                    tag.className = 'floating-price'; 
+                    let tag = document.createElement('div');
+                    tag.className = 'floating-price';
                     tag.innerText = `+${d.value} 💎`;
-                    tag.style.left = d.x + 'px'; 
-                    tag.style.top = d.y + 'px'; 
-                    document.body.appendChild(tag); 
+                    tag.style.left = d.x + 'px';
+                    tag.style.top = d.y + 'px';
+                    document.body.appendChild(tag);
                     setTimeout(() => tag.remove(), 2000);
-                    
+
                     diamonds.splice(clickedDiamondIndex, 1);
                     updateUI();
                     saveGame();
@@ -4623,14 +4832,14 @@
                 for (let i = gameState.fishes.length - 1; i >= 0; i--) {
                     let fish = gameState.fishes[i];
                     let hitbox = 45 * fish.baseScale * (1 + fish.level * 0.05);
-                    if (Math.hypot(mX - fish.x, mY - fish.y) < hitbox) { 
-                        clickedFish = fish; 
-                        break; 
+                    if (Math.hypot(mX - fish.x, mY - fish.y) < hitbox) {
+                        clickedFish = fish;
+                        break;
                     }
                 }
 
                 if (clickedFish) {
-                    draggedFish = clickedFish; 
+                    draggedFish = clickedFish;
                     draggedFish.isDragged = true;
                     return;
                 }
@@ -4640,21 +4849,21 @@
                 for (let i = gameState.decorations.length - 1; i >= 0; i--) {
                     let decor = gameState.decorations[i];
                     // Kiểm tra va chạm với vật phẩm trang trí
-                    if (Math.hypot(mX - decor.x, mY - decor.y) < decor.size / 2) { 
-                        clickedDecor = decor; 
-                        break; 
+                    if (Math.hypot(mX - decor.x, mY - decor.y) < decor.size / 2) {
+                        clickedDecor = decor;
+                        break;
                     }
                 }
 
                 if (clickedDecor) {
-                    draggedDecor = clickedDecor; 
+                    draggedDecor = clickedDecor;
                     draggedDecor.isDragged = true;
                     return;
                 }
 
                 // --- BƯỚC 4: KHÔNG TRÚNG GÌ THÌ THẢ MỒI (TỐN TIỀN) ---
                 let foodPrice = FOOD_PRICES[currentFoodType] || 0;
-                
+
                 if (gameState.coins >= foodPrice) {
                     gameState.coins -= foodPrice;
                     updateUI();
@@ -4663,7 +4872,7 @@
 
                     // Tạo viên mồi mới theo loại đang chọn
                     foods.push(new Food(mX, mY, currentFoodType));
-                    
+
                     // Hiệu ứng bọt nước nhỏ
                     createExplosion(mX, mY, "rgba(255,255,255,0.4)", 5);
                 } else {
@@ -4763,18 +4972,18 @@
             if (e.code === 'Space') {
                 // Tính tổng tiền cho 15 viên mồi đang chọn
                 let totalPrice = FOOD_PRICES[currentFoodType] * 15;
-                
+
                 if (gameState.coins >= totalPrice) {
                     gameState.coins -= totalPrice;
                     updateUI();
                     updateQuestProgress('feed', 15);
                     updateQuestProgress('spend', totalPrice);
-                    
+
                     for (let i = 0; i < 15; i++) {
-                        setTimeout(() => { 
+                        setTimeout(() => {
                             let rx = Math.random() * (width - 200) + 100;
-                            foods.push(new Food(rx, -10, currentFoodType)); 
-                            createExplosion(rx, 10, "#FFD700", 5); 
+                            foods.push(new Food(rx, -10, currentFoodType));
+                            createExplosion(rx, 10, "#FFD700", 5);
                         }, i * 100);
                     }
                 } else {
@@ -4938,6 +5147,21 @@
                 updateUI();
                 saveGame();
             }
+            // THÊM ĐOẠN NÀY DÀNH CHO SỨA QUẢN GIA
+            else if (type === 'jellyfish') {
+                let currentJelly = gameState.jellyfishCount || 0;
+                if (currentJelly >= 3) return alert("Bạn đã thuê tối đa 3 Sứa Quản Gia rồi!");
+                if (gameState.coins < price) return alert("Không đủ Kim Cương để thuê Sứa!");
+
+                gameState.coins -= price;
+                gameState.jellyfishCount = currentJelly + 1; // Tăng số lượng sứa
+                updateQuestProgress('spend', price);
+                closeModal('shop-overlay');
+
+                createExplosion(width / 2, 100, "#00f3ff", 50);
+                updateUI();
+                saveGame();
+            }
             updateUI(); saveGame();
         }
 
@@ -5011,6 +5235,18 @@
                 btnCrab.style.color = "rgba(255,255,255,0.5)";
                 btnCrab.style.pointerEvents = "none"; // Khóa nút không cho bấm nữa
             }
+        const btnJelly = document.getElementById('btn-buy-jellyfish');
+            if (btnJelly) {
+                let jCount = gameState.jellyfishCount || 0;
+                if (jCount >= 3) {
+                    btnJelly.innerText = "MAX (3/3)";
+                    btnJelly.style.background = "rgba(255,255,255,0.2)";
+                    btnJelly.style.color = "rgba(255,255,255,0.5)";
+                    btnJelly.style.pointerEvents = "none";
+                } else if (jCount > 0) {
+                    btnJelly.innerText = `MUA THÊM (${jCount}/3) - 2500 💎`;
+                }
+            }
         }
 
         // HÀM THẢ CÁ MẬP VÀO HỒ
@@ -5036,7 +5272,8 @@
                 decorations: gameState.decorations.map(d => ({ id: d.id, type: d.type, x: d.x, y: d.y, scale: d.scale })),
                 quests: gameState.quests,
                 lastQuestDate: gameState.lastQuestDate, unlockedFishes: gameState.unlockedFishes,
-                hasCrab: gameState.hasCrab // 👉 THÊM DÒNG NÀY ĐỂ LƯU CUA
+                hasCrab: gameState.hasCrab,
+                jellyfishCount: gameState.jellyfishCount || 0
             }));
         }
 
@@ -5048,6 +5285,7 @@
                 gameState.lastId = p.lastId;
                 gameState.unlockedFishes = p.unlockedFishes || [];
                 gameState.hasCrab = p.hasCrab || false; // 👉 THÊM DÒNG NÀY ĐỂ TẢI LẠI CUA
+                jellyfishCount: gameState.jellyfishCount || 0
                 if (p.quests && p.lastQuestDate) {
                     gameState.quests = p.quests;
                     gameState.lastQuestDate = p.lastQuestDate;
