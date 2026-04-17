@@ -1813,31 +1813,35 @@
 
         // --- 1. DỮ LIỆU CÁ CHUẨN ---
         const FISH_DATA = [
+            // --- GIÁP XÁC ---
             {
                 "type": "Tôm Tít Võ Sĩ",
                 "rarity": "Hiếm",
                 "shape": "mantis-shrimp",
                 "behavior": "slither",
+                "flockStyle": "independent", // Sống đơn độc, bảo vệ lãnh thổ
                 "colors": ["#2ecc71", "#e74c3c", "#f1c40f", "#3498db"],
-                "speed": 2.2, // Tốc độ cao hơn hẳn các loài bò khác
+                "speed": 2.2,
                 "scale": 0.3,
                 "desc": "Sở hữu cú đấm nhanh nhất đại dương. Với bộ giáp bảy sắc cầu vồng, nó vừa là nghệ sĩ, vừa là sát thủ dưới đáy biển."
             },
+
             // --- HỌ LƯƠN BIỂN & CÁ CHÌNH (Eel Family) ---
             {
                 type: "Lươn Bùn",
                 rarity: "Thường",
                 shape: "eel",
+                flockStyle: "independent", // Lươn thường chui rúc một mình
                 colors: ["#4a3721", "#8b7355"],
                 speed: 1.2,
                 scale: 0.9,
                 desc: "Loài lươn nâu quen thuộc thường ẩn mình dưới lớp bùn. Tuy vẻ ngoài giản dị nhưng nó là biểu tượng của sự bền bỉ và khả năng lẩn trốn tài tình."
             },
-
             {
                 type: "Lươn Điện Abyss",
                 rarity: "Hiếm",
                 shape: "eel",
+                flockStyle: "independent",
                 colors: ["#1e3799", "#4a69bd"],
                 speed: 0.5,
                 scale: 1.2,
@@ -1849,6 +1853,7 @@
                 type: "Hỏa Lươn Dung Nham",
                 rarity: "Hiếm",
                 shape: "eel",
+                flockStyle: "independent",
                 colors: ["#8b0000", "#ff4500"],
                 speed: 1.5,
                 scale: 1.3,
@@ -1860,6 +1865,7 @@
                 type: "Lươn Ngọc Bích Cổ Đại",
                 rarity: "Huyền thoại",
                 shape: "eel",
+                flockStyle: "independent",
                 colors: ["#006266", "#1289a7"],
                 speed: 1.0,
                 scale: 1.8,
@@ -1871,6 +1877,7 @@
                 type: "Lươn Galaxy Vô Tận",
                 rarity: "Huyền thoại",
                 shape: "eel",
+                flockStyle: "independent",
                 colors: ["#2c3e50", "#8e44ad"],
                 speed: 1.8,
                 scale: 1.5,
@@ -1878,14 +1885,14 @@
                 glowColor: "#fd79a8",
                 desc: "Thân hình mang màu tím đen của không gian sâu thẳm, rắc đầy bụi sao lấp lánh. Nó bơi đi như một dải ngân hà đang trôi dạt giữa lòng đại dương."
             },
-            // --- CÁ (fish) ---
 
-            // --- HỌ MỰC BIỂN (Squid Family - Pulse Swimmers) ---
+            // --- HỌ MỰC BIỂN (Squid Family) ---
             {
                 type: "Mực Đốm Đom Đóm",
                 rarity: "Thường",
                 shape: "squid",
                 behavior: "pulse_swimmer",
+                flockStyle: "horizontal", // Mực nhỏ bơi theo đàn ngang
                 colors: ["#22a6b3", "#7ed6df"],
                 speed: 1.8,
                 scale: 0.8,
@@ -1896,6 +1903,7 @@
                 rarity: "Hiếm",
                 shape: "squid",
                 behavior: "pulse_swimmer",
+                flockStyle: "independent", // Mực khổng lồ sống một mình
                 colors: ["#4834d4", "#686de0"],
                 speed: 1.2,
                 scale: 2.2,
@@ -1908,6 +1916,7 @@
                 rarity: "Hiếm",
                 shape: "squid",
                 behavior: "pulse_swimmer",
+                flockStyle: "independent",
                 colors: ["#3d0000", "#eb4d4b"],
                 speed: 1.5,
                 scale: 1.1,
@@ -1920,6 +1929,7 @@
                 rarity: "Huyền thoại",
                 shape: "squid",
                 behavior: "pulse_swimmer",
+                flockStyle: "independent",
                 colors: ["#ffffff", "#f093fb"],
                 speed: 1.2,
                 scale: 1.0,
@@ -1932,6 +1942,7 @@
                 rarity: "Huyền thoại",
                 shape: "squid",
                 behavior: "pulse_swimmer",
+                flockStyle: "independent",
                 colors: ["#000000", "#be2edd"],
                 speed: 2.0,
                 scale: 1.6,
@@ -1939,6 +1950,8 @@
                 glowColor: "#e056fd",
                 desc: "Kẻ thống trị vùng biển tối. Lớp da đen tuyền điểm xuyết những vân tím hoàng gia tỏa sáng, mang lại vẻ quyền quý và uy nghiêm khó cưỡng."
             },
+
+            // --- CÁ (fish) ---
             {
                 type: "Cá Đèn Lồng Deepsea", rarity: "Hiếm", shape: "fish", flockStyle: "independent", colors: ["#2F4F4F", "#00FF00"], speed: 1.4, scale: 1.0, glowType: "head", glowColor: "#00FF00",
                 desc: "Sinh vật của bóng tối vực rãnh Mariana. Chiếc đèn lồng trên đầu nó phát ra ánh sáng huỳnh quang tuyệt đẹp để dụ dỗ những con mồi ngây thơ."
@@ -1948,12 +1961,7 @@
                 desc: "Luôn bơi loanh quanh như đang tìm kiếm cậu con trai tên Nemo. Màu cam rực rỡ giúp nó ẩn mình hoàn hảo trong những rạn hải quỳ."
             },
             {
-                type: "Cá Dory",
-                rarity: "Hiếm",
-                shape: "fish_dory",
-                colors: ["#2e5bff", "#FFD700"], // Xanh dương và Vàng
-                speed: 2.5,
-                scale: 0.95,
+                type: "Cá Dory", rarity: "Hiếm", shape: "fish_dory", flockStyle: "horizontal", colors: ["#2e5bff", "#FFD700"], speed: 2.5, scale: 0.95,
                 desc: "Một cô cá đuôi gai xanh hay quên nhưng cực kỳ lạc quan. Dory mang đến sự vui vẻ và những giai điệu 'Just keep swimming' cho cả hồ cá."
             },
             {
@@ -1993,7 +2001,7 @@
                 desc: "Khoác lên mình bộ cánh kết hợp giữa cam và trắng tựa như những thiên thần. Chúng mang lại sự bình yên và thịnh vượng cho bất cứ vùng nước nào."
             },
             {
-                type: "Leviathan Xanh", rarity: "Huyền thoại", shape: "fish", flockStyle: "horizontal", colors: ["#00FA9A", "#006400"], speed: 3.5, scale: 2,
+                type: "Leviathan Xanh", rarity: "Huyền thoại", shape: "fish", flockStyle: "independent", colors: ["#00FA9A", "#006400"], speed: 3.5, scale: 2,
                 desc: "Thủy quái cổ đại ngủ vùi dưới đáy vực sâu. Lớp vảy xanh ngọc bích của nó cứng cáp hơn cả kim cương, tản ra sức mạnh áp đảo thiên nhiên."
             },
             {
@@ -2123,6 +2131,38 @@
             {
                 type: "Thần Rùa Huyền Vũ", rarity: "Huyền thoại", shape: "turtle", flockStyle: "independent", colors: ["#000000", "#2F4F4F"], speed: 0.6, scale: 3.0,
                 desc: "Thần thú thiêng liêng trấn giữ phương Bắc trong truyền thuyết cổ. Cổ dầy mai đen mang sức mạnh phòng thủ tuyệt đối không một lưỡi gươm nào xuyên phá nổi."
+            },
+
+            // ========================================================
+            // --- BỔ SUNG CÁC LOÀI MỚI (BẦY ĐÀN VÀ ĐỘC LẬP) ---
+            // ========================================================
+
+            // MỚI: BẦY ĐÀN (HORIZONTAL / CIRCULAR)
+            {
+                type: "Cá Cơm Sọc Đen", rarity: "Thường", shape: "fish", flockStyle: "horizontal", colors: ["#dcdde1", "#2f3640"], speed: 3.8, scale: 0.4,
+                desc: "Loài cá tí hon với tốc độ bơi kinh hoàng. Chúng tập hợp thành những bầy đàn khổng lồ, di chuyển đồng loạt như một dòng sông bạc dưới đại dương."
+            },
+            {
+                type: "Cá Dơi Rạn San Hô", rarity: "Thường", shape: "fish", flockStyle: "circular", colors: ["#e1b12c", "#2f3640"], speed: 1.8, scale: 0.8,
+                desc: "Thân hình dẹt với những sọc đen vàng nổi bật. Chúng cực kỳ thích bơi lượn vòng tròn xung quanh các tảng san hô hoặc mỏm đá để tìm kiếm thức ăn."
+            },
+            {
+                type: "Đàn Cá Voi Sát Thủ", rarity: "Huyền thoại", shape: "fish", flockStyle: "horizontal", colors: ["#111111", "#ffffff"], speed: 3.2, scale: 2.8,
+                desc: "Kẻ săn mồi tối thượng với trí thông minh tuyệt đỉnh. Khi bơi cùng nhau, chúng tạo nên một thế trận săn mồi không có kẻ hở, uy dũng và tàn độc."
+            },
+
+            // MỚI: ĐỘC LẬP (INDEPENDENT)
+            {
+                type: "Cá Nóc Gai Độc", rarity: "Thường", shape: "fish", flockStyle: "independent", colors: ["#fbc531", "#e1b12c"], speed: 1.0, scale: 0.8,
+                desc: "Sở hữu thân hình tròn ủm đáng yêu nhưng lại chứa đầy độc tố. Chúng thường đi lang thang một mình vì chẳng có kẻ săn mồi nào dại dột đụng vào."
+            },
+            {
+                type: "Cá Mặt Trăng Khổng Lồ", rarity: "Hiếm", shape: "fish", flockStyle: "independent", colors: ["#718093", "#dcdde1"], speed: 0.5, scale: 2.6,
+                desc: "Loài cá có thân hình kì dị dẹt và to như một chiếc đĩa khổng lồ. Chúng bơi lờ đờ một cách vô định, mặc kệ sự đời."
+            },
+            {
+                type: "Bạch Tuộc Nhẫn Xanh", rarity: "Hiếm", shape: "squid", flockStyle: "independent", colors: ["#e1b12c", "#0097e6"], speed: 1.2, scale: 0.6,
+                desc: "Sống đơn độc dưới đáy biển sâu. Trên mình nó điểm xuyết những chiếc nhẫn màu xanh neon rực rỡ nhưng mang kịch độc chết người."
             }
         ];
 
@@ -2215,6 +2255,131 @@
         let corals = [];
         let seaweeds = [];
         let planktons = [];
+        let diamonds = []; // 👉 THÊM DÒNG NÀY
+        // 👉 THÊM CLASS DIAMOND VÀO ĐÂY (TRƯỚC CLASS FOOD LÀ ĐƯỢC)
+        class Diamond {
+            constructor(x, y, value, size, rarity) {
+                this.x = x;
+                this.y = y;
+                this.value = Math.round(value);
+                this.size = Math.max(15, size); // Kích thước tối thiểu là 15px
+                this.vy = Math.random() * 0.5 + 0.5; // Tốc độ rơi cực chậm (0.5 - 1.0)
+                this.floorY = height - 20 - Math.random() * 30; // Rơi xuống đáy hồ ngẫu nhiên
+
+                // Màu sắc lấp lánh theo độ hiếm của con cá đẻ ra nó
+                this.color = rarity === "Huyền thoại" ? "#ff00ea" : rarity === "Hiếm" ? "#00f3ff" : "#FFD700";
+                this.glow = rarity === "Huyền thoại" ? "#ffb8f5" : rarity === "Hiếm" ? "#b8fbff" : "#fff1b8";
+                this.pulse = Math.random() * Math.PI * 2; // Nhịp độ lấp lánh
+            }
+
+            update() {
+                if (this.y < this.floorY) {
+                    this.y += this.vy;
+                    this.x += Math.sin(this.y * 0.05) * 0.5; // Lắc lư zíc zắc nhẹ khi rơi
+                }
+                this.pulse += 0.05;
+            }
+
+            draw() {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+
+                let w = this.size; // Kích thước tổng
+                
+                // --- 1. XÁC ĐỊNH CÁC TỌA ĐỘ ĐỈNH CỦA KIM CƯƠNG ---
+                let tY = -0.4 * w;  // Y Cạnh trên cùng
+                let mY = -0.05 * w; // Y Đường ngang giữa
+                let bY = 0.5 * w;   // Y Đỉnh nhọn bên dưới
+                
+                let t1X = -0.25 * w; // Góc trên trái
+                let t2X = 0.25 * w;  // Góc trên phải
+                
+                let m1X = -0.5 * w;  // Mép giữa ngoài cùng trái
+                let m2X = -0.15 * w; // Điểm cắt giữa trái
+                let m3X = 0.15 * w;  // Điểm cắt giữa phải
+                let m4X = 0.5 * w;   // Mép giữa ngoài cùng phải
+
+                // Hào quang lấp lánh dưới đáy hồ (phát sáng theo nhịp pulse)
+                ctx.shadowBlur = 15 + Math.sin(this.pulse) * 10;
+                ctx.shadowColor = this.color;
+
+                // --- 2. ĐỔ MÀU NỀN GỐC (Dựa trên this.color độ hiếm của cá) ---
+                ctx.fillStyle = this.color; 
+                ctx.beginPath();
+                ctx.moveTo(t1X, tY); ctx.lineTo(t2X, tY); ctx.lineTo(m4X, mY); 
+                ctx.lineTo(0, bY); ctx.lineTo(m1X, mY); ctx.closePath();
+                ctx.fill();
+
+                // TẮT shadow để vẽ các khối 3D (facets) cho thật sắc nét
+                ctx.shadowBlur = 0;
+
+                // Hàm phụ trợ: Vẽ từng mảng khối với độ sáng/tối khác nhau
+                const drawFacet = (pts, overlayColor) => {
+                    ctx.fillStyle = overlayColor;
+                    ctx.beginPath();
+                    ctx.moveTo(pts[0][0], pts[0][1]);
+                    for(let i=1; i<pts.length; i++) ctx.lineTo(pts[i][0], pts[i][1]);
+                    ctx.closePath();
+                    ctx.fill();
+                };
+
+                // BÓNG ĐỔ KHỐI 3D NỬA TRÊN (Phủ trắng rgba để tạo phản quang)
+                drawFacet([[t1X, tY], [m1X, mY], [m2X, mY]], "rgba(255, 255, 255, 0.4)");  // Trái trên
+                drawFacet([[t1X, tY], [t2X, tY], [m3X, mY], [m2X, mY]], "rgba(255, 255, 255, 0.7)"); // Giữa trên (Sáng nhất)
+                drawFacet([[t2X, tY], [m4X, mY], [m3X, mY]], "rgba(255, 255, 255, 0.15)"); // Phải trên
+
+                // BÓNG ĐỔ KHỐI 3D NỬA DƯỚI (Phủ đen rgba để tạo bóng râm)
+                drawFacet([[m1X, mY], [m2X, mY], [0, bY]], "rgba(0, 0, 0, 0.15)"); // Trái dưới
+                // Mảng giữa dưới giữ nguyên màu gốc (không phủ)
+                drawFacet([[m3X, mY], [m4X, mY], [0, bY]], "rgba(0, 0, 0, 0.35)"); // Phải dưới (Tối nhất)
+
+                // --- 3. VẼ VIỀN ĐEN DÀY (Outline tạo phong cách hoạt hình giống ảnh) ---
+                ctx.strokeStyle = "#111111"; // Viền đen đậm
+                ctx.lineWidth = Math.max(1.5, w * 0.08); // Độ dày viền co giãn theo size cá
+                ctx.lineJoin = "round";
+                ctx.lineCap = "round";
+
+                // Viền chu vi ngoài cùng
+                ctx.beginPath();
+                ctx.moveTo(t1X, tY); ctx.lineTo(t2X, tY); ctx.lineTo(m4X, mY); 
+                ctx.lineTo(0, bY); ctx.lineTo(m1X, mY); ctx.closePath();
+                ctx.stroke();
+
+                // Đường ngang chia đôi
+                ctx.beginPath(); ctx.moveTo(m1X, mY); ctx.lineTo(m4X, mY); ctx.stroke();
+
+                // Các đường chéo tạo khối đỉnh
+                ctx.beginPath(); ctx.moveTo(t1X, tY); ctx.lineTo(m2X, mY); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(t2X, tY); ctx.lineTo(m3X, mY); ctx.stroke();
+
+                // Các đường chéo hội tụ về đáy
+                ctx.beginPath(); ctx.moveTo(m2X, mY); ctx.lineTo(0, bY); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(m3X, mY); ctx.lineTo(0, bY); ctx.stroke();
+
+                // --- 4. HIỆU ỨNG NGÔI SAO LẤP LÁNH BAY QUANH KIM CƯƠNG ---
+                let starAlpha = (Math.sin(this.pulse * 2) + 1) / 2; // Độ sáng chớp tắt
+                if (starAlpha > 0.1) {
+                    ctx.fillStyle = `rgba(255, 255, 255, ${starAlpha})`;
+                    
+                    // Hàm vẽ ngôi sao 4 cánh nhọn
+                    const drawStar = (cx, cy, r) => {
+                        ctx.beginPath();
+                        ctx.moveTo(cx, cy - r);
+                        ctx.quadraticCurveTo(cx, cy, cx + r, cy);
+                        ctx.quadraticCurveTo(cx, cy, cx, cy + r);
+                        ctx.quadraticCurveTo(cx, cy, cx - r, cy);
+                        ctx.quadraticCurveTo(cx, cy, cx, cy - r);
+                        ctx.fill();
+                    };
+                    
+                    // Vẽ 2 ngôi sao bay lơ lửng phía trên kim cương (giống hệt ảnh)
+                    drawStar(-0.4 * w, -0.6 * w + Math.sin(this.pulse)*5, w * 0.15);
+                    drawStar(0.3 * w, -0.7 * w + Math.cos(this.pulse)*5, w * 0.2);
+                }
+
+                ctx.restore();
+            }
+        }
         let currentHour = 12; let isNight = false;
         let draggedDecor = null;
         // TỪ ĐIỂN GIẢI THÍCH KỸ NĂNG
@@ -2542,9 +2707,9 @@
                     if (targetFood) {
                         isHunting = true; // Đang đuổi theo mồi
                         this.targetAngle = Math.atan2(targetFood.y - this.y, targetFood.x - this.x);
-                        
+
                         // Buff tốc độ và khả năng bẻ lái để cá táp mồi chuẩn hơn
-                        speedBoost = 1.8; 
+                        speedBoost = 1.8;
                         turnSpeed = 0.3;
 
                         // Mở rộng bán kính ăn mồi (cá càng to đớp càng xa)
@@ -2557,7 +2722,7 @@
                                 foods.splice(fIndex, 1); // Xóa mồi bằng splice an toàn tuyệt đối
                                 this.hunger = Math.min(100, this.hunger + 35);
                                 this.gainXp();
-                                
+
                                 // Tạo hiệu ứng bọt nước nhỏ khi đớp trúng mồi
                                 if (typeof createExplosion === 'function') {
                                     createExplosion(this.x, this.y, "rgba(255,255,255,0.6)", 8);
@@ -2606,7 +2771,7 @@
 
                                 // QUYẾT ĐỊNH BẺ LÁI
                                 if (Math.hypot(sepX, sepY) > 0) {
-                                    this.targetAngle = Math.atan2(sepY, sepX); 
+                                    this.targetAngle = Math.atan2(sepY, sepX);
                                 } else {
                                     let dx = Math.cos(angleToAlign) * 1.5 + Math.cos(angleToCenter) * 0.5;
                                     let dy = Math.sin(angleToAlign) * 1.5 + Math.sin(angleToCenter) * 0.5;
@@ -2614,7 +2779,7 @@
                                 }
 
                                 if (flockStyle === "circular") {
-                                     this.targetAngle += 0.08; 
+                                    this.targetAngle += 0.08;
                                 }
                             }
                         }
@@ -3926,7 +4091,12 @@
             drawEnvironment();
             gameState.decorations.forEach(decor => decor.draw());
             foods.forEach((f, i) => { f.update(); f.draw(); if (f.y > height + 20) foods.splice(i, 1); });
-
+            // Vẽ kim cương
+            for (let i = diamonds.length - 1; i >= 0; i--) {
+                let d = diamonds[i];
+                d.update();
+                d.draw();
+            }
             for (let i = gameState.fishes.length - 1; i >= 0; i--) {
                 let fish = gameState.fishes[i];
 
@@ -4030,11 +4200,43 @@
         window.addEventListener('mousedown', (e) => {
             if (document.body.classList.contains('cinema-active')) { toggleCinema(); return; }
 
+
             if (e.target.tagName !== 'BUTTON' && !e.target.closest('.glass-panel') && !e.target.closest('.modal')) {
                 if (e.button === 2) {
                     // ... (Code thả bom chuột phải giữ nguyên)
                 } else if (e.button === 0) {
+                    // 👉 1. ƯU TIÊN KIỂM TRA CLICK NHẶT KIM CƯƠNG TRƯỚC
+                    let clickedDiamondIndex = -1;
+                    for (let i = diamonds.length - 1; i >= 0; i--) {
+                        let d = diamonds[i];
+                        if (Math.hypot(e.clientX - d.x, e.clientY - d.y) < d.size) {
+                            clickedDiamondIndex = i;
+                            break;
+                        }
+                    }
 
+                    if (clickedDiamondIndex !== -1) {
+                        let d = diamonds[clickedDiamondIndex];
+                        gameState.coins += d.value;
+
+                        // Hiệu ứng nổ màu sắc của kim cương đó
+                        createExplosion(d.x, d.y, d.color, 15);
+
+                        // Bay số tiền lên
+                        let tag = document.createElement('div');
+                        tag.className = 'floating-price';
+                        tag.innerText = `+${d.value} 💎`;
+                        tag.style.left = (d.x - 20) + 'px';
+                        tag.style.top = (d.y - 30) + 'px';
+                        document.body.appendChild(tag);
+                        setTimeout(() => tag.remove(), 2000);
+
+                        // Xóa kim cương khỏi hồ
+                        diamonds.splice(clickedDiamondIndex, 1);
+                        updateUI();
+                        saveGame();
+                        return; // Đã nhặt kim cương thì KHÔNG làm các việc khác (không rải mồi, không nắm cá)
+                    }
                     let clickedFish = null;
                     for (let i = gameState.fishes.length - 1; i >= 0; i--) {
                         let fish = gameState.fishes[i];
@@ -4411,18 +4613,34 @@
 
         resize(); loadGame(); updateUI(); animate();
 
-        // Kỹ năng Phúc Lộc đẻ nhiều kim cương hơn
+        // 👉 CƠ CHẾ ĐẺ KIM CƯƠNG (Thay thế cơ chế tự động cộng tiền cũ)
         setInterval(() => {
-            let earned = 0;
             gameState.fishes.forEach(f => {
-                if (f.level >= 5) {
-                    let coin = f.skill === "Phúc Lộc 💰" ? 5 : 2; // Skill đẻ nhiều tiền
-                    earned += coin;
-                    createExplosion(f.x, f.y + 15, "#FFD700", 3);
+                if (f.level >= 5 && !f.isDead) { // Phải đạt Lv.5 trở lên và còn sống
+                    // Nếu có skill Phúc Lộc, tỉ lệ đẻ kim cương là 70%, nếu không là 30%
+                    let dropChance = f.skill === "Phúc Lộc 💰" ? 0.7 : 0.3;
+
+                    if (Math.random() < dropChance) {
+                        // 1. TÍNH HỆ SỐ ĐỘ HIẾM
+                        let rarityMult = f.data.rarity === "Huyền thoại" ? 5 : f.data.rarity === "Hiếm" ? 2 : 1;
+
+                        // 2. TÍNH GIÁ TRỊ (Tỉ lệ thuận với độ hiếm, kích thước và cấp độ)
+                        // Công thức: Căn bản(5) * Độ hiếm * Level * Kích thước cá
+                        let dValue = 5 * rarityMult * f.level * f.baseScale;
+
+                        // 3. TÍNH KÍCH CỠ KIM CƯƠNG (Cá càng to, càng hiếm -> Cục kim cương càng to)
+                        let dSize = 15 + (rarityMult * 4) + (f.baseScale * 6);
+                        if (dSize > 45) dSize = 45; // Khóa max size để không to chà bá
+
+                        // 4. THẢ KIM CƯƠNG (Rơi từ phần bụng/đuôi cá xuống)
+                        diamonds.push(new Diamond(f.x, f.y + 15, dValue, dSize, f.data.rarity));
+
+                        // Hiệu ứng bong bóng nhỏ xíu phọt ra báo hiệu vừa đẻ
+                        createExplosion(f.x, f.y + 15, "rgba(255,255,255,0.4)", 3);
+                    }
                 }
             });
-            if (earned > 0) { gameState.coins += earned; updateUI(); saveGame(); }
-        }, 5000);
+        }, 10000); 
         function toggleCinema() {
             document.body.classList.toggle('cinema-active');
             if (document.body.classList.contains('cinema-active')) {
