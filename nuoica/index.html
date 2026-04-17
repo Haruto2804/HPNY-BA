@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Abyss & Light - Epic Aquarium</title>
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;500;800;900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
@@ -420,56 +420,124 @@
             border: none !important;
         }
 
-        /* 💡 THIẾT KẾ LẠI PHẦN HƯỚNG DẪN */
+    /* ==========================================
+           💡 THIẾT KẾ LẠI BẢNG HƯỚNG DẪN (TUTORIAL)
+           ========================================== */
         .tutorial {
             position: absolute;
-            top: 400px;
-            left: 15px;
-            width: 280px;
-            background: rgba(0, 0, 0, 0.4);
+            bottom: 20px;
+            left: 110px; /* Nằm cạnh bên phải của Thùng Rác */
+            width: 340px;
+            background: rgba(15, 23, 42, 0.85); /* Nền tối sang trọng */
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-            padding: 15px;
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--neon-blue);
+            border-radius: 16px;
+            padding: 15px 20px;
             color: white;
+            font-family: 'Quicksand', sans-serif;
             font-size: 13px;
             line-height: 1.6;
             z-index: 1000;
             pointer-events: auto;
-            /* Cho phép tương tác để đóng */
-            transition: all 0.5s ease;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 30px rgba(0, 243, 255, 0.2);
         }
 
-        .tutorial b {
+        .tuto-title {
+            font-size: 15px;
+            color: var(--gold);
+            margin-bottom: 10px;
+            border-bottom: 1px dashed rgba(255, 215, 0, 0.4);
+            padding-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            text-transform: uppercase;
+        }
+
+        .tuto-item {
+            margin-bottom: 6px;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+        }
+
+        .tuto-item b {
             color: var(--neon-blue);
         }
 
-        /* Nút ẩn hướng dẫn */
+        /* Nút Tắt Hướng Dẫn */
         .close-tutorial {
             position: absolute;
-            top: 5px;
-            right: 10px;
+            top: 12px;
+            right: 18px;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 22px;
+            color: white;
             opacity: 0.5;
+            transition: 0.3s;
+            font-weight: bold;
         }
 
         .close-tutorial:hover {
             opacity: 1;
+            color: #ff4757;
+            transform: scale(1.2) rotate(90deg);
         }
 
-        /* Trạng thái khi thu nhỏ */
+        /* Trạng thái khi thu nhỏ (Biến thành icon lơ lửng) */
         .tutorial.minimized {
-            width: 45px;
-            height: 45px;
+            width: 48px;
+            height: 48px;
             padding: 0;
+            bottom: 20px;
+            left: 110px;
             display: flex;
             align-items: center;
             justify-content: center;
             border-radius: 50%;
             cursor: pointer;
-            overflow: hidden;
+            background: rgba(0, 243, 255, 0.15);
+            border: 2px solid var(--neon-blue);
+            animation: pulseTuto 2s infinite;
+        }
+
+        @keyframes pulseTuto {
+            0% { box-shadow: 0 0 0 0 rgba(0, 243, 255, 0.6); }
+            70% { box-shadow: 0 0 0 12px rgba(0, 243, 255, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 243, 255, 0); }
+        }
+
+        #tutorial-icon {
+            font-size: 22px;
+            text-shadow: 0 0 10px var(--neon-blue);
+        }
+
+        /* ==========================================
+           📱 TỐI ƯU HÓA HƯỚNG DẪN CHO DI ĐỘNG (MOBILE)
+           ========================================== */
+        @media screen and (max-width: 768px) {
+            .tutorial {
+                bottom: 90px; /* Nâng cao lên để tránh đè Widget Nhạc / Tooltip */
+                left: 15px;
+                width: calc(100vw - 30px); /* Tự động tràn vừa màn hình */
+                padding: 12px 15px;
+                font-size: 11.5px;
+            }
+            .tuto-title {
+                font-size: 13px;
+                margin-bottom: 8px;
+            }
+            .tuto-item {
+                margin-bottom: 4px;
+            }
+            .tutorial.minimized {
+                bottom: 20px;
+                left: 80px; /* Đứng sát cạnh thùng rác mini trên điện thoại */
+                width: 40px;
+                height: 40px;
+            }
+            #tutorial-icon { font-size: 18px; }
+            .close-tutorial { top: 8px; right: 15px; font-size: 20px; }
         }
 
         /* ✨ TOOLTIP HIỂN THỊ THÔNG TIN CÁ */
@@ -1363,7 +1431,8 @@
         .quest-sidebar {
             position: absolute;
             top: 255px;
-            /* Nằm dưới nút Tùy Chỉnh một chút */
+            bottom: 20px;
+            /* CẬP NHẬT: Ép bảng luôn cách đáy màn hình 20px, không bị tràn */
             right: 15px;
             width: 300px;
             display: flex;
@@ -1527,6 +1596,364 @@
             background: linear-gradient(90deg, rgba(255, 215, 0, 0.2) 0%, transparent 100%);
             text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
         }
+
+        /* ==========================================
+           🏆 BẢNG VÀNG THÀNH TỰU CSS
+           ========================================== */
+        .achieve-item {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: help;
+        }
+
+        .achieve-item:hover {
+            background: rgba(255, 215, 0, 0.05);
+            border-color: var(--gold);
+            transform: translateX(-5px);
+            /* Hiệu ứng trượt nhẹ sang trái khi rà chuột */
+            box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Trạng thái khi đã đạt cấp tối đa */
+        .achieve-item.maxed {
+            background: rgba(50, 205, 50, 0.1);
+            border-color: rgba(50, 205, 50, 0.3);
+        }
+
+        .achieve-item.maxed:hover {
+            border-color: #32CD32;
+        }
+
+        .achieve-icon {
+            font-size: 26px;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.4);
+            flex-shrink: 0;
+            width: 35px;
+            text-align: center;
+        }
+
+        .achieve-info {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            text-align: left;
+        }
+
+        .achieve-title {
+            font-family: 'Quicksand';
+            font-size: 14px;
+            font-weight: 900;
+            color: var(--gold);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .achieve-title span {
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.6);
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        /* Thanh tiến trình mỏng, hiện đại */
+        .achieve-progress-bg {
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .achieve-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #FFD700, #ff7e5f);
+            transition: width 0.4s ease;
+            box-shadow: 0 0 5px #FFD700;
+        }
+
+        .achieve-btn-wrap {
+            min-width: 90px;
+            text-align: right;
+        }
+
+        /* ==========================================
+           📱 TỐI ƯU HÓA GIAO DIỆN DI ĐỘNG (SMARTPHONE)
+           ========================================== */
+        @media screen and (max-width: 768px) {
+            
+            /* 1. HEADER (THÔNG SỐ HIỆN TẠI) */
+            .header {
+                top: 10px;
+                left: 10px;
+                padding: 6px 12px;
+                gap: 10px;
+                border-radius: 12px;
+                transform: scale(0.85);
+                /* Thu nhỏ 15% */
+                transform-origin: top left;
+            }
+
+            /* 2. KHAY THỨC ĂN (BÊN TRÁI) */
+            #food-selector {
+                top: 70px !important;
+                left: 10px !important;
+                padding: 5px !important;
+                gap: 5px !important;
+                transform: scale(0.8);
+                /* Thu nhỏ 20% */
+                transform-origin: top left;
+            }
+
+            /* 3. MENU 4 NÚT TÍNH NĂNG (BÊN PHẢI) */
+            .btn-slide-toggle,
+            .btn-controls-toggle,
+            .btn-custom-toggle,
+            .btn-quest-toggle {
+                width: 90px !important;
+                height: 35px !important;
+                font-size: 10px !important;
+                padding: 0 10px 0 8px !important;
+                border-radius: 20px 0 0 20px !important;
+            }
+
+            .btn-slide-toggle:hover,
+            .btn-controls-toggle:hover,
+            .btn-custom-toggle:hover,
+            .btn-quest-toggle:hover {
+                width: 100px !important;
+                padding-right: 15px !important;
+                right: 0 !important;
+            }
+
+            /* Dồn 4 nút lại sát nhau để tiết kiệm chiều cao */
+            .btn-slide-toggle {
+                top: 55px !important;
+            }
+
+            .btn-controls-toggle {
+                top: 100px !important;
+            }
+
+            .btn-custom-toggle {
+                top: 145px !important;
+            }
+
+            .btn-quest-toggle {
+                top: 190px !important;
+            }
+
+            /* 4. CÁC BẢNG SIDEBAR (VUỐT TỪ PHẢI SANG) */
+            .sidebar {
+                top: 55px !important;
+                width: 230px !important;
+            }
+
+            .controls-sidebar {
+                top: 100px !important;
+                width: 190px !important;
+            }
+
+            .custom-sidebar {
+                top: 145px !important;
+                width: 190px !important;
+            }
+
+            .quest-sidebar {
+                top: 190px !important;
+                width: 260px !important;
+                bottom: 70px !important;
+            }
+
+            /* Tránh đè Widget nhạc */
+
+            /* 5. WIDGET NHẠC (GÓC DƯỚI PHẢI) */
+            #music-widget {
+                bottom: 10px !important;
+                right: 10px !important;
+                top: auto !important;
+                transform: scale(0.8);
+                transform-origin: bottom right;
+                padding: 5px 10px 5px 5px !important;
+                max-width: 200px;
+            }
+
+            /* 6. THÙNG RÁC (GÓC DƯỚI TRÁI) */
+            #trash-zone {
+                width: 50px !important;
+                height: 50px !important;
+                bottom: 15px !important;
+                left: 15px !important;
+                font-size: 16px !important;
+            }
+
+            /* 7. MODALS CHUNG (CỬA HÀNG, TRIỆU HỒI, BẢNG VÀNG) */
+            .modal {
+                padding: 15px !important;
+                width: 95% !important;
+                max-height: 90vh !important;
+            }
+
+            .shop-grid {
+                grid-template-columns: repeat(2, 1fr) !important;
+                /* Ép về 2 cột */
+                gap: 8px !important;
+                max-height: 55vh !important;
+            }
+
+            .shop-item {
+                padding: 10px !important;
+            }
+
+            .shop-item button {
+                padding: 6px !important;
+                font-size: 10px !important;
+            }
+
+            .shop-item div[style*="font-size: 35px"] {
+                font-size: 25px !important;
+                margin-bottom: 2px !important;
+            }
+
+            /* 8. BẢNG THÀNH TỰU */
+            .achieve-item {
+                padding: 8px !important;
+                gap: 8px !important;
+            }
+
+            .achieve-icon {
+                font-size: 22px !important;
+                width: 30px !important;
+            }
+
+            .achieve-title {
+                font-size: 12px !important;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 2px;
+            }
+
+            .achieve-title span {
+                font-size: 9px !important;
+            }
+
+            .achieve-btn-wrap {
+                min-width: 70px !important;
+            }
+
+            .achieve-btn-wrap button {
+                padding: 6px !important;
+                font-size: 9px !important;
+            }
+
+            /* ==================================================
+               🌟 9. TỐI ƯU HÓA UX/UI: TỪ ĐIỂN (DICTIONARY)
+               Chuyển sang dạng cuộn ngang ở trên, chi tiết ở dưới
+               ================================================== */
+            #dict-content {
+                flex-direction: column !important;
+                gap: 10px !important;
+            }
+
+            #dict-grid {
+                flex: none !important;
+                height: 90px !important;
+                display: flex !important;
+                flex-wrap: nowrap !important;
+                overflow-x: auto !important;
+                overflow-y: hidden !important;
+                padding-bottom: 5px !important;
+                align-items: center;
+                -webkit-overflow-scrolling: touch;
+                /* Cuộn mượt trên iOS */
+            }
+
+            .dict-item {
+                min-width: 75px;
+                padding: 8px 5px !important;
+            }
+
+            #dict-details {
+                flex: 1 !important;
+                overflow-y: auto !important;
+                padding: 12px !important;
+            }
+
+            #dict-details h3 {
+                font-size: 20px !important;
+                margin: 5px 0 !important;
+            }
+
+            #dict-details img {
+                width: 90px !important;
+                height: 90px !important;
+            }
+
+            /* ==================================================
+               🌟 10. TỐI ƯU HÓA UX/UI: TOOLTIP (HUD STYLE)
+               Cố định Tooltip dưới đáy màn hình, không trôi theo tay
+               ================================================== */
+            #fish-tooltip,
+            #achieve-tooltip {
+                position: fixed !important;
+                top: auto !important;
+                bottom: 80px !important;
+                /* Nằm trên Widget Nhạc một chút */
+                left: 50% !important;
+                transform: translateX(-50%) !important;
+                width: 90% !important;
+                max-width: 320px !important;
+                z-index: 100000 !important;
+                padding: 15px !important;
+                font-size: 13px !important;
+                box-shadow: 0 -5px 30px rgba(0, 0, 0, 0.8) !important;
+                border-width: 2px !important;
+            }
+            /* Tinh chỉnh Item Cá trong Danh sách */
+            .fish-item {
+                padding: 6px 10px !important; /* Giảm padding để item mỏng hơn */
+                margin-bottom: 6px !important;
+                border-radius: 8px !important; /* Bo góc nhỏ lại cho hợp với item nhỏ */
+            }
+
+            /* Thu nhỏ khu vực tên và cấp độ cá */
+            .fish-item > div:first-child {
+                max-width: 120px !important; /* Giới hạn chiều rộng nhỏ hơn chút */
+            }
+
+            .fish-item > div:first-child > div:first-child {
+                font-size: 13px !important; /* Nhỏ font tên cá */
+            }
+
+            .fish-item > div:first-child > div:last-child {
+                font-size: 9px !important; /* Nhỏ font độ hiếm & level */
+                margin-top: 2px !important;
+            }
+
+            /* Thu nhỏ khu vực nút bấm (Đổi tên & Bán) */
+            .fish-item > div:last-child {
+                gap: 4px !important; /* Giảm khoảng cách giữa 2 nút */
+            }
+
+            .fish-item button[title="Đổi tên"] {
+                padding: 4px 6px !important;
+                font-size: 10px !important;
+                border-radius: 6px !important;
+            }
+
+            .fish-item button:last-child { /* Nút BÁN */
+                padding: 4px 10px !important;
+                font-size: 10px !important;
+                border-radius: 6px !important;
+            }
+        }
     </style>
 </head>
 
@@ -1545,7 +1972,9 @@
     <canvas id="gameCanvas"></canvas>
 
     <div id="fish-tooltip"></div>
-
+    <div id="achieve-tooltip"
+        style="position: absolute; display: none; z-index: 10005; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px); border: 1px solid var(--gold); border-radius: 12px; padding: 15px; color: white; font-family: 'Quicksand'; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5); min-width: 250px; pointer-events: none;">
+    </div>
     <button class="btn-slide-toggle" id="btn-slide-toggle" onclick="toggleSidebar(true)">🎒 DSTC</button>
 
     <div id="ui-layer">
@@ -1606,13 +2035,17 @@
             <span class="close-tutorial" id="close-tuto-btn"
                 onclick="event.stopPropagation(); toggleTutorial(false)">×</span>
             <div id="tutorial-content">
-                <span style="font-size: 18px;">💡</span> <b>HƯỚNG DẪN</b><br>
-                👆 <b>Chuột trái:</b> Thả mồi / Tương tác<br>
-                🖱️ <b>Cuộn chuột:</b> Phóng to/nhỏ đồ vật<br>
-                🔍 <b>Rà chuột:</b> Xem thông tin chi tiết cá<br>
-                ⚠️ <b>Lưu ý:</b> Cá sẽ chết nếu bị bỏ đói hoặc bị cá mập tấn công!
+                <div class="tuto-title"><span style="font-size: 20px;">💡</span> <b>CẨM NANG ĐẠI DƯƠNG</b></div>
+                <div class="tuto-item">👆 <b>Chuột trái:</b> Thả mồi & Nhặt Kim Cương.</div>
+                <div class="tuto-item">🖐️ <b>Kéo thả:</b> Di chuyển Cá & Đồ trang trí. Kéo đồ vật vào 🗑️ để bán/xóa.</div>
+                <div class="tuto-item">🔍 <b>Rà chuột:</b> Xem chỉ số Cá & Xem thông tin Thành tựu.</div>
+                <div class="tuto-item">⌨️ <b>Phím Space:</b> Xả nhanh 15 viên mồi cùng lúc.</div>
+                <div class="tuto-item">🦀 <b>Trợ thủ:</b> Mua Cua Kim Cương & Sứa Quản Gia ăn tại Cửa Hàng.</div>
+                <div class="tuto-item" style="color: #ff4757; font-weight: bold; margin-top: 8px; border-top: 1px dashed rgba(255,71,87,0.4); padding-top: 5px;">
+                    ⚠️ CẢNH BÁO: Cá sẽ chết nếu bị bỏ đói, bị Cá Mập cắn, hoặc ăn nhầm mồi Tẩm Độc (☠️)!
+                </div>
             </div>
-            <div id="tutorial-icon" style="display: none; font-size: 20px;">❓</div>
+            <div id="tutorial-icon" style="display: none;">📖</div>
         </div>
 
         <button class="btn-controls-toggle" id="btn-controls-toggle" onclick="toggleControls(true)">🛠️ CÀI ĐẶT</button>
@@ -1646,7 +2079,7 @@
                 style="background: rgba(255, 215, 0, 0.1); color: #FFD700; border-color: rgba(255, 215, 0, 0.3);"
                 onclick="toggleCustomSidebar(false)">Đóng Lại ➔
             </div>
-            
+
             <div>
                 <p style="font-size: 12px; font-weight: 800; color: #FFD700; margin-bottom: 8px; text-align: center;">🎵
                     TRÌNH PHÁT NHẠC</p>
@@ -1688,7 +2121,7 @@
             </div>
 
         </div>
-        
+
         <button class="btn-quest-toggle" id="btn-quest-toggle" onclick="toggleQuestSidebar(true)">📋 NHIỆM VỤ</button>
 
         <div class="quest-sidebar glass-panel" id="quest-sidebar">
@@ -1740,15 +2173,22 @@
             <div class="gacha-rarity" id="gacha-rarity">ĐỘ HIẾM</div>
         </div>
     </div>
-    <div class="overlay" id="achievements-overlay" onclick="if(event.target === this) closeModal('achievements-overlay')">
-        <div class="modal shop-modal" style="max-width: 700px; width: 95%; max-height: 85vh; display: flex; flex-direction: column; padding: 20px;">
-            <h2 style="font-family: 'Quicksand'; font-size: 26px; color: var(--gold); margin-bottom: 5px;">🏆 BẢNG VÀNG THÀNH TỰU</h2>
-            <p style="font-size: 12px; opacity: 0.8; margin-bottom: 15px;">Hoàn thành 100 thử thách từ dễ đến cực khó để nhận Kim Cương vô tận!</p>
-            
-            <div id="achievements-list" style="overflow-y: auto; flex-grow: 1; display: flex; flex-direction: column; gap: 10px; padding-right: 5px;">
-                </div>
+    <div class="overlay" id="achievements-overlay"
+        onclick="if(event.target === this) closeModal('achievements-overlay')">
+        <div class="modal shop-modal"
+            style="max-width: 700px; width: 95%; max-height: 85vh; display: flex; flex-direction: column; padding: 20px;">
+            <h2 style="font-family: 'Quicksand'; font-size: 26px; color: var(--gold); margin-bottom: 5px;">🏆 BẢNG VÀNG
+                THÀNH TỰU</h2>
+            <p style="font-size: 12px; opacity: 0.8; margin-bottom: 15px;">Hoàn thành 100 thử thách từ dễ đến cực khó để
+                nhận Kim Cương vô tận!</p>
 
-            <button class="btn-main" style="margin-top: 15px; background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.3);" onclick="closeModal('achievements-overlay')">Đóng Lại</button>
+            <div id="achievements-list"
+                style="overflow-y: auto; flex-grow: 1; display: flex; flex-direction: column; gap: 10px; padding-right: 5px;">
+            </div>
+
+            <button class="btn-main"
+                style="margin-top: 15px; background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.3);"
+                onclick="closeModal('achievements-overlay')">Đóng Lại</button>
         </div>
     </div>
     <div class="overlay" id="sell-overlay">
@@ -1918,8 +2358,7 @@
     </div>
 
     <script>
-
-        // --- 1. DỮ LIỆU CÁ CHUẨN ---
+        toggleTutorial(false);
         // --- 1. DỮ LIỆU CÁ CHUẨN (ĐÃ CẬP NHẬT TỪ ĐIỂN CHI TIẾT) ---
         const FISH_DATA = [
             // --- GIÁP XÁC ---
@@ -2202,7 +2641,7 @@
         let width, height;
         let trackedFishId = null; // ID của con cá đang bị theo dõi
         // Tìm dòng này:
-        let gameState = { coins: 1000000, fishes: [], decorations: [], lastId: 0, quests: [], lastQuestDate: "", unlockedFishes: [], hasCrab: false, jellyfishCount: 0, poisons: 0 };
+        let gameState = { coins: 1000000, fishes: [], decorations: [], lastId: 0, quests: [], lastQuestDate: "", unlockedFishes: [], hasCrab: false, jellyfishCount: 0, poisons: 5 };
         // Thêm biến cờ hiệu này ngay bên dưới gameState:
         let isNextFoodPoisoned = false;
 
@@ -2245,6 +2684,18 @@
             { id: "decor", title: "Kiến Trúc Sư", icon: "🏛️", targets: [1, 3, 5, 10, 20, 30, 50, 75, 100, 200], rewards: [100, 200, 500, 1000, 2000, 3000, 5000, 7500, 10000, 20000] },
             { id: "level", title: "Huấn Luyện Viên", icon: "📈", targets: [10, 50, 100, 500, 1000, 2000, 5000, 10000, 20000, 50000], rewards: [100, 500, 1000, 5000, 10000, 20000, 50000, 100000, 200000, 500000] }
         ];
+        const ACH_DESCRIPTIONS = {
+            "earn": "Thu thập tổng cộng [TARGET] Kim Cương từ mọi nguồn.",
+            "spend": "Tiêu xài tổng cộng [TARGET] Kim Cương vào Siêu Thị.",
+            "click": "Nhấp chuột tương tác với hồ cá [TARGET] lần.",
+            "feed": "Thả [TARGET] viên thức ăn bất kỳ xuống hồ.",
+            "gacha": "Thực hiện Ký khế ước / Triệu hồi [TARGET] lần.",
+            "sell": "Nhẫn tâm bán đi [TARGET] con cá cho Thương Nhân Mèo.",
+            "unlock": "Mở khóa thành công [TARGET] loài cá trong Từ Điển.",
+            "kill": "Khiến [TARGET] sinh mệnh cá hóa kiếp luân hồi (Bị đói/Bị cắn).",
+            "decor": "Sắm sửa [TARGET] món đồ trang trí cho hồ cá.",
+            "level": "Nâng cấp cá thành công [TARGET] lần."
+        };
 
         // Khởi tạo file lưu thành tựu nếu chưa có
         function initAchievements() {
@@ -2260,14 +2711,14 @@
         function trackAchievement(type, amount) {
             initAchievements();
             if (!gameState.achievements[type]) return;
-            
+
             if (type === 'unlock') {
                 gameState.achievements[type].progress = gameState.unlockedFishes.length;
             } else {
                 gameState.achievements[type].progress += amount;
             }
             saveGame();
-            
+
             // Cập nhật ngay nếu bảng đang mở
             if (document.getElementById('achievements-overlay').classList.contains('active')) {
                 renderAchievements();
@@ -2281,52 +2732,90 @@
             openModal('achievements-overlay');
         }
 
+        // HIỂN THỊ TOOLTIP THÀNH TỰU
+        function showAchieveTooltip(e, catId) {
+            let cat = ACHIEVEMENT_CONFIG.find(c => c.id === catId);
+            let data = gameState.achievements[catId];
+            let tier = data.claimedTier;
+
+            let isMax = tier >= 10;
+            let currentTarget = isMax ? cat.targets[9] : cat.targets[tier];
+            let currentReward = isMax ? cat.rewards[9] : cat.rewards[tier];
+            let progress = isMax ? currentTarget : data.progress;
+
+            // Đổi chữ [TARGET] thành số mục tiêu và tô màu
+            let desc = ACH_DESCRIPTIONS[catId].replace('[TARGET]', `<b style="color:var(--neon-pink); font-size: 14px;">${currentTarget}</b>`);
+
+            let tooltip = document.getElementById('achieve-tooltip');
+            tooltip.innerHTML = `
+                <div style="font-size: 16px; font-weight: 900; color: var(--gold); margin-bottom: 5px; border-bottom: 1px solid rgba(255,215,0,0.3); padding-bottom: 5px;">${cat.icon} ${cat.title} ${isMax ? '(MAX)' : `(Cấp ${tier + 1})`}</div>
+                <div style="font-size: 13px; color: #ecf0f1; margin-bottom: 12px; line-height: 1.5;">${desc}</div>
+                <div style="font-size: 12px; color: white;">Tiến độ: <b style="color: #32CD32; font-size: 14px;">${Math.floor(progress)}</b> / ${currentTarget}</div>
+                <div style="font-size: 12px; color: white; margin-top: 5px;">Phần thưởng: <b style="color: var(--neon-blue); font-size: 14px;">${currentReward} 💎</b></div>
+            `;
+
+            tooltip.style.left = (e.clientX + 15) + 'px';
+            tooltip.style.top = (e.clientY + 15) + 'px';
+            tooltip.style.display = 'block';
+        }
+
+        // ẨN TOOLTIP
+        function hideAchieveTooltip() {
+            document.getElementById('achieve-tooltip').style.display = 'none';
+        }
+
+        // VẼ LẠI BẢNG THÀNH TỰU SẠCH SẼ & GỌN GÀNG HƠN
         function renderAchievements() {
             let listDiv = document.getElementById('achievements-list');
             let html = '';
 
             ACHIEVEMENT_CONFIG.forEach(cat => {
                 let data = gameState.achievements[cat.id];
-                let tier = data.claimedTier; 
-                
+                let tier = data.claimedTier;
+
                 if (tier >= 10) {
-                    // Cấp Tối Đa
+                    // --- GIAO DIỆN CẤP TỐI ĐA (MAX) ---
                     html += `
-                    <div class="dict-item" style="display: flex; flex-direction: row; justify-content: space-between; text-align: left; padding: 12px; background: rgba(50, 205, 50, 0.1); border-color: #32CD32;">
-                        <div style="flex-grow: 1; display: flex; align-items: center; gap: 12px;">
-                            <div style="font-size: 30px;">${cat.icon}</div>
-                            <div>
-                                <div style="font-size: 15px; font-weight: 900; color: #32CD32;">${cat.title} (MAX)</div>
-                                <div style="font-size: 11px; opacity: 0.8;">Đã hoàn thành toàn bộ 10 cấp độ!</div>
+                    <div class="achieve-item maxed" onmousemove="showAchieveTooltip(event, '${cat.id}')" onmouseleave="hideAchieveTooltip()">
+                        <div class="achieve-icon">${cat.icon}</div>
+                        <div class="achieve-info">
+                            <div class="achieve-title" style="color: #32CD32;">${cat.title} <span>(MAX)</span></div>
+                            <div class="achieve-progress-bg">
+                                <div class="achieve-progress-fill" style="width: 100%; background: #32CD32; box-shadow: 0 0 5px #32CD32;"></div>
                             </div>
                         </div>
-                        <button class="btn-claim" disabled style="background: rgba(255,255,255,0.1); color: #aaa;">ĐÃ TỐI ĐA</button>
+                        <div class="achieve-btn-wrap">
+                            <button class="btn-claim" disabled style="background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.4); box-shadow: none;">HOÀN TẤT</button>
+                        </div>
                     </div>`;
                 } else {
+                    // --- GIAO DIỆN ĐANG THỰC HIỆN ---
                     let target = cat.targets[tier];
                     let reward = cat.rewards[tier];
                     let progress = Math.min(data.progress, target);
                     let pct = (progress / target) * 100;
                     let canClaim = progress >= target;
 
-                    let btnHtml = canClaim 
-                        ? `<button class="btn-claim" style="background: linear-gradient(45deg, #00FA9A, #32CD32);" onclick="claimAchievement('${cat.id}')">NHẬN ${reward} 💎</button>`
-                        : `<button class="btn-claim" disabled style="background: rgba(255,255,255,0.1); color: #aaa;">${Math.floor(progress)} / ${target}</button>`;
+                    let btnHtml = canClaim
+                        ? `<button class="btn-claim" style="background: linear-gradient(45deg, #00FA9A, #32CD32); color: black;" onclick="event.stopPropagation(); claimAchievement('${cat.id}')">NHẬN ${reward} 💎</button>`
+                        : `<button class="btn-claim" disabled style="background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.6); box-shadow: none;">${Math.floor(progress)}/${target}</button>`;
 
                     html += `
-                    <div class="dict-item" style="display: flex; flex-direction: row; justify-content: space-between; text-align: left; padding: 12px; position: relative; overflow: hidden;">
-                        <div style="position: absolute; top: 0; left: 0; height: 100%; width: ${pct}%; background: rgba(255, 215, 0, 0.1); z-index: 0;"></div>
-                        <div style="flex-grow: 1; display: flex; align-items: center; gap: 12px; z-index: 1;">
-                            <div style="font-size: 30px; text-shadow: 0 0 10px ${canClaim ? 'var(--gold)' : 'transparent'};">${cat.icon}</div>
-                            <div>
-                                <div style="font-size: 15px; font-weight: 900; color: var(--gold);">${cat.title} <span style="font-size:10px; color:#fff;">(Cấp ${tier + 1}/10)</span></div>
-                                <div style="font-size: 11px; opacity: 0.8;">Mục tiêu: Đạt mốc ${target}</div>
+                    <div class="achieve-item" onmousemove="showAchieveTooltip(event, '${cat.id}')" onmouseleave="hideAchieveTooltip()">
+                        <div class="achieve-icon" style="${canClaim ? 'text-shadow: 0 0 15px var(--gold); transform: scale(1.1);' : ''}">${cat.icon}</div>
+                        <div class="achieve-info">
+                            <div class="achieve-title">${cat.title} <span>(CẤP ${tier + 1}/10)</span></div>
+                            <div class="achieve-progress-bg">
+                                <div class="achieve-progress-fill" style="width: ${pct}%;"></div>
                             </div>
                         </div>
-                        <div style="z-index: 1; min-width: 100px; text-align: right;">${btnHtml}</div>
+                        <div class="achieve-btn-wrap">
+                            ${btnHtml}
+                        </div>
                     </div>`;
                 }
             });
+
             listDiv.innerHTML = html;
         }
 
@@ -2334,11 +2823,11 @@
             let cat = ACHIEVEMENT_CONFIG.find(c => c.id === catId);
             let data = gameState.achievements[catId];
             let tier = data.claimedTier;
-            
+
             if (tier < 10 && data.progress >= cat.targets[tier]) {
                 let reward = cat.rewards[tier];
                 gameState.coins += reward;
-                data.claimedTier++; 
+                data.claimedTier++;
                 trackAchievement('earn', reward); // Tiền thưởng cũng được tính vào thành tựu kiếm tiền
                 createExplosion(width / 2, height / 2, "#FFD700", 50);
                 saveGame();
@@ -4703,8 +5192,11 @@
         // Cập nhật bảng thông tin Tooltip
         // Cập nhật bảng thông tin Tooltip khi bơi
         function updateTooltip() {
-            if (isHoveringList) return; // Nếu đang rà chuột ở Sidebar thì không cho Canvas can thiệp
 
+            if (isHoveringList || document.querySelector('.overlay.active')) {
+                document.getElementById('fish-tooltip').style.display = 'none';
+                return;
+            }
             const tooltip = document.getElementById('fish-tooltip');
             let hoveredFish = null;
 
@@ -5132,7 +5624,7 @@
             let bar = document.getElementById('sell-loading-bar'); bar.style.transition = 'none'; bar.style.width = '0%';
             setTimeout(() => { bar.style.transition = 'width 1.5s linear'; bar.style.width = '100%'; }, 50);
             setTimeout(() => {
-                closeModal('sell-overlay'); gameState.coins += price; 
+                closeModal('sell-overlay'); gameState.coins += price;
                 trackAchievement('earn', price); trackAchievement('sell', 1);
                 gameState.fishes.splice(idx, 1);
                 createExplosion(fish.x, fish.y, "#FFD700", 40);
@@ -5255,6 +5747,7 @@
 
         // Cập nhật bảng thông tin Tooltip khi rà chuột trong Danh Sách Thủy Cung
         function showListTooltip(e, id) {
+            if (document.querySelector('.overlay.active')) return;
             isHoveringList = true;
             const fish = gameState.fishes.find(f => f.id === id);
             if (!fish) return;
