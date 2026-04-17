@@ -1644,8 +1644,9 @@
         <div class="custom-sidebar glass-panel" id="custom-sidebar">
             <div class="close-sidebar-btn"
                 style="background: rgba(255, 215, 0, 0.1); color: #FFD700; border-color: rgba(255, 215, 0, 0.3);"
-                onclick="toggleCustomSidebar(false)">Đóng Lại ➔</div>
-
+                onclick="toggleCustomSidebar(false)">Đóng Lại ➔
+            </div>
+            
             <div>
                 <p style="font-size: 12px; font-weight: 800; color: #FFD700; margin-bottom: 8px; text-align: center;">🎵
                     TRÌNH PHÁT NHẠC</p>
@@ -1687,12 +1688,17 @@
             </div>
 
         </div>
+        
         <button class="btn-quest-toggle" id="btn-quest-toggle" onclick="toggleQuestSidebar(true)">📋 NHIỆM VỤ</button>
 
         <div class="quest-sidebar glass-panel" id="quest-sidebar">
             <div class="close-sidebar-btn"
                 style="background: rgba(50, 205, 50, 0.1); color: #32CD32; border-color: rgba(50, 205, 50, 0.3);"
                 onclick="toggleQuestSidebar(false)">Đóng Lại ➔</div>
+            <button class="btn-main"
+                style="background: linear-gradient(45deg, #FFD700, #ff7e5f); border:none; margin-bottom: 10px;"
+                onclick="openAchievements()">🏆 100 THÀNH TỰU
+            </button>
             <h3
                 style="font-family: 'Quicksand'; font-size: 14px; margin-bottom: 5px; color: #00FA9A; text-align: center;">
                 NHIỆM VỤ HÀNG NGÀY</h3>
@@ -1734,7 +1740,17 @@
             <div class="gacha-rarity" id="gacha-rarity">ĐỘ HIẾM</div>
         </div>
     </div>
+    <div class="overlay" id="achievements-overlay" onclick="if(event.target === this) closeModal('achievements-overlay')">
+        <div class="modal shop-modal" style="max-width: 700px; width: 95%; max-height: 85vh; display: flex; flex-direction: column; padding: 20px;">
+            <h2 style="font-family: 'Quicksand'; font-size: 26px; color: var(--gold); margin-bottom: 5px;">🏆 BẢNG VÀNG THÀNH TỰU</h2>
+            <p style="font-size: 12px; opacity: 0.8; margin-bottom: 15px;">Hoàn thành 100 thử thách từ dễ đến cực khó để nhận Kim Cương vô tận!</p>
+            
+            <div id="achievements-list" style="overflow-y: auto; flex-grow: 1; display: flex; flex-direction: column; gap: 10px; padding-right: 5px;">
+                </div>
 
+            <button class="btn-main" style="margin-top: 15px; background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.3);" onclick="closeModal('achievements-overlay')">Đóng Lại</button>
+        </div>
+    </div>
     <div class="overlay" id="sell-overlay">
         <div class="modal sell-modal">
             <img src="./images/sell/business-cat.gif" alt="Cat"
@@ -1904,6 +1920,7 @@
     <script>
 
         // --- 1. DỮ LIỆU CÁ CHUẨN ---
+        // --- 1. DỮ LIỆU CÁ CHUẨN (ĐÃ CẬP NHẬT TỪ ĐIỂN CHI TIẾT) ---
         const FISH_DATA = [
             // --- GIÁP XÁC ---
             {
@@ -1911,350 +1928,263 @@
                 "rarity": "Hiếm",
                 "shape": "mantis-shrimp",
                 "behavior": "slither",
-                "flockStyle": "independent", // Sống đơn độc, bảo vệ lãnh thổ
+                "flockStyle": "independent",
                 "colors": ["#2ecc71", "#e74c3c", "#f1c40f", "#3498db"],
                 "speed": 2.2,
                 "scale": 0.3,
-                "desc": "Sở hữu cú đấm nhanh nhất đại dương. Với bộ giáp bảy sắc cầu vồng, nó vừa là nghệ sĩ, vừa là sát thủ dưới đáy biển."
+                "desc": "Mang bộ giáp bảy sắc cầu vồng, nó vừa là nghệ sĩ, vừa là sát thủ dưới đáy biển với cú đấm ngàn cân. Loài này có tập tính bảo vệ lãnh thổ khắt khe, luôn bò trườn (slither) lủi thủi một mình sát đáy bể. Khẩu vị rất kén: chỉ nạp năng lượng bằng Tôm tươi (8💎)."
             },
 
-            // --- HỌ LƯƠN BIỂN & CÁ CHÌNH (Eel Family) ---
+            // --- HỌ LƯƠN BIỂN & CÁ CHÌNH ---
             {
-                type: "Lươn Bùn",
-                rarity: "Thường",
-                shape: "eel",
-                flockStyle: "independent", // Lươn thường chui rúc một mình
-                colors: ["#4a3721", "#8b7355"],
-                speed: 1.2,
-                scale: 0.9,
-                desc: "Loài lươn nâu quen thuộc thường ẩn mình dưới lớp bùn. Tuy vẻ ngoài giản dị nhưng nó là biểu tượng của sự bền bỉ và khả năng lẩn trốn tài tình."
+                type: "Lươn Bùn", rarity: "Thường", shape: "eel", flockStyle: "independent", colors: ["#4a3721", "#8b7355"], speed: 1.2, scale: 0.9,
+                desc: "Loài lươn nâu quen thuộc kiên nhẫn ẩn mình dưới lớp bùn. Bản tính hướng nội, chúng không bao giờ bơi theo đàn mà thích lượn lờ đơn độc. Là loài ăn thịt mộc mạc, một miếng Thịt sống (10💎) là đủ để chúng no nê cả ngày."
             },
             {
-                type: "Lươn Điện Abyss",
-                rarity: "Hiếm",
-                shape: "eel",
-                flockStyle: "independent",
-                colors: ["#1e3799", "#4a69bd"],
-                speed: 0.5,
-                scale: 1.2,
-                glowType: "body",
-                glowColor: "#00f3ff",
-                desc: "Cơ thể nó tích tụ hàng ngàn volt điện từ áp suất đáy biển. Mỗi khi di chuyển, những tia lửa xanh neon chạy dọc sống lưng khiến mọi kẻ thù phải khiếp sợ."
+                type: "Lươn Điện Abyss", rarity: "Hiếm", shape: "eel", flockStyle: "independent", colors: ["#1e3799", "#4a69bd"], speed: 0.5, scale: 1.2, glowType: "body", glowColor: "#00f3ff",
+                desc: "Cơ thể tích tụ hàng ngàn volt điện tỏa ra ánh sáng xanh neon rực rỡ, khiến mọi kẻ thù khiếp sợ. Với tốc độ bơi khá chậm (0.5 m/s), chúng lượn lờ một cách đầy uy quyền quanh lãnh thổ riêng và chỉ xơi Thịt (10💎) để duy trì dòng điện."
             },
             {
-                type: "Hỏa Lươn Dung Nham",
-                rarity: "Hiếm",
-                shape: "eel",
-                flockStyle: "independent",
-                colors: ["#8b0000", "#ff4500"],
-                speed: 1.5,
-                scale: 1.3,
-                glowType: "body",
-                glowColor: "#ff0000",
-                desc: "Sống trong các dòng hải lưu gần núi lửa ngầm. Thân hình đỏ rực như chứa magma nung chảy, tỏa nhiệt lượng làm ấm cả một vùng nước lạnh giá."
+                type: "Hỏa Lươn Dung Nham", rarity: "Hiếm", shape: "eel", flockStyle: "independent", colors: ["#8b0000", "#ff4500"], speed: 1.5, scale: 1.3, glowType: "body", glowColor: "#ff0000",
+                desc: "Sinh ra từ các khe nứt núi lửa ngầm, thân hình đỏ rực tỏa nhiệt lượng ấm áp. Dáng bơi đơn độc, uyển chuyển với tốc độ khá nhanh. Khẩu vị của bạo chúa rạn san hô này dĩ nhiên là những tảng Thịt sống nguyên chất (10💎)."
             },
             {
-                type: "Lươn Ngọc Bích Cổ Đại",
-                rarity: "Huyền thoại",
-                shape: "eel",
-                flockStyle: "independent",
-                colors: ["#006266", "#1289a7"],
-                speed: 1.0,
-                scale: 1.8,
-                glowType: "body",
-                glowColor: "#32ff7e",
-                desc: "Tương truyền đây là hóa thân của rồng nước thời tiền sử. Lớp da bóng bẩy như ngọc quý và có khả năng chữa lành vết thương cho các sinh vật bơi quanh nó."
+                type: "Lươn Ngọc Bích Cổ Đại", rarity: "Huyền thoại", shape: "eel", flockStyle: "independent", colors: ["#006266", "#1289a7"], speed: 1.0, scale: 1.8, glowType: "body", glowColor: "#32ff7e",
+                desc: "Hóa thân của loài rồng nước tiền sử với lớp da ngọc bích phát sáng ánh lục bảo có khả năng chữa lành vết thương. Sống ẩn dật và đơn độc qua ngàn thế kỷ, thỉnh thoảng trồi lên bơi lững lờ tìm kiếm Thịt tươi (10💎) để bổ sung năng lượng."
             },
             {
-                type: "Lươn Galaxy Vô Tận",
-                rarity: "Huyền thoại",
-                shape: "eel",
-                flockStyle: "independent",
-                colors: ["#2c3e50", "#8e44ad"],
-                speed: 1.8,
-                scale: 1.5,
-                glowType: "body",
-                glowColor: "#fd79a8",
-                desc: "Thân hình mang màu tím đen của không gian sâu thẳm, rắc đầy bụi sao lấp lánh. Nó bơi đi như một dải ngân hà đang trôi dạt giữa lòng đại dương."
+                type: "Lươn Galaxy Vô Tận", rarity: "Huyền thoại", shape: "eel", flockStyle: "independent", colors: ["#2c3e50", "#8e44ad"], speed: 1.8, scale: 1.5, glowType: "body", glowColor: "#fd79a8",
+                desc: "Bơi lượn tựa một dải ngân hà trôi dạt giữa lòng đại dương, mang theo màu tím đen của không gian sâu thẳm. Tốc độ bơi xé nước (1.8 m/s) và lối sống độc lai độc vãng khiến nó vô cùng bí ẩn. Thức ăn yêu thích: Thịt (10💎)."
             },
 
-            // --- HỌ MỰC BIỂN (Squid Family) ---
+            // --- HỌ MỰC BIỂN ---
             {
-                type: "Mực Đốm Đom Đóm",
-                rarity: "Thường",
-                shape: "squid",
-                behavior: "pulse_swimmer",
-                flockStyle: "horizontal", // Mực nhỏ bơi theo đàn ngang
-                colors: ["#22a6b3", "#7ed6df"],
-                speed: 1.8,
-                scale: 0.8,
-                desc: "Nhỏ bé và nhanh nhẹn, loài mực này sở hữu hàng ngàn đốm sáng li ti trên da, trông giống như những đàn đom đóm đang khiêu vũ dưới mặt nước."
+                type: "Mực Đốm Đom Đóm", rarity: "Thường", shape: "squid", behavior: "pulse_swimmer", flockStyle: "horizontal", colors: ["#22a6b3", "#7ed6df"], speed: 1.8, scale: 0.8,
+                desc: "Nhỏ bé và nhanh nhẹn với hàng ngàn đốm sáng li ti trên da. Tuyệt vời nhất là được ngắm chúng co bóp (pulse) bơi thành từng đàn đồng điệu (horizontal) lướt ngang qua hồ. Khẩu vị thuộc hệ hải sản, cực ghiền ăn Tôm (8💎)."
             },
             {
-                type: "Mực Khổng Lồ Abyss",
-                rarity: "Hiếm",
-                shape: "squid",
-                behavior: "pulse_swimmer",
-                flockStyle: "independent", // Mực khổng lồ sống một mình
-                colors: ["#4834d4", "#686de0"],
-                speed: 1.2,
-                scale: 2.2,
-                glowType: "body",
-                glowColor: "#70a1ff",
-                desc: "Bóng ma của vùng nước sâu thẳm. Với kích thước khổng lồ, mỗi nhịp bơi của nó tạo ra những luồng nước mạnh mẽ xua tan sự tĩnh lặng của đại dương."
+                type: "Mực Khổng Lồ Abyss", rarity: "Hiếm", shape: "squid", behavior: "pulse_swimmer", flockStyle: "independent", colors: ["#4834d4", "#686de0"], speed: 1.2, scale: 2.2, glowType: "body", glowColor: "#70a1ff",
+                desc: "Bóng ma của vùng nước thẳm với kích thước to lớn. Mỗi nhịp co bóp tản nước của nó tạo ra dòng hải lưu mạnh mẽ. Bản tính lãnh chúa nên chỉ thích bơi một mình, lang thang tìm kiếm Tôm tươi (8💎) lót dạ."
             },
             {
-                type: "Mực Ma Cà Rồng",
-                rarity: "Hiếm",
-                shape: "squid",
-                behavior: "pulse_swimmer",
-                flockStyle: "independent",
-                colors: ["#3d0000", "#eb4d4b"],
-                speed: 1.5,
-                scale: 1.1,
-                glowType: "body",
-                glowColor: "#ff0000",
-                desc: "Tên gọi đáng sợ nhưng vẻ ngoài lại vô cùng bí ẩn với lớp màng đỏ rực như một chiếc áo choàng. Nó thường cuộn tròn cơ thể để đe dọa những kẻ săn mồi."
+                type: "Mực Ma Cà Rồng", rarity: "Hiếm", shape: "squid", behavior: "pulse_swimmer", flockStyle: "independent", colors: ["#3d0000", "#eb4d4b"], speed: 1.5, scale: 1.1, glowType: "body", glowColor: "#ff0000",
+                desc: "Lớp màng đỏ rực như chiếc áo choàng ma cà rồng đe dọa mọi kẻ săn mồi. Tỏa ánh sáng đỏ rực rỡ và luôn di chuyển đơn độc trong đêm tối. Món khoái khẩu của 'vị bá tước' này là Tôm (8💎)."
             },
             {
-                type: "Mực Cầu Vồng Thủy Tinh",
-                rarity: "Huyền thoại",
-                shape: "squid",
-                behavior: "pulse_swimmer",
-                flockStyle: "independent",
-                colors: ["#ffffff", "#f093fb"],
-                speed: 1.2,
-                scale: 1.0,
-                glowType: "body",
-                glowColor: "#f5f6fa",
-                desc: "Thân hình gần như trong suốt như pha lê, có khả năng khúc xạ ánh sáng tạo ra những dải màu cầu vồng lung linh mỗi khi nó đổi hướng bơi."
+                type: "Mực Cầu Vồng Thủy Tinh", rarity: "Huyền thoại", shape: "squid", behavior: "pulse_swimmer", flockStyle: "independent", colors: ["#ffffff", "#f093fb"], speed: 1.2, scale: 1.0, glowType: "body", glowColor: "#f5f6fa",
+                desc: "Thân hình trong suốt khúc xạ ánh sáng thành dải cầu vồng lung linh mỗi lần nhấp nhô đẩy nước. Sinh vật kiêu sa này hiếm khi đi chung với ai, lướt đi đơn độc tìm kiếm những con Tôm (8💎) ngon nhất bể."
             },
             {
-                type: "Hắc Mực Đế Vương",
-                rarity: "Huyền thoại",
-                shape: "squid",
-                behavior: "pulse_swimmer",
-                flockStyle: "independent",
-                colors: ["#000000", "#be2edd"],
-                speed: 2.0,
-                scale: 1.6,
-                glowType: "body",
-                glowColor: "#e056fd",
-                desc: "Kẻ thống trị vùng biển tối. Lớp da đen tuyền điểm xuyết những vân tím hoàng gia tỏa sáng, mang lại vẻ quyền quý và uy nghiêm khó cưỡng."
+                type: "Hắc Mực Đế Vương", rarity: "Huyền thoại", shape: "squid", behavior: "pulse_swimmer", flockStyle: "independent", colors: ["#000000", "#be2edd"], speed: 2.0, scale: 1.6, glowType: "body", glowColor: "#e056fd",
+                desc: "Kẻ thống trị vùng biển tối. Lớp da đen tuyền điểm vân tím hoàng gia phát sáng rực rỡ. Sở hữu tốc độ đẩy nước cực nhanh (2.0 m/s), luôn đi tuần tra lãnh thổ một mình và ăn Tôm (8💎) cho bữa chính."
             },
 
-            // --- CÁ (fish) ---
+            // --- HỌ CÁ CƠ BẢN ---
             {
                 type: "Cá Đèn Lồng Deepsea", rarity: "Hiếm", shape: "fish", flockStyle: "independent", colors: ["#2F4F4F", "#00FF00"], speed: 1.4, scale: 1.0, glowType: "head", glowColor: "#00FF00",
-                desc: "Sinh vật của bóng tối vực rãnh Mariana. Chiếc đèn lồng trên đầu nó phát ra ánh sáng huỳnh quang tuyệt đẹp để dụ dỗ những con mồi ngây thơ."
+                desc: "Sinh vật của vực Mariana với chiếc đèn lồng huỳnh quang mọc trên đầu. Sống lủi thủi trong bóng tối rình mồi. Dù mang tiếng dụ mồi ngây thơ, ở hồ này nó lại ngoan ngoãn ăn Cám viên (2💎) qua ngày."
             },
             {
                 type: "Cá Hề Marlin", rarity: "Thường", shape: "fish_nemo", flockStyle: "horizontal", colors: ["#FF4500", "#FFFFFF"], speed: 2, scale: 0.8,
-                desc: "Luôn bơi loanh quanh như đang tìm kiếm cậu con trai tên Nemo. Màu cam rực rỡ giúp nó ẩn mình hoàn hảo trong những rạn hải quỳ."
+                desc: "Nhân vật hoạt hình quốc dân bơi lội thoăn thoắt (2.0 m/s). Tập tính xã hội siêu cao, luôn thích rủ rê đồng bọn bơi thành từng đàn ngang qua các rạn san hô. Ăn Cám viên (2💎) để duy trì lớp vảy cam rực rỡ."
             },
             {
                 type: "Cá Dory", rarity: "Hiếm", shape: "fish_dory", flockStyle: "horizontal", colors: ["#2e5bff", "#FFD700"], speed: 2.5, scale: 0.95,
-                desc: "Một cô cá đuôi gai xanh hay quên nhưng cực kỳ lạc quan. Dory mang đến sự vui vẻ và những giai điệu 'Just keep swimming' cho cả hồ cá."
+                desc: "Cô cá đuôi gai xanh hay quên nhưng bơi siêu nhanh (2.5 m/s). Cực kỳ sợ cô đơn nên luôn bám theo đàn di chuyển đồng điệu. Mang tinh thần 'Just keep swimming' và ăn Cám (2💎) mỗi ngày."
             },
             {
                 type: "Cá Vàng Mộng Mơ", rarity: "Thường", shape: "fish", flockStyle: "circular", colors: ["#FFD700", "#FFA500"], speed: 1.5, scale: 0.7,
-                desc: "Có trí nhớ chỉ kéo dài 3 giây, nhưng lại mang một tâm hồn mộng mơ lãng mạn. Luôn bơi vòng quanh bể như đang khiêu vũ."
+                desc: "Não cá vàng trí nhớ 3 giây nhưng tâm hồn cực lãng mạn. Khác với các loài bơi ngang, chúng có điệu bơi lượn vòng tròn (circular) tụ tập khiêu vũ. Rất dễ nuôi bằng Cám viên (2💎)."
             },
             {
                 type: "Cá Neon Xanh", rarity: "Thường", shape: "fish", flockStyle: "horizontal", colors: ["#00FFFF", "#000080"], speed: 3, scale: 0.6,
-                desc: "Mang dải sáng xanh neon lấp lánh dọc thân. Khi bơi theo bầy, chúng tạo nên những vệt sáng tuyệt đẹp như dải ngân hà dưới nước."
+                desc: "Sở hữu tốc độ ánh sáng (3.0 m/s), dải màu neon lấp lánh dọc thân. Thường bơi thành bầy lớn tạo thành vệt ngân hà sống động xé toạc làn nước. Ăn Cám (2💎) để sạc pin phát sáng."
             },
             {
                 type: "Cá Bảy Màu", rarity: "Thường", shape: "fish", flockStyle: "horizontal", colors: ["#FF4500", "#9400D3"], speed: 2.5, scale: 0.6,
-                desc: "Nhỏ bé nhưng sở hữu chiếc đuôi lộng lẫy như một chiếc váy dạ hội. Là loài cá quốc dân mang lại sức sống cho mọi bể thủy sinh."
+                desc: "Chiếc đuôi lộng lẫy tựa váy dạ hội, chúng mang sức sống dồi dào đến mọi bể. Là loài cá bầy đàn vui vẻ, bơi khá nhanh và ăn Cám (2💎) cực kỳ nhiệt tình."
             },
             {
                 type: "Cá Trích Bạc", rarity: "Thường", shape: "fish", flockStyle: "horizontal", colors: ["#C0C0C0", "#E0FFFF"], speed: 3.5, scale: 0.5,
-                desc: "Bơi lội thoăn thoắt với vảy lấp lánh ánh bạc. Chúng thường tập hợp thành từng đàn khổng lồ, di chuyển đồng điệu để né tránh kẻ thù."
+                desc: "Quán quân điền kinh với tốc độ 3.5 m/s. Cơ thể bạc lấp lánh phản chiếu ánh sáng. Luôn kết thành đàn khổng lồ di chuyển sắc bén để né kẻ thù. Thức ăn chính là Cám viên (2💎)."
             },
             {
                 type: "Cá Bướm Vàng", rarity: "Thường", shape: "fish", flockStyle: "circular", colors: ["#FFFF00", "#000000"], speed: 2.2, scale: 0.7,
-                desc: "Nổi bật với thân hình mỏng manh và vệt đen vắt ngang mắt. Dáng bơi uyển chuyển tựa như những chú bướm đang lượn lờ trong vườn hoa san hô."
+                desc: "Dáng bơi uyển chuyển tựa bướm bay lượn trong vườn san hô. Tập tính bơi lượn vòng quanh (circular) rực rỡ dưới nắng mặt trời. Ngoan ngoãn nhặt Cám (2💎) để sống."
             },
             {
                 type: "Cá Betta Huyết", rarity: "Hiếm", shape: "fish", flockStyle: "independent", colors: ["#FF0000", "#8B0000"], speed: 2.5, scale: 0.9,
-                desc: "Mang bản tính chiến binh kiêu hãnh. Chiếc đuôi đỏ rực tưa tủa bồng bềnh tựa như những ngọn lửa rực cháy dưới nước."
+                desc: "Chiến binh kiêu hãnh với chiếc đuôi đỏ tưa tủa rực lửa. Tính tình hung hăng, bảo vệ lãnh thổ tuyệt đối nên luôn ngao du đơn độc. Ăn Cám (2💎) nhưng thần thái như đang ăn thịt rồng."
             },
             {
                 type: "Cá Kiếm U Minh", rarity: "Hiếm", shape: "fish", flockStyle: "horizontal", colors: ["#191970", "#C0C0C0"], speed: 4.5, scale: 1.4,
-                desc: "Phát ra thứ ánh sáng xanh thẳm đầy huyền bí. Chiếc vây mũi nhọn hoắt như thanh gươm có thể xé toạc màn đêm đại dương."
+                desc: "Kẻ nắm giữ kỷ lục tốc độ bể bơi (4.5 m/s). Vây mũi nhọn hoắt như thanh gươm xé toạc màn nước. Thường tụ tập thành tiểu đội lướt đi thoăn thoắt. Nuôi bằng Cám (2💎)."
             },
             {
                 type: "Cá Rồng Tuyết", rarity: "Hiếm", shape: "fish", flockStyle: "independent", colors: ["#FFFFFF", "#7FFFD4"], speed: 2.4, scale: 1.8,
-                desc: "Toát lên vẻ đẹp vương giả với lớp vảy trắng muốt tinh khôi. Tương truyền, ai nuôi được loài cá này sẽ gặp muôn vàn may mắn."
+                desc: "Vẻ vương giả toát lên từ lớp vảy trắng tinh khôi. Sống đơn độc trên cao, không thèm tụ tập bầy đàn ồn ào. Tương truyền mang lại may mắn cho ai thả Cám (2💎) cho nó ăn."
             },
             {
                 type: "Cá Koi Thiên Sứ", rarity: "Hiếm", shape: "fish", flockStyle: "circular", colors: ["#FF8C00", "#FFFFFF"], speed: 1.8, scale: 1.2,
-                desc: "Khoác lên mình bộ cánh kết hợp giữa cam và trắng tựa như những thiên thần. Chúng mang lại sự bình yên và thịnh vượng cho bất cứ vùng nước nào."
+                desc: "Họa tiết cam trắng tựa thiên thần. Bản tính vô cùng hòa đồng, thích rủ nhau bơi xoay vòng (circular) tạo thành những vòng xoáy phong thủy vượng khí. Dễ nuôi với Cám viên (2💎)."
             },
             {
                 type: "Leviathan Xanh", rarity: "Huyền thoại", shape: "fish", flockStyle: "independent", colors: ["#00FA9A", "#006400"], speed: 3.5, scale: 2,
-                desc: "Thủy quái cổ đại ngủ vùi dưới đáy vực sâu. Lớp vảy xanh ngọc bích của nó cứng cáp hơn cả kim cương, tản ra sức mạnh áp đảo thiên nhiên."
+                desc: "Thủy quái cổ đại to lớn ngủ vùi dưới vực sâu. Dù vảy ngọc bích cứng hơn kim cương, ở hồ này cụ vẫn hiền lành bơi một mình, ngoan ngoãn ngậm Cám viên (2💎)."
             },
             {
                 type: "Long Vương Hắc Ám", rarity: "Huyền thoại", shape: "fish", flockStyle: "independent", colors: ["#111111", "#FF00EA"], speed: 4, scale: 2.5,
-                desc: "Kẻ cai trị bóng đêm dưới rãnh vực đại dương. Mỗi lần nó quẫy đuôi là tạo ra những vòng xoáy hắc ám rực sáng sắc hồng ma mị nuốt chửng vạn vật."
+                desc: "Chúa tể bóng đêm với vòng xoáy hắc ám ma mị bơi rẽ nước với tốc độ 4.0 m/s. Sống cô độc không đối thủ, ngạo nghễ nuốt chửng từng viên Cám (2💎) do chủ hồ ban phát."
             },
             {
                 type: "Cá Voi Ánh Sáng", rarity: "Huyền thoại", shape: "fish", flockStyle: "horizontal", colors: ["#FFFFFF", "#00F3FF"], speed: 1.5, scale: 3,
-                desc: "Thực thể thần thánh mang theo dải sáng bình minh rực rỡ. Người ta nói rằng nó đang bơi tới đâu, bóng tối vùng biển sẽ tan biến tới đó."
+                desc: "Thực thể thần thánh với kích thước khổng lồ mang theo ánh sáng bình minh. Thường gọi bầy bơi ngang hồ vĩ đại tựa như pháo đài di động. Ăn Cám (2💎) thanh đạm để giữ cốt cách thần linh."
             },
             {
                 type: "Megalodon Bạo Chúa", rarity: "Huyền thoại", shape: "fish", flockStyle: "independent", colors: ["#696969", "#000000"], speed: 3.0, scale: 3.5,
-                desc: "Bóng ma của thời tiền sử vừa thức tỉnh. Sát thủ vĩ đại nhất của đại dương với hàm răng khổng lồ có thể nghiền nát mọi thứ chắn đường đi."
+                desc: "Bóng ma tiền sử với hàm răng nghiền nát vạn vật. Di chuyển cô độc lầm lì, tạo áp lực cho cả vùng biển. Mặc cho cái mác bạo chúa, trong hồ này nó lại ngoan ngoãn gặm Cám viên đắt tiền (2💎)."
             },
             {
                 type: "Cá Sinh Nhật 🎂", rarity: "Huyền thoại", shape: "fish", flockStyle: "independent", colors: ["#FF1493", "#FFD700"], speed: 2.2, scale: 2.5,
-                desc: "Loài cá thần kỳ chỉ xuất hiện vào những dịp cực kỳ đặc biệt. Thân hình nó tỏa ra hương vị bánh kem ngọt ngào và rắc đầy kim tuyến pha lê lấp lánh!"
+                desc: "Thực thể ma thuật chỉ xuất hiện vào các dịp hệ trọng. Thân hình tỏa hương bánh kem, rắc đầy kim tuyến lấp lánh. Lượn lờ điệu đà một mình khắp hồ để xin Cám (2💎)."
             },
 
-            // --- CÁ ĐUỐI (ray) ---
+            // --- HỌ CÁ ĐUỐI ---
             {
                 type: "Đuối Chấm Bi", rarity: "Thường", shape: "ray", flockStyle: "horizontal", colors: ["#D2B48C", "#8B4513"], speed: 1.5, scale: 1.1,
-                desc: "Hiền lành và nhút nhát. Lớp áo khoác chấm bi nâu giúp nó ngụy trang hoàn hảo thành những lớp hòn sỏi dưới đáy cát."
+                desc: "Hiền lành nhút nhát, lớp áo chấm bi nâu giúp ngụy trang dưới lớp sỏi. Thích bơi thành bầy ngang dọc, vỗ cánh nhẹ nhàng để săn Tôm (8💎) vùi trong bùn."
             },
             {
                 type: "Đuối Cát", rarity: "Thường", shape: "ray", flockStyle: "horizontal", colors: ["#F5DEB3", "#D2691E"], speed: 1.4, scale: 1.0,
-                desc: "Bậc thầy ẩn mình. Chỉ cần một cái lách mình vùi thân, nó sẽ hòa tan hoàn toàn vào lớp nền cát vàng ươm của đại dương."
+                desc: "Bậc thầy ẩn mình vùi thân vào nền cát. Tụ tập thành những bầy lướt êm ái sát đáy. Món khoái khẩu để nạp năng lượng là những chú Tôm (8💎) biển ngọt thịt."
             },
             {
                 type: "Cá Đuối Bóng Đêm", rarity: "Hiếm", shape: "ray", flockStyle: "independent", colors: ["#4B0082", "#191970"], speed: 1.8, scale: 1.5,
-                desc: "Lướt đi như một bóng ma không để lại tiếng động. Màu tím đen bí ẩn của nó là sự ngụy trang hoàn hảo nhất trong vùng biển khuất bóng mặt trời."
+                desc: "Lướt đi như bóng ma tím thẫm không tiếng động. Cô độc giăng bẫy trong vùng nước khuất sáng, sải cánh uyển chuyển nhặt Tôm (8💎) rơi từ trên cao."
             },
             {
                 type: "Cá Đuối Gai Độc", rarity: "Hiếm", shape: "ray", flockStyle: "horizontal", colors: ["#556B2F", "#000000"], speed: 2.0, scale: 1.3,
-                desc: "Sở hữu chiếc đuôi chứa chiếc gai tẩm nọc độc nguy hiểm. Dù mang vẻ ngoài trầm tĩnh nhưng chớ dại mà chọc giận sinh vật lầm lì này."
+                desc: "Sở hữu chiếc đuôi chứa gai tẩm độc nguy hiểm nhưng lại thích hòa đồng bay theo đàn lớn. Dù lầm lì nhưng rất tích cực há mồm đợi Tôm (8💎)."
             },
             {
                 type: "Cá Đuối Cẩm Thạch", rarity: "Hiếm", shape: "ray", flockStyle: "circular", colors: ["#008080", "#F0E68C"], speed: 1.7, scale: 1.6,
-                desc: "Lưng nó mang những hoa văn tuyệt mỹ tựa như một phiến đá cẩm thạch quý hiếm ngàn năm tuổi được mẹ thiên nhiên điêu khắc."
+                desc: "Mặt lưng điêu khắc hoa văn tuyệt mỹ tựa phiến đá ngàn năm. Có sở thích tao nhã là rủ nhau lượn lờ vòng xoắn ốc (circular) và thưởng thức Tôm sống (8💎)."
             },
             {
                 type: "Cá Đuối Manta Quỷ", rarity: "Huyền thoại", shape: "ray", flockStyle: "independent", colors: ["#1C1C1C", "#FF4500"], speed: 2.5, scale: 3.2,
-                desc: "Đôi cánh sải rộng khổng lồ rực đỏ như dung nham. Được mệnh danh là 'ác quỷ biển khơi' nhưng lại có điệu bơi vỗ cánh lả lướt vô cùng."
+                desc: "Đôi cánh khổng lồ rực đỏ dung nham, mệnh danh là ác quỷ biển khơi với điệu vỗ lả lướt kiêu ngạo. Ngao du cô độc tìm chân lý và... Tôm tươi (8💎)."
             },
             {
                 type: "Thần Đuối Nebula", rarity: "Huyền thoại", shape: "ray", flockStyle: "horizontal", colors: ["#8A2BE2", "#00FFFF"], speed: 2.0, scale: 3.0,
-                desc: "Thực thể vũ trụ mang theo sức mạnh của các chòm sao. Lớp da của nó lấp lánh như một tinh vân huyền ảo thu nhỏ ngay giữa lòng biển khơi."
+                desc: "Thực thể vũ trụ lấp lánh như tinh vân huyền ảo. Không màng thế sự độc tôn, vị thần này lại thích đi tuần tra theo đàn lộng lẫy và ban phước cho ai ném Tôm (8💎) xuống."
             },
 
-            // --- CÁ NGỰA (seahorse) ---
+            // --- HỌ CÁ NGỰA ---
             {
                 type: "Ngựa Biển Lùn", rarity: "Thường", shape: "seahorse", flockStyle: "circular", colors: ["#F0E68C", "#DAA520"], speed: 0.8, scale: 0.5,
-                desc: "Nhỏ bé và cực kỳ đáng yêu. Chúng thường dùng cái đuôi quăn tít của mình để bám víu vào những cành rong biển trôi dạt."
+                desc: "Nhỏ bé đáng yêu, chuyên dùng đuôi quăn tít bám víu san hô. Chúng bơi rề rà chậm chạp tụ thành vòng tròn cổ tích múa hát, mỏ chu ra hút Tôm nhỏ (8💎)."
             },
             {
                 type: "Ngựa Thảo Nguyên", rarity: "Thường", shape: "seahorse", flockStyle: "circular", colors: ["#90EE90", "#006400"], speed: 0.9, scale: 0.6,
-                desc: "Trông hệt như một chiếc lá non đang trôi lơ lửng. Màu lục tươi mát giúp nó hòa mình vào những 'cánh đồng' tảo rậm rạp."
+                desc: "Trông hệt chiếc lá non trôi lơ lửng ngụy trang trong rong biển. Thích tụ tập xoay vòng nhảy múa rề rà, nạp năng lượng bằng cách hút Tôm (8💎) qua chiếc mõm thon dài."
             },
             {
                 type: "Cá Ngựa Pha Lê", rarity: "Hiếm", shape: "seahorse", flockStyle: "circular", colors: ["#FF69B4", "#FFC0CB"], speed: 1.2, scale: 0.8,
-                desc: "Thân hình trong suốt như pha lê ửng lên sắc hồng phấn kiêu sa. Chúng mỏng manh tựa một món đồ trang sức vô giá của Long cung."
+                desc: "Thân hình trong suốt ửng hồng phấn kiêu sa tựa món trang sức Long cung. Bay lượn vòng tròn khoe sắc lấp lánh cùng hội chị em, rất đam mê ăn Tôm (8💎)."
             },
             {
                 type: "Cá Ngựa Gai Tím", rarity: "Hiếm", shape: "seahorse", flockStyle: "independent", colors: ["#9370DB", "#4B0082"], speed: 1.1, scale: 0.9,
-                desc: "Khoác lên mình bộ giáp đầy gai nhọn hoắt ánh lên sắc tím độc tôn. Đây là loài cá ngựa mang dòng máu chiến binh kiên cường kiêu hãnh."
+                desc: "Khoác giáp gai nhọn hoắt ánh tím độc tôn. Sinh ra với dòng máu chiến binh kiên cường nên chúng chọn cách sống đơn độc oai phong. Cần Tôm (8💎) để duy trì sức mạnh."
             },
             {
                 type: "Cá ngựa Hoàng Gia", rarity: "Huyền thoại", shape: "seahorse", flockStyle: "circular", colors: ["#FFD700", "#DAA520"], speed: 1.5, scale: 1.5,
-                desc: "Mang dáng vóc bệ vệ với chiếc vương miện lấp lánh trên đầu. Thân hình dát vàng của chúng chứng minh sự tồn tại của hoàng tộc rạn san hô."
+                desc: "Bệ vệ vương giả với vương miện lấp lánh. Biểu tượng hoàng tộc luôn mở các yến tiệc lượn vòng (circular) khiêu vũ dưới nước. Món ngự thiện dĩ nhiên là Tôm (8💎)."
             },
             {
                 type: "Cá Ngựa Hỏa Ngục", rarity: "Huyền thoại", shape: "seahorse", flockStyle: "independent", colors: ["#8B0000", "#FF4500"], speed: 1.8, scale: 1.6,
-                desc: "Toát ra nhiệt lượng rực lửa dưới làn nước buốt giá. Sinh vật này dường như không sinh ra từ trứng mà được rèn ra từ magma nơi tâm Trái đất."
+                desc: "Rèn từ magma lõi trái đất, cơ thể tỏa nhiệt lượng đun sôi cả dòng hải lưu. Kẻ độc hành kiêu ngạo rực lửa xé nước khá nhanh, chỉ chịu hạ mình khi thấy Tôm rớt xuống (8💎)."
             },
 
-            // --- SỨA (jellyfish) ---
+            // --- HỌ SỨA (PHÙ DU) ---
             {
                 type: "Sứa Mặt Trăng", rarity: "Thường", shape: "jellyfish", flockStyle: "independent", colors: ["#E0FFFF", "#AFEEEE"], speed: 0.6, scale: 0.8,
-                desc: "Mang hình dáng chiếc ô trong vắt mờ ảo. Những nhịp bơi của nó nhẹ nhàng như nhịp thở của ánh trăng lướt qua mặt nước tĩnh lặng."
+                desc: "Chiếc ô trong vắt mờ ảo lướt nhẹ như nhịp thở ánh trăng. Chúng trôi dạt lơ lửng một mình, không bao giờ tranh giành, chuyên bơi chậm rãi lọc nước ăn Phù du tinh khiết (4💎)."
             },
             {
                 type: "Sứa Ô Đỏ", rarity: "Thường", shape: "jellyfish", flockStyle: "independent", colors: ["#FFB6C1", "#DC143C"], speed: 0.7, scale: 0.9,
-                desc: "Mang sắc đỏ rực rỡ lôi cuốn mọi ánh nhìn, nhưng những chiếc xúc tu rũ rượi của nó lại ẩn chứa những nụ hôn mang đầy nọc độc cay xè."
+                desc: "Sắc đỏ lôi cuốn đi kèm những chiếc xúc tu rũ rượi chứa nụ hôn cay xè. Sống một mình kiêu ngạo, vươn màng lọc bắt những con Phù du (4💎) trôi vô định."
             },
             {
                 type: "Sứa Dạ Quang", rarity: "Hiếm", shape: "jellyfish", flockStyle: "independent", colors: ["#00FF7F", "#008B8B"], speed: 1.0, scale: 1.2,
-                desc: "Phát ra ánh sáng xanh lục lập lòe liên hồi. Chúng là những chiếc đèn lồng tự nhiên sinh ra để soi sáng con đường tăm tối của vực biển."
+                desc: "Đèn lồng tự nhiên rực sáng lục bảo soi đường tăm tối vực biển. Lượn lờ cô độc đẩy nước nhịp nhàng, chỉ cần rải Phù du (4💎) là thân hình chúng lại bừng sáng."
             },
             {
                 type: "Sứa Hộp Băng Giá", rarity: "Hiếm", shape: "jellyfish", flockStyle: "independent", colors: ["#ADD8E6", "#4169E1"], speed: 1.2, scale: 1.1,
-                desc: "Tuyệt mỹ nhưng cực kỳ nguy hiểm. Chạm vào những xúc tu mang màu xanh tuyết này có thể làm đóng băng và tê liệt hoàn toàn cơ thể."
+                desc: "Xúc tu xanh tuyết mang khả năng đóng băng tê liệt con mồi. Sát thủ độc hành xinh đẹp tuyệt mỹ, lọc Phù du sinh học (4💎) để nuôi dưỡng nọc độc chết người."
             },
             {
                 type: "Sứa Vũ Trụ Bất Tử", rarity: "Huyền thoại", shape: "jellyfish", flockStyle: "independent", colors: ["#FFFAFA", "#FF00FF"], speed: 0.8, scale: 2.0,
-                desc: "Nắm giữ bí mật của sự bất tử. Khi già đi hoặc bị thương, nó lại tự reset cơ thể quay về chu kỳ sinh trưởng ban đầu, tạo thành vòng lặp vô tận."
+                desc: "Nắm giữ bí mật trường sinh bằng cách tự reset tuổi thọ vô tận. Sinh vật huyền bí trôi dạt cô độc một cõi, không cần ăn uống phức tạp, chỉ hút Phù du (4💎) là đủ sống đời."
             },
             {
                 type: "Sứa Chuông Linh Hồn", rarity: "Huyền thoại", shape: "jellyfish", flockStyle: "independent", colors: ["#F8F8FF", "#000080"], speed: 0.5, scale: 2.5,
-                desc: "Chiếc chuông khổng lồ trong suốt đến mức nhìn thấu tâm can. Tương truyền, nó dạt trôi vô định để thu thập những mảnh linh hồn đại dương thất lạc."
+                desc: "Chiếc chuông khổng lồ trong suốt nhìn thấu tâm can. Tương truyền dạt trôi vô định thu thập mảnh vỡ đại dương. Ăn Phù du (4💎) để giữ độ linh thiêng tĩnh lặng."
             },
 
-            // --- RÙA (turtle) ---
+            // --- HỌ RÙA (RONG BIỂN) ---
             {
                 type: "Rùa Cỏ Ven Bờ", rarity: "Thường", shape: "turtle", flockStyle: "circular", colors: ["#8FBC8F", "#556B2F"], speed: 0.8, scale: 1.0,
-                desc: "Hiền lành, chậm chạp và thong thả. Sở thích lớn nhất của chú rùa này là lặn ngụp đi gặm nhấm những thảm cỏ biển bám trên các mỏm đá nông."
+                desc: "Chậm chạp, hiền lành, yêu chuộng hòa bình. Sở thích cực đoan là tụ tập đàn lượn vòng (circular) quanh mỏm đá gặm nhấm những lá Rong biển (5💎) xanh mướt."
             },
             {
                 type: "Rùa Lưng Gù", rarity: "Thường", shape: "turtle", flockStyle: "horizontal", colors: ["#BDB76B", "#8B4513"], speed: 0.9, scale: 1.1,
-                desc: "Sở hữu chiếc mai sần sùi nhô cao mang dấu ấn bào mòn của năm tháng. Tốc độ bơi tuy chậm nhưng độ sức bền bỉ thì không loài cá nào sánh kịp."
+                desc: "Chiếc mai nhô cao hằn dấu vết thời gian. Sức bền vô địch bù lại tốc độ lề mề, chúng kết bạn kéo nhau thành hàng rong ruổi đi ăn Rong biển (5💎) thả ga."
             },
             {
                 type: "Rùa Mai Xanh", rarity: "Hiếm", shape: "turtle", flockStyle: "circular", colors: ["#32CD32", "#228B22"], speed: 1.2, scale: 1.4,
-                desc: "Nổi bật với chiếc mai phẳng hình giọt nước màu lục bảo tuyệt đẹp. Chúng là những nhà du hành vĩ đại đã vượt qua vô số đại dương sóng gió."
+                desc: "Mai phẳng hình giọt nước màu lục bảo tuyệt đẹp. Nhà du hành vĩ đại vượt đại dương này thích rủ rê bạn bè xoay vòng khiêu vũ. Đồ chay ưa thích: Rong biển (5💎)."
             },
             {
                 type: "Rùa Đảo Hoang", rarity: "Hiếm", shape: "turtle", flockStyle: "independent", colors: ["#CD853F", "#A0522D"], speed: 1.0, scale: 1.6,
-                desc: "Mỗi khi nổi lờ đờ trên mặt nước, mai của nó mang theo rêu phong đất đá trông hệt như một hòn đảo hoang thu nhỏ trôi dạt vô định."
+                desc: "Đóng rêu phong đất đá lờ đờ trên mặt nước hệt như một hòn đảo hoang thu nhỏ. Ngủ vùi cô độc không cần bạn bè, thỉnh thoảng cắn miếng Rong biển (5💎) cho đỡ nhạt miệng."
             },
             {
                 type: "Rùa Biển Cổ Đại", rarity: "Huyền thoại", shape: "turtle", flockStyle: "circular", colors: ["#2E8B57", "#8B4513"], speed: 0.8, scale: 2.2,
-                desc: "Sinh vật thông thái đã chứng kiến sự thăng trầm của lịch sử từ thời tiền sử. Lớp mai của nó vững chãi như một pháo đài không thể bị phá vỡ."
+                desc: "Bậc hiền triết chứng kiến thăng trầm tiền sử. Mai vững chãi như pháo đài không thể xuyên phá. Khôn ngoan tụ tập bảo vệ nhau theo đội hình tròn, trường thọ nhờ ăn Rong biển (5💎)."
             },
             {
                 type: "Rùa Dung Nham", rarity: "Huyền thoại", shape: "turtle", flockStyle: "independent", colors: ["#FF0000", "#800000"], speed: 1.0, scale: 2.5,
-                desc: "Chiếc mai của nó rực đỏ hệt như ngưng tụ sức nóng ngàn độ của lõi Trái Đất. Nó thường ngâm mình yên giấc ở các miệng núi lửa dưới biển sâu."
+                desc: "Nung chảy dòng hải lưu bằng chiếc mai rực lửa ngàn độ. Lầm lì dũng mãnh chiếm cứ ngọn núi lửa một mình, và dù nóng tính vẫn là loài ăn chay với món Rong biển (5💎)."
             },
             {
                 type: "Thần Rùa Huyền Vũ", rarity: "Huyền thoại", shape: "turtle", flockStyle: "independent", colors: ["#000000", "#2F4F4F"], speed: 0.6, scale: 3.0,
-                desc: "Thần thú thiêng liêng trấn giữ phương Bắc trong truyền thuyết cổ. Cổ dầy mai đen mang sức mạnh phòng thủ tuyệt đối không một lưỡi gươm nào xuyên phá nổi."
+                desc: "Thần thú trấn giữ phương Bắc trong truyền thuyết. Cổ dầy mai đen phòng thủ tuyệt đối vô phương phá giải. Uy nghi tĩnh lặng độc hành vạn dặm, duy trì pháp lực bằng Rong biển (5💎)."
             },
 
-            // ========================================================
-            // --- BỔ SUNG CÁC LOÀI MỚI (BẦY ĐÀN VÀ ĐỘC LẬP) ---
-            // ========================================================
-
-            // MỚI: BẦY ĐÀN (HORIZONTAL / CIRCULAR)
+            // --- BỔ SUNG LOÀI MỚI ---
             {
                 type: "Cá Cơm Sọc Đen", rarity: "Thường", shape: "fish", flockStyle: "horizontal", colors: ["#dcdde1", "#2f3640"], speed: 3.8, scale: 0.4,
-                desc: "Loài cá tí hon với tốc độ bơi kinh hoàng. Chúng tập hợp thành những bầy đàn khổng lồ, di chuyển đồng loạt như một dòng sông bạc dưới đại dương."
+                desc: "Tí hon bơi với tốc độ kinh hoàng 3.8 m/s. Trí khôn bầy đàn cực đỉnh, chúng liên kết thành dòng sông bạc khổng lồ chạy trốn cá mập. Dọn dẹp Cám viên (2💎) cực sạch."
             },
             {
                 type: "Cá Dơi Rạn San Hô", rarity: "Thường", shape: "fish", flockStyle: "circular", colors: ["#e1b12c", "#2f3640"], speed: 1.8, scale: 0.8,
-                desc: "Thân hình dẹt với những sọc đen vàng nổi bật. Chúng cực kỳ thích bơi lượn vòng tròn xung quanh các tảng san hô hoặc mỏm đá để tìm kiếm thức ăn."
+                desc: "Thân dẹt nổi bật cùng sọc đen vàng cảnh báo. Thích lượn vòng tròn chơi đùa ở các hẻm san hô tìm thức ăn. Rất hiền lành dễ nuôi với món Cám (2💎) rẻ tiền."
             },
             {
                 type: "Đàn Cá Voi Sát Thủ", rarity: "Huyền thoại", shape: "fish", flockStyle: "horizontal", colors: ["#111111", "#ffffff"], speed: 3.2, scale: 2.8,
-                desc: "Kẻ săn mồi tối thượng với trí thông minh tuyệt đỉnh. Khi bơi cùng nhau, chúng tạo nên một thế trận săn mồi không có kẻ hở, uy dũng và tàn độc."
+                desc: "Bóng dáng trắng đen uy dũng của kẻ đi săn tối thượng. Khác biệt với các bạo chúa khác, chúng kết đàn săn mồi hoàn hảo không kẽ hở. Hiện đang tạm ăn Cám (2💎) trong bể này."
             },
-
-            // MỚI: ĐỘC LẬP (INDEPENDENT)
             {
                 type: "Cá Nóc Gai Độc", rarity: "Thường", shape: "fish", flockStyle: "independent", colors: ["#fbc531", "#e1b12c"], speed: 1.0, scale: 0.8,
-                desc: "Sở hữu thân hình tròn ủm đáng yêu nhưng lại chứa đầy độc tố. Chúng thường đi lang thang một mình vì chẳng có kẻ săn mồi nào dại dột đụng vào."
+                desc: "Tròn ủm đáng yêu nhưng đầy chất kịch độc xù lông nhím. Bơi siêu chậm chạp lờ đờ, chả sợ ai nên luôn lang thang một mình. Mỏ chu ra ngậm từng viên Cám (2💎)."
             },
             {
                 type: "Cá Mặt Trăng Khổng Lồ", rarity: "Hiếm", shape: "fish", flockStyle: "independent", colors: ["#718093", "#dcdde1"], speed: 0.5, scale: 2.6,
-                desc: "Loài cá có thân hình kì dị dẹt và to như một chiếc đĩa khổng lồ. Chúng bơi lờ đờ một cách vô định, mặc kệ sự đời."
+                desc: "Dẹt và to như chiếc đĩa bay khổng lồ (2.6 scale) lọt thỏm giữa biển khơi. Rất chậm chạp và làm biếng lượn lờ mặc kệ đời cô độc. Nuôi tốn diện tích nhưng chỉ cần cho Cám (2💎)."
             },
             {
                 type: "Bạch Tuộc Nhẫn Xanh", rarity: "Hiếm", shape: "squid", flockStyle: "independent", colors: ["#e1b12c", "#0097e6"], speed: 1.2, scale: 0.6,
-                desc: "Sống đơn độc dưới đáy biển sâu. Trên mình nó điểm xuyết những chiếc nhẫn màu xanh neon rực rỡ nhưng mang kịch độc chết người."
+                desc: "Nhỏ thó với những chiếc nhẫn xanh neon rực rỡ báo hiệu nọc độc tử thần. Thích ẩn nấp sống đơn độc không bè phái dưới đáy bùn và xé xác những con Tôm (8💎) để sinh tồn."
             }
         ];
 
@@ -2302,7 +2232,120 @@
             { id: "gacha", title: "✨ Triệu Hồi Sư", desc: "Triệu hồi cá mới 2 lần", target: 2, reward: 300 },
             { id: "spend", title: "💸 Đại Gia Biển Sâu", desc: "Tiêu 1000 Kim Cương", target: 1000, reward: 200 }
         ];
+        // --- 🏆 HỆ THỐNG 100 THÀNH TỰU ---
+        const ACHIEVEMENT_CONFIG = [
+            { id: "earn", title: "Tài Phiệt Tương Lai", icon: "💰", targets: [1000, 5000, 10000, 50000, 100000, 500000, 1000000, 5000000, 10000000, 50000000], rewards: [100, 500, 1000, 5000, 10000, 50000, 100000, 500000, 1000000, 5000000] },
+            { id: "spend", title: "Cỗ Máy Tiêu Tiền", icon: "💸", targets: [1000, 5000, 10000, 50000, 100000, 500000, 1000000, 5000000, 10000000, 50000000], rewards: [100, 500, 1000, 5000, 10000, 50000, 100000, 500000, 1000000, 5000000] },
+            { id: "click", title: "Bàn Tay Vàng", icon: "👆", targets: [100, 500, 1000, 5000, 10000, 50000, 100000, 200000, 500000, 1000000], rewards: [50, 100, 200, 500, 1000, 5000, 10000, 20000, 50000, 100000] },
+            { id: "feed", title: "Bảo Mẫu Biển Sâu", icon: "🍔", targets: [50, 200, 500, 1000, 2000, 5000, 10000, 20000, 50000, 100000], rewards: [50, 200, 500, 1000, 2000, 5000, 10000, 20000, 50000, 100000] },
+            { id: "gacha", title: "Thần Triệu Hồi", icon: "✨", targets: [5, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000], rewards: [100, 200, 500, 1000, 2000, 5000, 10000, 20000, 50000, 100000] },
+            { id: "sell", title: "Thương Nhân Tàn Nhẫn", icon: "🤝", targets: [5, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000], rewards: [100, 200, 500, 1000, 2000, 5000, 10000, 20000, 50000, 100000] },
+            { id: "unlock", title: "Nhà Sưu Tầm", icon: "📖", targets: [1, 5, 10, 15, 20, 25, 30, 35, 40, 45], rewards: [200, 500, 1000, 2000, 5000, 10000, 20000, 50000, 100000, 200000] },
+            { id: "kill", title: "Tử Thần Gọi Tên", icon: "💀", targets: [1, 5, 10, 20, 50, 100, 200, 500, 1000, 2000], rewards: [50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000, 50000] },
+            { id: "decor", title: "Kiến Trúc Sư", icon: "🏛️", targets: [1, 3, 5, 10, 20, 30, 50, 75, 100, 200], rewards: [100, 200, 500, 1000, 2000, 3000, 5000, 7500, 10000, 20000] },
+            { id: "level", title: "Huấn Luyện Viên", icon: "📈", targets: [10, 50, 100, 500, 1000, 2000, 5000, 10000, 20000, 50000], rewards: [100, 500, 1000, 5000, 10000, 20000, 50000, 100000, 200000, 500000] }
+        ];
 
+        // Khởi tạo file lưu thành tựu nếu chưa có
+        function initAchievements() {
+            if (!gameState.achievements) gameState.achievements = {};
+            ACHIEVEMENT_CONFIG.forEach(cat => {
+                if (!gameState.achievements[cat.id]) {
+                    gameState.achievements[cat.id] = { progress: 0, claimedTier: 0 };
+                }
+            });
+        }
+
+        // Theo dõi tiến trình tự động
+        function trackAchievement(type, amount) {
+            initAchievements();
+            if (!gameState.achievements[type]) return;
+            
+            if (type === 'unlock') {
+                gameState.achievements[type].progress = gameState.unlockedFishes.length;
+            } else {
+                gameState.achievements[type].progress += amount;
+            }
+            saveGame();
+            
+            // Cập nhật ngay nếu bảng đang mở
+            if (document.getElementById('achievements-overlay').classList.contains('active')) {
+                renderAchievements();
+            }
+        }
+
+        function openAchievements() {
+            toggleCustomSidebar(false);
+            initAchievements();
+            renderAchievements();
+            openModal('achievements-overlay');
+        }
+
+        function renderAchievements() {
+            let listDiv = document.getElementById('achievements-list');
+            let html = '';
+
+            ACHIEVEMENT_CONFIG.forEach(cat => {
+                let data = gameState.achievements[cat.id];
+                let tier = data.claimedTier; 
+                
+                if (tier >= 10) {
+                    // Cấp Tối Đa
+                    html += `
+                    <div class="dict-item" style="display: flex; flex-direction: row; justify-content: space-between; text-align: left; padding: 12px; background: rgba(50, 205, 50, 0.1); border-color: #32CD32;">
+                        <div style="flex-grow: 1; display: flex; align-items: center; gap: 12px;">
+                            <div style="font-size: 30px;">${cat.icon}</div>
+                            <div>
+                                <div style="font-size: 15px; font-weight: 900; color: #32CD32;">${cat.title} (MAX)</div>
+                                <div style="font-size: 11px; opacity: 0.8;">Đã hoàn thành toàn bộ 10 cấp độ!</div>
+                            </div>
+                        </div>
+                        <button class="btn-claim" disabled style="background: rgba(255,255,255,0.1); color: #aaa;">ĐÃ TỐI ĐA</button>
+                    </div>`;
+                } else {
+                    let target = cat.targets[tier];
+                    let reward = cat.rewards[tier];
+                    let progress = Math.min(data.progress, target);
+                    let pct = (progress / target) * 100;
+                    let canClaim = progress >= target;
+
+                    let btnHtml = canClaim 
+                        ? `<button class="btn-claim" style="background: linear-gradient(45deg, #00FA9A, #32CD32);" onclick="claimAchievement('${cat.id}')">NHẬN ${reward} 💎</button>`
+                        : `<button class="btn-claim" disabled style="background: rgba(255,255,255,0.1); color: #aaa;">${Math.floor(progress)} / ${target}</button>`;
+
+                    html += `
+                    <div class="dict-item" style="display: flex; flex-direction: row; justify-content: space-between; text-align: left; padding: 12px; position: relative; overflow: hidden;">
+                        <div style="position: absolute; top: 0; left: 0; height: 100%; width: ${pct}%; background: rgba(255, 215, 0, 0.1); z-index: 0;"></div>
+                        <div style="flex-grow: 1; display: flex; align-items: center; gap: 12px; z-index: 1;">
+                            <div style="font-size: 30px; text-shadow: 0 0 10px ${canClaim ? 'var(--gold)' : 'transparent'};">${cat.icon}</div>
+                            <div>
+                                <div style="font-size: 15px; font-weight: 900; color: var(--gold);">${cat.title} <span style="font-size:10px; color:#fff;">(Cấp ${tier + 1}/10)</span></div>
+                                <div style="font-size: 11px; opacity: 0.8;">Mục tiêu: Đạt mốc ${target}</div>
+                            </div>
+                        </div>
+                        <div style="z-index: 1; min-width: 100px; text-align: right;">${btnHtml}</div>
+                    </div>`;
+                }
+            });
+            listDiv.innerHTML = html;
+        }
+
+        function claimAchievement(catId) {
+            let cat = ACHIEVEMENT_CONFIG.find(c => c.id === catId);
+            let data = gameState.achievements[catId];
+            let tier = data.claimedTier;
+            
+            if (tier < 10 && data.progress >= cat.targets[tier]) {
+                let reward = cat.rewards[tier];
+                gameState.coins += reward;
+                data.claimedTier++; 
+                trackAchievement('earn', reward); // Tiền thưởng cũng được tính vào thành tựu kiếm tiền
+                createExplosion(width / 2, height / 2, "#FFD700", 50);
+                saveGame();
+                updateUI();
+                renderAchievements();
+            }
+        }
         // HÀM RESET NHIỆM VỤ KHI QUA NGÀY MỚI
         function checkDailyQuests() {
             let today = new Date().toDateString(); // Lấy chuỗi ngày hiện tại (VD: Mon Apr 16 2026)
@@ -2543,7 +2586,7 @@
         }
 
         // --- 3. CÁC LỚP THỰC THỂ ---
-    class Food {
+        class Food {
             constructor(x, y, type = 'pellet', isPoisoned = false) {
                 this.x = x;
                 this.y = y;
@@ -2588,7 +2631,7 @@
                 let glowGrad = ctx.createRadialGradient(0, 0, 2, 0, 0, currentGlow);
 
                 let baseColor = this.style.glow;
-                let rgb = "255, 255, 255"; 
+                let rgb = "255, 255, 255";
                 if (baseColor === "#FFD700") rgb = "255, 215, 0";
                 else if (baseColor === "#ff4757") rgb = "255, 71, 87";
                 else if (baseColor === "#ff7e67") rgb = "255, 126, 103";
@@ -2757,7 +2800,7 @@
                         if (index > -1) {
                             let d = diamonds[index];
                             gameState.coins += d.value;
-
+                            trackAchievement('earn', d.value);
                             // Hiệu ứng nổ lấp lánh
                             if (typeof createExplosion === 'function') {
                                 createExplosion(this.x, this.y, d.color, 20);
@@ -3046,6 +3089,7 @@
 
                 if (gameState.coins >= price) {
                     gameState.coins -= price;
+                    trackAchievement('spend', price); trackAchievement('feed', 1);
                     updateQuestProgress('spend', price);
                     updateQuestProgress('feed', 1);
                     updateUI();
@@ -3502,6 +3546,7 @@
                 this.xp += 10;
                 if (this.xp >= this.level * 20) {
                     this.level++; this.xp = 0;
+                    trackAchievement('level', 1);
 
                     if (this.level === 5 && this.skill === "Chưa có") {
                         if (this.data.rarity === "Thường") this.skill = "Bụng Không Đáy 🛡️";
@@ -4658,8 +4703,7 @@
         // Cập nhật bảng thông tin Tooltip
         // Cập nhật bảng thông tin Tooltip khi bơi
         function updateTooltip() {
-            // Nếu đang rà chuột ở Sidebar thì không cho Canvas can thiệp
-            if (isHoveringList) return;
+            if (isHoveringList) return; // Nếu đang rà chuột ở Sidebar thì không cho Canvas can thiệp
 
             const tooltip = document.getElementById('fish-tooltip');
             let hoveredFish = null;
@@ -4673,28 +4717,7 @@
             }
 
             if (hoveredFish) {
-                let sizeCm = (hoveredFish.baseScale * (1 + hoveredFish.level * 0.05) * 25).toFixed(1);
-                let rarityColor = hoveredFish.data.rarity === "Huyền thoại" ? "var(--neon-pink)" : hoveredFish.data.rarity === "Hiếm" ? "var(--neon-blue)" : "white";
-                let hungerColor = hoveredFish.hunger > 60 ? "#32CD32" : hoveredFish.hunger > 25 ? "var(--gold)" : "#ff4757";
-                let hungerStatus = hoveredFish.hunger > 60 ? "No Nê" : hoveredFish.hunger > 25 ? "Hơi đói" : "Sắp chết đói!";
-                let hpColor = hoveredFish.hp > 60 ? "#2ed573" : hoveredFish.hp > 25 ? "#ffa502" : "#ff4757";
-                // Lấy giải thích kỹ năng
-                let skillDesc = SKILL_DESC[hoveredFish.skill] || "";
-
-                tooltip.innerHTML = `
-            <div class="tt-title" style="color: ${rarityColor};">${hoveredFish.data.type}</div>
-            <div class="tt-row"><span>Cấp độ:</span> <b>Lv.${hoveredFish.level}</b></div>
-            <div class="tt-row"><span>Kỹ năng:</span> <b style="color: var(--gold);">${hoveredFish.skill}</b></div>
-            
-            <div class="tt-row" style="margin-top: 10px; color: ${hpColor};"><span>Sinh lực (HP):</span> <b>${Math.ceil(hoveredFish.hp)}%</b></div>
-            <div class="tt-bar-bg"><div class="tt-bar-fill" style="width: ${hoveredFish.hp}%; background: ${hpColor};"></div></div>
-
-            <div class="tt-row" style="margin-top: 5px; color: ${hungerColor};"><span>Trạng thái:</span> <b>${hungerStatus}</b></div>
-            <div class="tt-bar-bg"><div class="tt-bar-fill" style="width: ${hoveredFish.hunger}%; background: ${hungerColor};"></div></div>
-        `;
-                tooltip.style.left = (mouseX + 20) + 'px';
-                tooltip.style.top = (mouseY + 20) + 'px';
-                tooltip.style.display = 'block';
+                renderTooltipContent(tooltip, hoveredFish, mouseX + 20, mouseY + 20);
             } else {
                 tooltip.style.display = 'none';
             }
@@ -4740,12 +4763,15 @@
                     // ĐÃ SỬA: Ưu tiên kiểm tra xem cá có chết vì ĐỘC không
                     if (fish.deathReason === "poison") {
                         tag.innerText = '💀 CHẾT VÌ TRÚNG ĐỘC!';
+                        trackAchievement('kill', 1);
                         tag.style.color = '#9b59b6'; // Chữ màu tím độc
                     } else if (fish.hunger <= 0) {
                         tag.innerText = '💀 CHẾT ĐÓI RỒI...';
+                        trackAchievement('kill', 1);
                         tag.style.color = '#ffa502'; // Màu cam đói khát
                     } else {
                         tag.innerText = '💀 BỊ THỊT RỒI!';
+                        trackAchievement('kill', 1);
                         tag.style.color = '#ff4757'; // Màu đỏ máu cá mập cắn
                     }
 
@@ -4810,9 +4836,9 @@
         // --- 6. TƯƠNG TÁC & SỰ KIỆN ---
 
         window.addEventListener('mousedown', (e) => {
-            if (document.body.classList.contains('cinema-active')) { 
-                toggleCinema(); 
-                return; 
+            if (document.body.classList.contains('cinema-active')) {
+                toggleCinema();
+                return;
             }
 
             if (e.target.tagName === 'BUTTON' || e.target.closest('.glass-panel') || e.target.closest('.modal')) {
@@ -4823,8 +4849,8 @@
             const mX = e.clientX - rect.left;
             const mY = e.clientY - rect.top;
 
-            if (e.button === 0) { 
-                
+            if (e.button === 0) {
+                trackAchievement('click', 1);
                 // 1. NHẶT KIM CƯƠNG
                 let clickedDiamondIndex = -1;
                 for (let i = diamonds.length - 1; i >= 0; i--) {
@@ -4838,20 +4864,20 @@
                 if (clickedDiamondIndex !== -1) {
                     let d = diamonds[clickedDiamondIndex];
                     gameState.coins += d.value;
-                    
+                    trackAchievement('earn', d.value);
                     if (typeof createExplosion === 'function') createExplosion(d.x, d.y, d.color, 15);
-                    
-                    let tag = document.createElement('div'); 
-                    tag.className = 'floating-price'; 
+
+                    let tag = document.createElement('div');
+                    tag.className = 'floating-price';
                     tag.innerText = `+${d.value} 💎`;
-                    tag.style.left = d.x + 'px'; 
-                    tag.style.top = d.y + 'px'; 
-                    document.body.appendChild(tag); 
+                    tag.style.left = d.x + 'px';
+                    tag.style.top = d.y + 'px';
+                    document.body.appendChild(tag);
                     setTimeout(() => tag.remove(), 2000);
-                    
+
                     diamonds.splice(clickedDiamondIndex, 1);
                     updateUI(); saveGame();
-                    return; 
+                    return;
                 }
 
                 // 2. NẮM KÉO CÁ
@@ -4859,13 +4885,13 @@
                 for (let i = gameState.fishes.length - 1; i >= 0; i--) {
                     let fish = gameState.fishes[i];
                     let hitbox = 45 * fish.baseScale * (1 + fish.level * 0.05);
-                    if (Math.hypot(mX - fish.x, mY - fish.y) < hitbox) { 
-                        clickedFish = fish; break; 
+                    if (Math.hypot(mX - fish.x, mY - fish.y) < hitbox) {
+                        clickedFish = fish; break;
                     }
                 }
 
                 if (clickedFish) {
-                    draggedFish = clickedFish; 
+                    draggedFish = clickedFish;
                     draggedFish.isDragged = true;
                     return;
                 }
@@ -4874,24 +4900,25 @@
                 let clickedDecor = null;
                 for (let i = gameState.decorations.length - 1; i >= 0; i--) {
                     let decor = gameState.decorations[i];
-                    if (Math.hypot(mX - decor.x, mY - decor.y) < decor.size / 2) { 
-                        clickedDecor = decor; break; 
+                    if (Math.hypot(mX - decor.x, mY - decor.y) < decor.size / 2) {
+                        clickedDecor = decor; break;
                     }
                 }
 
                 if (clickedDecor) {
-                    draggedDecor = clickedDecor; 
+                    draggedDecor = clickedDecor;
                     draggedDecor.isDragged = true;
                     return;
                 }
 
                 // 4. THẢ MỒI (VÀ TẨM ĐỘC)
                 let foodPrice = FOOD_PRICES[currentFoodType] || 0;
-                
+
                 if (gameState.coins >= foodPrice) {
                     gameState.coins -= foodPrice;
+                    trackAchievement('spend', foodPrice); trackAchievement('feed', 1);
                     updateUI();
-                    if(typeof updateQuestProgress === 'function') {
+                    if (typeof updateQuestProgress === 'function') {
                         updateQuestProgress('spend', foodPrice);
                         updateQuestProgress('feed', 1);
                     }
@@ -4899,13 +4926,13 @@
                     let isPoisonedNow = (typeof isNextFoodPoisoned !== 'undefined') ? isNextFoodPoisoned : false;
 
                     foods.push(new Food(mX, mY, currentFoodType, isPoisonedNow));
-                    
+
                     if (isPoisonedNow) {
                         gameState.poisons--;
                         isNextFoodPoisoned = false;
-                        
+
                         let pBtn = document.getElementById('poison-btn');
-                        if(pBtn) {
+                        if (pBtn) {
                             pBtn.style.opacity = '0.4';
                             pBtn.style.transform = 'scale(1)';
                             pBtn.style.textShadow = 'none';
@@ -5014,6 +5041,7 @@
 
                 if (gameState.coins >= totalPrice) {
                     gameState.coins -= totalPrice;
+                    trackAchievement('spend', totalPrice); trackAchievement('feed', 15);
                     updateUI();
                     updateQuestProgress('feed', 15);
                     updateQuestProgress('spend', totalPrice);
@@ -5061,6 +5089,7 @@
             if (gameState.coins < 200) return alert("Hết Kim Cương rồi fen ơi!");
             if (gameState.fishes.length >= 30) return alert("Hồ cá đã đầy (Max 30)!");
             gameState.coins -= 200;
+            trackAchievement('spend', 2000); trackAchievement('gacha', 1); trackAchievement('unlock', 0);
             updateQuestProgress('gacha', 1);
             updateQuestProgress('spend', 200);
             const r = Math.random() * 100; let pool = r < 5 ? FISH_DATA.filter(f => f.rarity === "Huyền thoại") : r < 30 ? FISH_DATA.filter(f => f.rarity === "Hiếm") : FISH_DATA.filter(f => f.rarity === "Thường");
@@ -5103,7 +5132,9 @@
             let bar = document.getElementById('sell-loading-bar'); bar.style.transition = 'none'; bar.style.width = '0%';
             setTimeout(() => { bar.style.transition = 'width 1.5s linear'; bar.style.width = '100%'; }, 50);
             setTimeout(() => {
-                closeModal('sell-overlay'); gameState.coins += price; gameState.fishes.splice(idx, 1);
+                closeModal('sell-overlay'); gameState.coins += price; 
+                trackAchievement('earn', price); trackAchievement('sell', 1);
+                gameState.fishes.splice(idx, 1);
                 createExplosion(fish.x, fish.y, "#FFD700", 40);
                 let tag = document.createElement('div'); tag.className = 'floating-price'; tag.innerText = `+${price} 💎`;
                 tag.style.left = (fish.x - 40) + 'px'; tag.style.top = (fish.y - 40) + 'px'; document.body.appendChild(tag); setTimeout(() => tag.remove(), 2500);
@@ -5129,6 +5160,7 @@
             if (gameState.coins < price) return alert("Không đủ Kim Cương!");
             if (type === 'rain') {
                 gameState.coins -= price;
+                trackAchievement('spend', price);
                 updateQuestProgress('spend', price);
                 closeModal('shop-overlay');
 
@@ -5168,6 +5200,7 @@
                 newDecor.y = height - 100;
 
                 gameState.decorations.push(newDecor);
+                trackAchievement('decor', 1);
                 createExplosion(newDecor.x, newDecor.y, "#FFD700", 30);
                 updateUI();
                 saveGame();
@@ -5220,39 +5253,64 @@
             updateUI(); saveGame();
         }
 
-        // HIỂN THỊ TOOLTIP KHI HOVER TRONG DANH SÁCH
+        // Cập nhật bảng thông tin Tooltip khi rà chuột trong Danh Sách Thủy Cung
         function showListTooltip(e, id) {
             isHoveringList = true;
             const fish = gameState.fishes.find(f => f.id === id);
             if (!fish) return;
 
             const tooltip = document.getElementById('fish-tooltip');
-            let sizeCm = (fish.baseScale * (1 + fish.level * 0.05) * 25).toFixed(1);
-            let rarityColor = fish.data.rarity === "Huyền thoại" ? "var(--neon-pink)" : fish.data.rarity === "Hiếm" ? "var(--neon-blue)" : "white";
-            let hungerColor = fish.hunger > 60 ? "#32CD32" : fish.hunger > 25 ? "var(--gold)" : "#ff4757";
-            let hungerStatus = fish.hunger > 60 ? "No Nê" : fish.hunger > 25 ? "Hơi đói" : "Sắp chết đói!";
-            let skillDesc = SKILL_DESC[fish.skill] || "";
-            let hpColor = fish.hp > 60 ? "#2ed573" : fish.hp > 25 ? "#ffa502" : "#ff4757";
-            tooltip.innerHTML = `
-            <div class="tt-title" style="color: ${rarityColor};">${fish.data.type}</div>
-            <div class="tt-row"><span>Cấp độ:</span> <b>Lv.${fish.level}</b></div>
-            
-            <div class="tt-row" style="margin-top: 10px; color: ${hpColor};"><span>Sinh lực (HP):</span> <b>${Math.ceil(fish.hp)}%</b></div>
-            <div class="tt-bar-bg"><div class="tt-bar-fill" style="width: ${fish.hp}%; background: ${hpColor};"></div></div>
-
-            <div class="tt-row" style="margin-top: 5px; color: ${hungerColor};"><span>Trạng thái:</span> <b>${hungerStatus}</b></div>
-            <div class="tt-bar-bg"><div class="tt-bar-fill" style="width: ${fish.hunger}%; background: ${hungerColor};"></div></div>
-        `;
-
-            // Canh lề sang trái để không bị tràn màn hình
-            tooltip.style.left = (e.clientX - 240) + 'px';
-            tooltip.style.top = (e.clientY + 10) + 'px';
-            tooltip.style.display = 'block';
+            renderTooltipContent(tooltip, fish, e.clientX - 240, e.clientY + 10);
         }
 
         function hideListTooltip() {
             isHoveringList = false;
             document.getElementById('fish-tooltip').style.display = 'none';
+        }
+        // HÀM DÙNG CHUNG ĐỂ VẼ NỘI DUNG TOOLTIP (TRÁNH LẶP CODE)
+        function renderTooltipContent(tooltip, fish, x, y) {
+            let sizeCm = (fish.baseScale * (1 + fish.level * 0.05) * 25).toFixed(1);
+            let currentSpeed = (fish.data.speed || 2) * (1 + fish.level * 0.02); // Ước tính tốc độ hiện tại
+            let rarityColor = fish.data.rarity === "Huyền thoại" ? "var(--neon-pink)" : fish.data.rarity === "Hiếm" ? "var(--neon-blue)" : "white";
+
+            // Xử lý thanh Đói
+            let hungerColor = fish.hunger > 60 ? "#32CD32" : fish.hunger > 25 ? "var(--gold)" : "#ff4757";
+            let hungerStatus = fish.hunger > 60 ? "No Nê" : fish.hunger > 25 ? "Hơi đói" : "Sắp chết đói!";
+
+            // Xử lý thanh Máu
+            let hpColor = fish.hp > 60 ? "#2ed573" : fish.hp > 25 ? "#ffa502" : "#ff4757";
+
+            // Xác định món ăn yêu thích dựa vào shape
+            let favoriteFood = "🧆 Cám";
+            if (fish.data.shape === 'eel' || fish.data.isPredator) favoriteFood = "🥩 Thịt";
+            else if (['ray', 'seahorse', 'squid', 'mantis-shrimp'].includes(fish.data.shape)) favoriteFood = "🦐 Tôm";
+            else if (fish.data.shape === 'turtle') favoriteFood = "🥬 Rong biển";
+            else if (fish.data.shape === 'jellyfish') favoriteFood = "🦠 Phù du";
+
+            // Nếu là cá mập (Sát thủ) thì ăn thịt cá khác
+            if (fish.data.isPredator) favoriteFood = "🐟 Cá nhỏ (Sát thủ)";
+
+            tooltip.innerHTML = `
+            <div class="tt-title" style="color: ${rarityColor};">${fish.customName ? fish.customName + ' <span style="font-size:12px;opacity:0.6">(' + fish.data.type + ')</span>' : fish.data.type}</div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; margin-top: 5px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px;">
+                <div class="tt-row" style="margin:0;"><span>Cấp độ:</span> <b>Lv.${fish.level}</b></div>
+                <div class="tt-row" style="margin:0;"><span>Kích thước: </span> <b>${sizeCm} cm</b></div>
+                <div class="tt-row" style="margin:0;"><span>Tốc độ:</span> <b>${currentSpeed.toFixed(1)} m/s</b></div>
+                <div class="tt-row" style="margin:0;"><span>Thức ăn:</span> <b style="color:var(--gold)">${favoriteFood}</b></div>
+            </div>
+
+            <div class="tt-row"><span>Kỹ năng:</span> <b style="color: var(--neon-blue);">${fish.skill}</b></div>
+            
+            <div class="tt-row" style="margin-top: 10px; color: ${hpColor};"><span>Sinh lực (HP):</span> <b>${Math.ceil(fish.hp)}/100</b></div>
+            <div class="tt-bar-bg"><div class="tt-bar-fill" style="width: ${fish.hp}%; background: ${hpColor}; box-shadow: 0 0 8px ${hpColor}"></div></div>
+
+            <div class="tt-row" style="margin-top: 8px; color: ${hungerColor};"><span>Độ no:</span> <b>${Math.ceil(fish.hunger)}% (${hungerStatus})</b></div>
+            <div class="tt-bar-bg"><div class="tt-bar-fill" style="width: ${fish.hunger}%; background: ${hungerColor}; box-shadow: 0 0 8px ${hungerColor}"></div></div>
+        `;
+            tooltip.style.left = x + 'px';
+            tooltip.style.top = y + 'px';
+            tooltip.style.display = 'block';
         }
         function updateUI() {
             document.getElementById('coin-ui').innerText = gameState.coins + " 💎";
@@ -5670,21 +5728,55 @@
                 let rarityColor = fish.rarity === "Huyền thoại" ? "var(--neon-pink)" : fish.rarity === "Hiếm" ? "var(--neon-blue)" : "white";
                 let description = fish.desc || `Sinh vật tuyệt đẹp này thuộc họ <b>${fish.shape}</b>. Sống ở vùng nước sâu của Abyss & Light, chúng mang trong mình màu sắc rực rỡ và khả năng sinh tồn vô cùng mãnh liệt.`;
 
+                // Tính toán các chỉ số cơ bản
+                let baseSize = (fish.scale * 25).toFixed(1);
+                let maxSize = (fish.scale * (1 + 20 * 0.05) * 25).toFixed(1); // Giả sử level max là 20
+                let baseSpeed = fish.speed || 2;
+
+                // Phân tích chế độ ăn
+                let dietInfo = "🧆 Cám viên (Cơ bản)";
+                let dietColor = "#FFD700";
+                if (fish.shape === 'eel') { dietInfo = "🥩 Thịt sống (Kén ăn)"; dietColor = "#ff4757"; }
+                else if (['ray', 'seahorse', 'squid', 'mantis-shrimp'].includes(fish.shape)) { dietInfo = "🦐 Tôm tươi (Hải sản)"; dietColor = "#ff7e67"; }
+                else if (fish.shape === 'turtle') { dietInfo = "🥬 Rong biển (Ăn chay)"; dietColor = "#2ed573"; }
+                else if (fish.shape === 'jellyfish') { dietInfo = "🦠 Phù du (Lọc nước)"; dietColor = "#00f3ff"; }
+
+                if (fish.isPredator) { dietInfo = "🐟 Săn mồi (Ăn thịt cá khác)"; dietColor = "#ff0000"; }
+
+                let flockInfo = fish.flockStyle === "independent" ? "🐺 Đơn độc (Bảo vệ lãnh thổ)" :
+                    fish.flockStyle === "horizontal" ? "🐟 Bơi theo đàn (Đồng bộ)" : "🌀 Bơi lượn vòng (Tụ tập)";
+
                 detailsDiv.innerHTML = `
                     <img src="${displayImg}" style="width: 150px; height: 150px; object-fit: contain; filter: drop-shadow(0 0 20px ${fish.colors[0]}); animation: floatBday 3s ease-in-out infinite;">
                     <h3 style="color: ${rarityColor}; margin: 10px 0 5px 0; font-size: 24px; font-family: 'Quicksand'; text-shadow: 0 0 10px ${rarityColor};">${fish.type}</h3>
                     
-                    <div style="background: rgba(255,255,255,0.1); padding: 5px 15px; border-radius: 20px; font-size: 12px; font-weight: 800; border: 1px solid ${rarityColor}; margin-bottom: 20px;">
+                    <div style="background: rgba(255,255,255,0.1); padding: 5px 15px; border-radius: 20px; font-size: 12px; font-weight: 800; border: 1px solid ${rarityColor}; margin-bottom: 15px;">
                         Độ hiếm: ${fish.rarity}
                     </div>
 
-                    <div style="font-size: 13.5px; line-height: 1.7; text-align: left; color: #ecf0f1; background: rgba(0,0,0,0.4); padding: 15px; border-radius: 12px; width: 100%; border: 1px solid rgba(255,255,255,0.05);">
-                        📝 <b>Hồ sơ sinh thái:</b><br><span style="color: #bdc3c7;">${description}</span>
-                        <hr style="border: none; border-top: 1px solid rgba(255,255,255,0.1); margin: 12px 0;">
-                        ⚡ <b>Tốc độ di chuyển:</b> ${fish.speed || 'Bình thường'} m/s<br>
-                        🎨 <b>Màu sắc đặc trưng:</b> 
-                        <span style="color:${fish.colors[0]}; text-shadow: 0 0 5px ${fish.colors[0]}; font-size: 16px;">█</span> 
-                        <span style="color:${fish.colors[1]}; text-shadow: 0 0 5px ${fish.colors[1]}; font-size: 16px;">█</span>
+                    <div style="font-size: 13px; line-height: 1.6; text-align: left; color: #ecf0f1; background: rgba(0,0,0,0.4); padding: 15px; border-radius: 12px; width: 100%; border: 1px solid rgba(255,255,255,0.05); overflow-y: auto; max-height: 40vh;">
+                        <div style="margin-bottom: 10px;">
+                            <span style="color: #bdc3c7;">📝 <b>Tiểu sử:</b></span><br>
+                            ${description}
+                        </div>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px;">
+                            <div>📏 <b>Kích cỡ (Cơ bản):</b><br><span style="color:#00f3ff">${baseSize} cm</span></div>
+                            <div>📈 <b>Kích cỡ (Tối đa):</b><br><span style="color:#ff00ea">${maxSize} cm</span></div>
+                            <div>⚡ <b>Tốc độ bơi:</b><br><span style="color:#FFD700">${baseSpeed} m/s</span></div>
+                            <div>👥 <b>Tập tính:</b><br><span style="color:#2ed573">${flockInfo}</span></div>
+                        </div>
+
+                        <div style="margin-top: 10px; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px;">
+                            🍽️ <b>Chế độ ăn yêu thích:</b><br>
+                            <span style="color:${dietColor}; font-weight: bold; font-size: 14px;">${dietInfo}</span>
+                        </div>
+
+                        <div style="margin-top: 10px; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px;">
+                            🎨 <b>Màu sắc đặc trưng:</b><br>
+                            <span style="color:${fish.colors[0]}; text-shadow: 0 0 5px ${fish.colors[0]}; font-size: 20px;">█</span> 
+                            <span style="color:${fish.colors[1]}; text-shadow: 0 0 5px ${fish.colors[1]}; font-size: 20px;">█</span>
+                        </div>
                     </div>
                 `;
             }
